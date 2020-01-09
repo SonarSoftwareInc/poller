@@ -1,0 +1,25 @@
+{
+    "name": "sonarsoftwareinc/poller",
+    "description": "A poller for Sonar",
+    "type": "project",
+    "require": {
+        "php": ">=7.3.0",
+        "amphp/amp": "^2.4",
+        "amphp/parallel": "^1.2",
+        "ext-sockets": "*",
+        "ext-snmp": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Poller\\": "src/"
+        }
+    },
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Simon Westlake",
+            "email": "simon@sonar.software"
+        }
+    ],
+    "minimum-stability": "stable"
+}
