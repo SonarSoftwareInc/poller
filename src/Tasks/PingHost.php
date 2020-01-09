@@ -2,6 +2,7 @@
 
 namespace Poller\Tasks;
 
+use Amp\Parallel\Worker\DefaultPool;
 use Amp\Parallel\Worker\Environment;
 use Amp\Parallel\Worker\Task;
 use Exception;
@@ -11,16 +12,19 @@ class PingHost implements Task
 {
     private $ipAddress;
     private $timeout;
+    private $repeats;
 
     /**
      * PingHost constructor.
      * @param string $ipAddress
-     * @param int $timeout
+     * @param int $timeout (seconds)
+     * @param int $repeats
      */
-    public function __construct(string $ipAddress, int $timeout)
+    public function __construct(string $ipAddress, int $timeout = 1, int $repeats = 10)
     {
         $this->ipAddress = $ipAddress;
-        $this->timeout = $timeout;
+        $this->timeout = $timeout*1000;
+        $this->repeats = $repeats;
     }
 
     /**
@@ -28,56 +32,80 @@ class PingHost implements Task
      */
     public function run(Environment $environment)
     {
-        /**
-         * Many devices can't handle being flooded with multiple pings at the same time.
-         * This imposes a random delay between pings so that we try to alleviate this.
-         */
-        usleep(rand(10000, 500000));
-        $key = rand(1,10000000000000);
-        try {
-            $socket = socket_create(AF_INET, SOCK_RAW, getprotobyname('icmp'));
-            socket_set_option(
-                $socket,
-                SOL_SOCKET,
-                SO_RCVTIMEO,
-                [
-                    'sec' => $this->timeout,
-                    'usec' => 0
-                ]
-            );
+        $flags = [
+            '-b12', //12 byte packet
+            '-p10', //10ms between ping packets
+            '-r0', //No retries
+            '-B1', //Backoff multiplier
+            '-q', //Quiet - don't spam out results
+        ];
 
-            $result = socket_connect($socket, $this->ipAddress, 0);
-            if ($result === false) {
-                throw new IcmpPingException("Failed to connect to {$this->ipAddress}: " . socket_strerror(socket_last_error($socket)));
-            }
+        $command = '/usr/bin/fping '
+            . escapeshellcmd("-C {$this->repeats} ")
+            . escapeshellcmd("-t {$this->timeout} ")
+            . implode(' ', $flags)
+            . ' '
+            . escapeshellcmd($this->ipAddress)
+            . ' 2>&1';
 
-            $startTime = microtime(true);
-            $package  = "\x08\x00\x19\x2f\x00\x00\x00\x00\x70\x69\x6e\x67";
-            socket_send($socket, $package, strlen($package), 0);
-            if (socket_read($socket, 255)) {
-                $result = $this->calculateTime($startTime);
-            } else {
-                $result = null;
-            }
-            socket_close($socket);
-            return $result;
-        } catch (Exception $e) {
-            return null;
-        }
+        exec(
+            $command,
+            $results
+        );
+
+        return $this->formatResults($results);
     }
 
     /**
-     * @param $startTime
+     * @param array $results
+     * @return array
+     */
+    private function formatResults(array $results):array
+    {
+        $formattedResult = [
+            'host' => $this->ipAddress,
+            'loss_percentage' => 100,
+            'low' => 0,
+            'high' => 0,
+            'median' => 0,
+        ];
+
+        if (count($results) > 0) {
+            $boom = explode(" ",$results[0]);
+            //-2 here because we don't care about the first two results which are the host and a colon
+            $middleIndex = floor((count($boom)-2)/2);
+            foreach ($results as $result) {
+                $boom = preg_split('/\s+/', $result);
+                unset($boom[0]);
+                unset($boom[1]);
+                sort($boom);
+                $lossCount = count(array_filter($boom, function($val) {
+                    return strpos($val, '-') === 0;
+                }));
+
+                $formattedResult = [
+                    'loss_percentage' => round(($lossCount / (count($boom)))*100,2),
+                    'low' => (float)round($boom[0],2),
+                    'high' => (float)round($boom[count($boom)-1],2),
+                    'median' => $this->calculateMedian($boom, $middleIndex),
+                ];
+            }
+        }
+
+        return $formattedResult;
+    }
+
+    /**
+     * @param array $data
+     * @param int $middleIndex
      * @return float
      */
-    private function calculateTime($startTime):float
+    private function calculateMedian(array $data, int $middleIndex):float
     {
-        return sprintf(
-            '%.3f',
-            round(
-                (microtime(true) - $startTime)*1000,
-                3
-            )
-        );
+        $median = $data[$middleIndex];
+        if (count($data) % 2 === 0) {
+            $median = ($median + $data[$middleIndex - 1]) / 2;
+        }
+        return (float)round($median,2);
     }
 }

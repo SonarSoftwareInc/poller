@@ -29,7 +29,7 @@ class SnmpProbeHost implements Task
      */
     public function run(Environment $environment)
     {
-        $pool = new DefaultPool();
+        $pool = new DefaultPool(3);
         $coroutines = [];
         $coroutines['gets'] = call(function () use($pool) {
             $snmpVersion = 2;
@@ -60,6 +60,8 @@ class SnmpProbeHost implements Task
             );
         });
 
-        return yield all($coroutines);
+        $result = yield all($coroutines);
+        yield $pool->shutdown();
+        return $result;
     }
 }

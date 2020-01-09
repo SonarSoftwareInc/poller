@@ -40,6 +40,9 @@ class SnmpGet implements Task
             return [];
         } catch (Exception $e) {
             return [];
+        } finally {
+            $snmp->close();
+            unset($snmp);
         }
     }
 
@@ -50,12 +53,13 @@ class SnmpGet implements Task
             $this->ipAddress,
             $this->community,
             2000000, //microseconds
-            1
+            0
         );
         $snmp->valueretrieval = SNMP_VALUE_LIBRARY;
         $snmp->oid_output_format = SNMP_OID_OUTPUT_NUMERIC;
         $snmp->enum_print = true;
         $snmp->exceptions_enabled = SNMP::ERRNO_ANY;
+        $snmp->max_oids = 1000;
 
         //TODO: Fix this part
         if ($this->version === SNMP::VERSION_3)
