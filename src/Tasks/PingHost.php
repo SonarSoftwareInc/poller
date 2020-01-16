@@ -103,6 +103,10 @@ class PingHost implements Task
     private function calculateMedian(array $data, int $middleIndex):float
     {
         $median = $data[$middleIndex];
+        if ($median === '-') {
+            return 0;
+        }
+
         if (count($data) % 2 === 0) {
             $median = ($median + $data[$middleIndex - 1]) / 2;
         }

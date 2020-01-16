@@ -5,7 +5,6 @@ namespace Poller\Tasks;
 use Amp\Parallel\Worker\DefaultPool;
 use Amp\Parallel\Worker\Environment;
 use Amp\Parallel\Worker\Task;
-use Exception;
 use SNMP;
 use function Amp\call;
 use function Amp\Parallel\Worker\pool;
