@@ -3,6 +3,8 @@
 namespace Poller\Services;
 
 use InvalidArgumentException;
+use Poller\Models\SnmpResult;
+use const ZLIB_ENCODING_GZIP;
 
 class Formatter
 {
@@ -41,5 +43,33 @@ class Formatter
             $mac = $fixedMac;
         }
         return $mac;
+    }
+
+    public static function formatMonitoringData(array $coroutines):string
+    {
+        $data = [];
+        foreach ($coroutines as $coroutine) {
+            if (is_array($coroutine)) {
+                foreach ($coroutine as $pingResult) {
+                    if (!isset($data[$pingResult->getIp()])) {
+                        $data[$pingResult->getIp()] = [
+                            'icmp' => null,
+                            'snmp' => null,
+                        ];
+                    }
+                    $data[$pingResult->getIp()]['icmp'] = $pingResult->toArray();
+                }
+            } elseif ($coroutine instanceof SnmpResult) {
+                if (!isset($data[$coroutine->getIp()])) {
+                    $data[$coroutine->getIp()] = [
+                        'icmp' => null,
+                        'snmp' => null,
+                    ];
+                }
+                $data[$coroutine->getIp()]['snmp'] = $coroutine->toArray();
+            }
+        }
+
+        return gzcompress(json_encode($data), 6, ZLIB_ENCODING_GZIP);
     }
 }

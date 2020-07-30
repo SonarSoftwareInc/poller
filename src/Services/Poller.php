@@ -42,24 +42,14 @@ class Poller
             });
         }
 
-        $trie = $this->buildDeviceTrie();
+        $matcher = new SysObjectIDMatcher();
         foreach ($deviceFactory->getSnmpDevices() as $ip => $device) {
-            $snmpGet = new SnmpGet($device, $trie);
+            $snmpGet = new SnmpGet($device, $matcher);
             $coroutines[] = call(function () use ($snmpGet) {
                 return yield $this->snmpPool->enqueue($snmpGet);
             });
         }
 
         return $coroutines;
-    }
-
-    private function buildDeviceTrie()
-    {
-        $devices = json_decode(file_get_contents(__DIR__ . '../../config/devices.json'));
-        $trie = new SuffixTrie();
-        foreach ($devices->devices as $device) {
-            $trie->add($device->response, $device->device);
-        }
-        return $trie;
     }
 }

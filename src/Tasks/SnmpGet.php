@@ -11,22 +11,23 @@ use Poller\Models\Device;
 use Poller\Models\MonitoringTemplate;
 use Poller\Models\SnmpError;
 use Poller\Models\SnmpResult;
+use Poller\Services\SysObjectIDMatcher;
 use Tries\SuffixTrie;
 
 class SnmpGet implements Task
 {
     private Device $device;
-    private SuffixTrie $trie;
+    private SysObjectIDMatcher $matcher;
 
     /**
      * SnmpGet constructor.
      * @param Device $device
-     * @param SuffixTrie $trie
+     * @param SysObjectIDMatcher $trie
      */
-    public function __construct(Device $device, SuffixTrie $trie)
+    public function __construct(Device $device, SysObjectIDMatcher $matcher)
     {
         $this->device = $device;
-        $this->trie = $trie;
+        $this->matcher = $matcher;
     }
 
     /**
@@ -38,17 +39,14 @@ class SnmpGet implements Task
         $snmp = $this->device->getSnmpClient();
         try {
             $snmpResult = new SnmpResult(
-                $snmp->get(...$this->device->getMonitoringTemplate()->getOids())
+                $snmp->get(...$this->device->getMonitoringTemplate()->getOids()),
+                $this->device->getIp()
             );
 
             $oid = $snmpResult->results()->get(MonitoringTemplate::SYSTEM_SYSOBJECT_ID);
             if ($oid && $oid->getValue()) {
-                $results = $this->trie->search($oid->getValue()->__toString())
-                    ->sortKeys()
-                    ->limit(1);
-
-                if (count($results) === 1) {
-                    $className = $results[0];
+                $className = $this->matcher->getClass($oid->getValue()->__toString());
+                if ($className !== null) {
                     $mapper = new $className($this->device);
                     if ($mapper instanceof IdentifierInterface) {
                         $mapper = $mapper->getMapper();

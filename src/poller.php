@@ -6,6 +6,7 @@ use Amp\Loop;
 use League\BooBoo\BooBoo;
 use League\BooBoo\Formatter\CommandLineFormatter;
 use League\CLImate\CLImate;
+use Poller\Services\Formatter;
 use Poller\Services\Poller;
 use function Amp\Promise\all;
 
@@ -29,6 +30,12 @@ Loop::run(function () {
             $results = yield all($poller->buildCoroutines($data->data));
             $timeTaken = time() - $start;
             stdOutput("Cycle completed in $timeTaken seconds, got " . count($results) . " results.");
+
+            $gzCompressedString = Formatter::formatMonitoringData($results);
+
+            //todo: format the data, set Content-Encoding gzip with guzzle and gzcompress data
+            //todo: post to Sonar instance, where it it configured?
+            //todo: log output to file system, setup logrotate and display using goaccess or something similar
             $running = false;
         }
     });

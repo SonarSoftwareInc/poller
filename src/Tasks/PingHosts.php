@@ -2,10 +2,9 @@
 
 namespace Poller\Tasks;
 
-use Amp\Loop;
 use Amp\Parallel\Worker\Environment;
 use Amp\Parallel\Worker\Task;
-use Blackfire\Probe;
+use Poller\Models\PingResult;
 
 class PingHosts implements Task
 {
@@ -81,12 +80,13 @@ class PingHosts implements Task
                     return strpos($val, '-') === 0;
                 }));
 
-                $formattedResults[$ip] = [
-                    'loss_percentage' => round(($lossCount / (count($boom)))*100,2),
-                    'low' => (float)round($boom[0],2),
-                    'high' => (float)round($boom[count($boom)-1],2),
-                    'median' => $this->calculateMedian($boom),
-                ];;
+                $formattedResults[] = new PingResult(
+                    $ip,
+                    round(($lossCount / (count($boom)))*100,2),
+                    (float)round($boom[0],2),
+                    (float)round($boom[count($boom)-1],2),
+                    $this->calculateMedian($boom)
+                );
             }
         }
 

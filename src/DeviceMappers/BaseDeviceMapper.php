@@ -9,6 +9,8 @@ use Leth\IPAddress\IP\Address;
 use Poller\Models\Device;
 use Poller\Models\NetworkInterface;
 use Poller\Models\SnmpResult;
+use Poller\Services\Formatter;
+use const FILTER_VALIDATE_MAC;
 
 abstract class BaseDeviceMapper
 {

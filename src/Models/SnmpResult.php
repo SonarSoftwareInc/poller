@@ -10,10 +10,17 @@ class SnmpResult
     private OidList $results;
     private ?Metadata $metadata;
     private array $interfaces = [];
+    private string $ip;
 
-    public function __construct(OidList $results)
+    public function __construct(OidList $results, string $ip)
     {
         $this->results = $results;
+        $this->ip = $ip;
+    }
+
+    public function getIp():string
+    {
+        return $this->ip;
     }
 
     public function getResults():OidList
@@ -51,5 +58,27 @@ class SnmpResult
     public function setInterfaces(array $interfaces): void
     {
         $this->interfaces = $interfaces;
+    }
+
+    public function toArray()
+    {
+        return [
+            'metadata' => [
+                'contact' => $this->metadata->getContact(),
+                'name' => $this->metadata->getName(),
+                'location' => $this->metadata->getLocation(),
+                'uptime' => $this->metadata->getUptime(),
+                'description' => $this->metadata->getDescription(),
+            ],
+            'interfaces' => array_map(function ($interface) {
+                return $interface->toArray();
+            }, $this->interfaces),
+            'results' => array_map(function ($oid) {
+                return [
+                    'oid' => $oid->getOid(),
+                    'value' => $oid->getValue()->__toString()
+                ];
+            }, $this->getResults()->toArray()),
+        ];
     }
 }

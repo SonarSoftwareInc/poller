@@ -16,8 +16,8 @@
         "freedsx/snmp": "^0.4.0",
         "amphp/socket": "^1.1",
         "league/climate": "^3.5",
-        "markbaker/tries": "^2.0",
-        "leth/ip-address": "^1.1"
+        "leth/ip-address": "^1.1",
+        "ext-zlib": "*"
     },
     "autoload": {
         "psr-4": {

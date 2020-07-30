@@ -132,8 +132,7 @@ class Device
                     'context_name' => $this->monitoringTemplate->getSnmp3ContextName(),
                 ]);
             }
-
-            return $this->snmpClient;
         }
+        return $this->snmpClient;
     }
 }
