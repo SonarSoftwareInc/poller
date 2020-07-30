@@ -3,12 +3,21 @@
     "description": "A poller for Sonar",
     "type": "project",
     "require": {
-        "php": ">=7.3.0",
+        "php": ">=7.4",
         "amphp/amp": "^2.4",
         "amphp/parallel": "^1.2",
         "ext-sockets": "*",
-        "ext-snmp": "*",
-        "guzzlehttp/guzzle": "^6.5"
+        "ext-json": "*",
+        "ext-gmp": "*",
+        "guzzlehttp/guzzle": "^6.5",
+        "blackfire/php-sdk": "^1.21",
+        "psy/psysh": "@stable",
+        "league/booboo": "^2.0",
+        "freedsx/snmp": "^0.4.0",
+        "amphp/socket": "^1.1",
+        "league/climate": "^3.5",
+        "markbaker/tries": "^2.0",
+        "leth/ip-address": "^1.1"
     },
     "autoload": {
         "psr-4": {

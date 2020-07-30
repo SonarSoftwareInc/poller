@@ -3,67 +3,47 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use Amp\Loop;
-use Amp\Parallel\Worker\DefaultPool;
-use Poller\Tasks\PingHost;
-use Poller\Tasks\SnmpProbeHost;
-use function Amp\call;
+use League\BooBoo\BooBoo;
+use League\BooBoo\Formatter\CommandLineFormatter;
+use League\CLImate\CLImate;
+use Poller\Services\Poller;
 use function Amp\Promise\all;
 
-$poolSize = 32;
+$booboo = new BooBoo([
+    new CommandLineFormatter()
+]);
+$booboo->setErrorPageFormatter(new CommandLineFormatter());
+$booboo->register();
 
-$icmpTasks = [];
-$snmpTasks = [];
-$start = ip2long('192.168.1.1');
-for ($i = 0; $i < 50; $i++) {
-    $icmpTasks[long2ip($start)] = new PingHost(long2ip($start));
-    $snmpTasks[long2ip($start)] = new SnmpProbeHost(long2ip($start));
-    $start++;
-}
 
-$results = [];
-$pool = new DefaultPool($poolSize);
+Loop::run(function () {
+    $poller = new Poller();
+    $data = json_decode(file_get_contents('test_data_DELETE/data.json'));
 
-Loop::run(function () use ($icmpTasks, $snmpTasks, &$results, $pool) {
-    $start = time();
-    stdOutput('Starting loop execution');
-
-    try {
-        $coroutines = [];
-        foreach ($icmpTasks as $ip => $icmpTask) {
-            $coroutines[] = call(function () use ($pool, $icmpTask) {
-                return yield $pool->enqueue($icmpTask);
-            });
+    stdOutput("Starting polling cycle...");
+    $running = false;
+    Loop::repeat($msInterval = 60000, function ($watcherId) use (&$running, $poller, $data) {
+        if ($running === false) {
+            $running = true;
+            $start = time();
+            $results = yield all($poller->buildCoroutines($data->data));
+            $timeTaken = time() - $start;
+            stdOutput("Cycle completed in $timeTaken seconds, got " . count($results) . " results.");
+            $running = false;
         }
-
-        foreach ($snmpTasks as $ip => $snmpTask) {
-            $coroutines[] = call(function () use ($pool, $snmpTask) {
-                return yield $pool->enqueue($snmpTask);
-            });
-        }
-
-        Loop::repeat($msInterval = 1000, function ($watcherId) use ($pool) {
-            $idleWorkers = $pool->getIdleWorkerCount();
-            if ($idleWorkers < $pool->getMaxSize()) {
-                stdOutput("$idleWorkers workers idle...");
-            } else {
-                Loop::cancel($watcherId);
-            }
-        });
-
-        $results = yield all($coroutines);
-
-        $timeTaken = time() - $start . "s";
-        stdOutput("Execution complete (took $timeTaken)");
-    } catch (Throwable $e) {
-        stdOutput("Received an error: {$e->getMessage()}");
-    }
-
-    //TODO: this needs to be split out into a way to repeatedly run this loop
-    yield $pool->shutdown();
-    Loop::stop();
+    });
 });
 
-function stdOutput(string $message)
+/**
+ * @param string $message
+ * @param bool $error
+ */
+function stdOutput(string $message, bool $error = false)
 {
-    echo "[" . time() . "] $message\n";
+    $climate = new CLImate;
+    if ($error === false) {
+        $climate->lightGreen($message);
+    } else {
+        $climate->red($message);
+    }
 }
