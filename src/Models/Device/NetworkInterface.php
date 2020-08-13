@@ -16,6 +16,7 @@ class NetworkInterface
     private ?string $macAddress = null;
     private ?int $speedIn = null;
     private ?int $speedOut = null;
+    private ?int $interfaceSpeed = null;
     private ?string $type = null;
     private int $id;
 
@@ -172,5 +173,21 @@ class NetworkInterface
     private function validateMac(string $mac)
     {
         return filter_var(Formatter::addMacLeadingZeroes($mac), FILTER_VALIDATE_MAC) !== false;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getInterfaceSpeed(): ?int
+    {
+        return $this->interfaceSpeed;
+    }
+
+    /**
+     * @param int|null $interfaceSpeed
+     */
+    public function setInterfaceSpeed(?int $interfaceSpeed): void
+    {
+        $this->interfaceSpeed = $interfaceSpeed;
     }
 }

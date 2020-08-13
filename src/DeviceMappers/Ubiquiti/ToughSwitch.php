@@ -16,9 +16,13 @@ class ToughSwitch extends BaseDeviceMapper
 
     private function getBridgingTable(SnmpResult $snmpResult):SnmpResult
     {
-        $ssh = new SSH2($snmpResult->getIp());
+        if ($this->device->getSshUsername() === null || $this->device->getSshPassword() === null) {
+            return $snmpResult;
+        }
+
+        $ssh = new SSH2($snmpResult->getIp(), $this->device->getPort(), 5);
         $ssh->setTimeout(5);
-        if (!$ssh->login('username', 'password')) {
+        if (!$ssh->login($this->device->getSshUsername(), $this->device->getSshPassword())) {
             return $snmpResult;
         }
 

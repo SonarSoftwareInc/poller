@@ -5,6 +5,7 @@ namespace Poller\DeviceMappers;
 use Exception;
 use FreeDSx\Snmp\OidList;
 use Leth\IPAddress\IP\Address;
+use Poller\Log;
 use Poller\Models\Device;
 use Poller\Models\NetworkInterface;
 use Poller\Models\SnmpResult;
@@ -54,7 +55,8 @@ abstract class BaseDeviceMapper
             }
             $snmpResult->setInterfaces($this->interfaces);
         } catch (Exception $e) {
-            //TODO: log failures
+            $log = new Log();
+            $log->error($e->getTraceAsString());
         }
 
         return $snmpResult;
@@ -73,7 +75,8 @@ abstract class BaseDeviceMapper
                 $oids[] = $walk->next();
             }
         } catch (Exception $e) {
-            //TODO: log exception
+            $log = new Log();
+            $log->error($e->getTraceAsString());
         }
 
         return new OidList(... $oids);

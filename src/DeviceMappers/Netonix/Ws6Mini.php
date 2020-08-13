@@ -16,9 +16,13 @@ class Ws6Mini extends BaseDeviceMapper
 
     private function getInterfaceMacAddresses(SnmpResult $snmpResult):SnmpResult
     {
-        $ssh = new SSH2($snmpResult->getIp());
+        if ($this->device->getSshUsername() === null || $this->device->getSshPassword() === null) {
+            return $snmpResult;
+        }
+
+        $ssh = new SSH2($snmpResult->getIp(), $this->device->getPort(), 5);
         $ssh->setTimeout(5);
-        if (!$ssh->login('username', 'password')) {
+        if (!$ssh->login($this->device->getSshUsername(), $this->device->getSshPassword())) {
             return $snmpResult;
         }
 
@@ -33,6 +37,8 @@ class Ws6Mini extends BaseDeviceMapper
         while ($line !== false) {
             $boom = explode(' ', $interfaceMacs);
             $interface = str_replace(':', '', $boom[0]);
+            $interface = str_replace('eth', '', $interface);
+            $interface = 'Port ' . (string)((int)$interface+1);
             $mac = Formatter::formatMac($boom[1]);
             $readInterfaces[strtolower($interface)] = $mac;
             $line = strtok($separator);

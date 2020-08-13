@@ -8,6 +8,7 @@ use FreeDSx\Snmp\OidList;
 use Poller\DeviceMappers\Ubiquiti\AirFiberBackhaul;
 use Poller\DeviceMappers\Ubiquiti\AirMaxAccessPoint;
 use Poller\DeviceMappers\Ubiquiti\ToughSwitch;
+use Poller\Log;
 use Poller\Models\Device;
 
 class Ubiquiti implements IdentifierInterface
@@ -51,7 +52,8 @@ class Ubiquiti implements IdentifierInterface
                 $oids[] = $walk->next();
             }
         } catch (Exception $e) {
-            //TODO: log exception
+            $log = new Log();
+            $log->error($e->getTraceAsString());
         }
 
         return new OidList(... $oids);

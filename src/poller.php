@@ -6,6 +6,7 @@ use Amp\Loop;
 use League\BooBoo\BooBoo;
 use League\BooBoo\Formatter\CommandLineFormatter;
 use League\CLImate\CLImate;
+use Poller\Log;
 use Poller\Services\Formatter;
 use Poller\Services\Poller;
 use function Amp\Promise\all;
@@ -16,26 +17,37 @@ $booboo = new BooBoo([
 $booboo->setErrorPageFormatter(new CommandLineFormatter());
 $booboo->register();
 
-
 Loop::run(function () {
     $poller = new Poller();
     $data = json_decode(file_get_contents('test_data_DELETE/data.json'));
+    $client = new \GuzzleHttp\Client();
 
-    stdOutput("Starting polling cycle...");
+    output("Starting polling cycle...");
     $running = false;
-    Loop::repeat($msInterval = 60000, function ($watcherId) use (&$running, $poller, $data) {
+    Loop::repeat($msInterval = 60000, function ($watcherId) use (&$running, $poller, $data, $client, $log) {
         if ($running === false) {
             $running = true;
             $start = time();
             $results = yield all($poller->buildCoroutines($data->data));
             $timeTaken = time() - $start;
-            stdOutput("Cycle completed in $timeTaken seconds, got " . count($results) . " results.");
+            output("Cycle completed in $timeTaken seconds, got " . count($results) . " results.");
 
-            $gzCompressedString = Formatter::formatMonitoringData($results);
-
-            //todo: Set Content-Encoding gzip with guzzle
+            try {
+                $response = $client->request('POST', '/sonar', [
+                    'headers' => [
+                        'User-Agent' => "SonarPoller/2.0", //inject real poller version here
+                        'Accept'     => 'application/json',
+                        'Content-Encoding' => 'gzip',
+                    ],
+                    'body' => Formatter::formatMonitoringData($results),
+                ]);
+            } catch (Exception $e) {
+                output($e->getMessage(), true);
+            }
             //todo: post to Sonar instance, where it it configured?
             //todo: log output to file system, setup logrotate and display using goaccess or something similar
+            //or get docker working and just dump the output there?
+            //goaccess access.log -o /var/www/html/report.html --log-format=COMBINED --real-time-html
             $running = false;
         }
     });
@@ -45,12 +57,15 @@ Loop::run(function () {
  * @param string $message
  * @param bool $error
  */
-function stdOutput(string $message, bool $error = false)
+function output(string $message, bool $error = false)
 {
+    $log = new Log();
     $climate = new CLImate;
     if ($error === false) {
+        $log->info($message);
         $climate->lightGreen($message);
     } else {
+        $log->error($message);
         $climate->red($message);
     }
 }

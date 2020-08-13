@@ -4,6 +4,7 @@ namespace Poller\DeviceMappers\Etherwan;
 
 use Exception;
 use Poller\DeviceMappers\BaseDeviceMapper;
+use Poller\Log;
 use Poller\Models\SnmpResult;
 use Poller\Services\Formatter;
 
@@ -41,10 +42,9 @@ class EtherwanSwitch extends BaseDeviceMapper
                     $existingMacs = $this->interfaces[$mapping[$boom[count($boom)-1]]]->getConnectedLayer2Macs();
                     $existingMacs[] = $macAddress;
                     $this->interfaces[$mapping[$boom[count($boom)-1]]]->setConnectedLayer2Macs($macAddresses);
-                }
-                catch (Exception $e)
-                {
-                    //
+                } catch (Exception $e) {
+                    $log = new Log();
+                    $log->error($e->getTraceAsString());
                 }
             }
         }

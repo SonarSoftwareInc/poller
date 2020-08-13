@@ -18,6 +18,10 @@ class Device
     private $inventoryModelID;
     private $monitoringTemplate;
     private ?SnmpClient $snmpClient = null;
+    //TODO: need to set these from somewhere
+    private ?string $sshUsername = null;
+    private ?string $sshPassword = null;
+    private ?int $port = null;
 
     /**
      * Device constructor.
@@ -134,5 +138,29 @@ class Device
             }
         }
         return $this->snmpClient;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSshPassword(): ?string
+    {
+        return $this->sshPassword;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSshUsername(): ?string
+    {
+        return $this->sshUsername;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getPort(): ?int
+    {
+        return $this->port;
     }
 }

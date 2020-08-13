@@ -57,7 +57,7 @@ class SnmpResult
      */
     public function setInterfaces(array $interfaces): void
     {
-        $this->interfaces = $interfaces;
+        $this->interfaces = array_values($interfaces);
     }
 
     public function toArray()
