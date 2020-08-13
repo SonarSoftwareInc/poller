@@ -67,6 +67,10 @@
     {
       "response": "1.3.6.1.4.1.43356.1.1.3",
       "device": "Poller\\DeviceMappers\\Mimosa\\AxAccessPoint"
+    },
+    {
+      "response": "1.3.6.1.4.1.46242",
+      "device": "Poller\\DeviceMappers\\Netonix\\Ws6Mini"
     }
   ]
 }

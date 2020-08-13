@@ -4,20 +4,17 @@ namespace Poller\DeviceMappers;
 
 use Exception;
 use FreeDSx\Snmp\OidList;
-use InvalidArgumentException;
 use Leth\IPAddress\IP\Address;
 use Poller\Models\Device;
 use Poller\Models\NetworkInterface;
 use Poller\Models\SnmpResult;
-use Poller\Services\Formatter;
-use const FILTER_VALIDATE_MAC;
 
 abstract class BaseDeviceMapper
 {
     protected Device $device;
     protected ?OidList $baseData = null;
 
-    //Set to true if this device has a useful ARP table
+    //Set to true if this device has an ARP table at the standard SNMP location
     protected bool $hasArp = true;
 
     //Set this to true if this device has a bridging table at the standard SNMP location

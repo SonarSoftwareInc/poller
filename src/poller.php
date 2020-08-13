@@ -33,7 +33,7 @@ Loop::run(function () {
 
             $gzCompressedString = Formatter::formatMonitoringData($results);
 
-            //todo: format the data, set Content-Encoding gzip with guzzle and gzcompress data
+            //todo: Set Content-Encoding gzip with guzzle
             //todo: post to Sonar instance, where it it configured?
             //todo: log output to file system, setup logrotate and display using goaccess or something similar
             $running = false;
