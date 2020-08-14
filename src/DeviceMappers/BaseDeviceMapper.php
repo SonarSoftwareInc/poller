@@ -40,24 +40,46 @@ abstract class BaseDeviceMapper
     {
         try {
             $snmpResult->setMetadata($this->populateSystemMetadata());
+        } catch (Throwable $e) {
+            $log = new Log();
+            $log->error($e->getTraceAsString());
+        }
+
+        try {
             $this->mapInterfaces();
-            if ($this->device->getType() === Device::NETWORKSITE) {
+            $snmpResult->setInterfaces($this->interfaces);
+        } catch (Throwable $e) {
+            $log = new Log();
+            $log->error($e->getTraceAsString());
+        }
+
+        if ($this->device->getType() === Device::NETWORKSITE) {
+            try {
                 if ($this->hasArp === true) {
                     $this->setArp();
                 }
+            } catch (Throwable $e) {
+                $log = new Log();
+                $log->error($e->getTraceAsString());
+            }
 
+            try {
                 if ($this->hasBridgingTable === true) {
                     $this->setBridgingTable();
                 }
+            } catch (Throwable $e) {
+                $log = new Log();
+                $log->error($e->getTraceAsString());
+            }
 
+            try {
                 if ($this->exposesIpAddresses === true) {
                     $this->setIpAddresses();
                 }
+            } catch (Throwable $e) {
+                $log = new Log();
+                $log->error($e->getTraceAsString());
             }
-            $snmpResult->setInterfaces($this->interfaces);
-        } catch (Exception $e) {
-            $log = new Log();
-            $log->error($e->getTraceAsString());
         }
 
         return $snmpResult;

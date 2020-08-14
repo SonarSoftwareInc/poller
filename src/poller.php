@@ -5,6 +5,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use Amp\Loop;
 use GuzzleHttp\Client;
 use League\BooBoo\BooBoo;
+use League\BooBoo\Handler\LogHandler;
 use League\CLImate\CLImate;
 use Poller\Log;
 use Poller\Overrides\CommandLineFormatter;
@@ -74,6 +75,8 @@ function bootstrap()
     $booboo = new BooBoo([
         new CommandLineFormatter()
     ]);
+    $log = new Log();
+    $booboo->pushHandler(new LogHandler($log->getLogger()));
     $booboo->setErrorPageFormatter(new CommandLineFormatter());
     $booboo->register();
 }

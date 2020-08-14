@@ -21,6 +21,11 @@ class Log
         $this->logger->pushHandler($stream);
     }
 
+    public function getLogger():Logger
+    {
+        return $this->logger;
+    }
+
     public function info(string $message)
     {
         $this->logger->info($message);
