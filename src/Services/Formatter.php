@@ -50,17 +50,23 @@ class Formatter
     {
         $data = [];
         foreach ($coroutines as $coroutine) {
-            if (!isset($data[$coroutine->getIp()])) {
-                $data[$coroutine->getIp()] = [
-                    'icmp' => null,
-                    'snmp' => null,
-                ];
-            }
             if (is_array($coroutine)) {
                 foreach ($coroutine as $pingResult) {
+                    if (!isset($data[$pingResult->getIp()])) {
+                        $data[$pingResult->getIp()] = [
+                            'icmp' => null,
+                            'snmp' => null,
+                        ];
+                    }
                     $data[$pingResult->getIp()]['icmp'] = $pingResult->toArray();
                 }
             } elseif ($coroutine instanceof SnmpResult || $coroutine instanceof SnmpError) {
+                if (!isset($data[$coroutine->getIp()])) {
+                    $data[$coroutine->getIp()] = [
+                        'icmp' => null,
+                        'snmp' => null,
+                    ];
+                }
                 $data[$coroutine->getIp()]['snmp'] = $coroutine->toArray();
             }
         }
