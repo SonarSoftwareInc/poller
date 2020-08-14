@@ -23,7 +23,7 @@ class AirMaxAccessPoint extends BaseDeviceMapper
     {
         $interfaces = $snmpResult->getInterfaces();
         foreach ($interfaces as $key => $deviceInterface) {
-            if (strpos($deviceInterface->getDescription(),"wifi") !== false) {
+            if (strpos($deviceInterface->getName(),"wifi") !== false) {
                 $existingMacs = $interfaces[$key]->getConnectedLayer1Macs();
 
                 try {

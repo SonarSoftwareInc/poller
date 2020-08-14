@@ -18,7 +18,7 @@ class PTP250Backhaul extends BaseDeviceMapper
         $interfaces = $this->interfaces;
         foreach ($interfaces as $id => $deviceInterface)
         {
-            if (strpos($deviceInterface->getDescription(),"wireless") !== false)
+            if (strpos($deviceInterface->getName(),"wireless") !== false)
             {
                 $macs = $deviceInterface->getConnectedLayer1Macs();
                 $result = $this->device->getSnmpClient()->get("1.3.6.1.4.1.17713.250.1.4.0");
