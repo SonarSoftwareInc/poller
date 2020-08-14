@@ -64,11 +64,11 @@ class SnmpResult
     {
         return [
             'metadata' => [
-                'contact' => $this->metadata->getContact(),
-                'name' => $this->metadata->getName(),
-                'location' => $this->metadata->getLocation(),
-                'uptime' => $this->metadata->getUptime(),
-                'description' => $this->metadata->getDescription(),
+                'contact' => $this->metadata ? $this->metadata->getContact() : null,
+                'name' => $this->metadata ? $this->metadata->getName() : null,
+                'location' => $this->metadata ? $this->metadata->getLocation() : null,
+                'uptime' => $this->metadata ? $this->metadata->getUptime() : null,
+                'description' => $this->metadata ? $this->metadata->getDescription() : null,
             ],
             'interfaces' => array_map(function ($interface) {
                 return $interface->toArray();

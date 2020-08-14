@@ -233,8 +233,8 @@ abstract class BaseDeviceMapper
                 $key = ltrim($oid->getOid(), ".");
                 $boom = explode(".", $key, 12);
                 if (isset($mappings[$boom[11]]) && isset($this->interfaces[$mappings[$boom[11]]])) {
-                    if (!isset($bridgingTables[$boom[11]])) {
-                        $bridgingTables[$boom[11]] = [];
+                    if (!isset($bridgingTables[$mappings[$boom[11]]])) {
+                        $bridgingTables[$mappings[$boom[11]]] = [];
                     }
                     $bridgingTables[$mappings[$boom[11]]][] = $oid->getValue()->__toString();
                 }
