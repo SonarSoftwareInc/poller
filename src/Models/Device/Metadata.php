@@ -4,11 +4,11 @@ namespace Poller\Models\Device;
 
 class Metadata
 {
-    private ?String $description;
-    private ?String $uptime;
-    private ?String $contact;
-    private ?String $name;
-    private ?String $location;
+    private ?String $description = null;
+    private ?String $uptime = null;
+    private ?String $contact = null;
+    private ?String $name = null;
+    private ?String $location = null;
 
     /**
      * @return String|null
@@ -19,9 +19,9 @@ class Metadata
     }
 
     /**
-     * @param String|null $contact
+     * @param String $contact
      */
-    public function setContact(?string $contact): void
+    public function setContact(string $contact): void
     {
         $this->contact = $contact;
     }
@@ -35,9 +35,9 @@ class Metadata
     }
 
     /**
-     * @param String|null $name
+     * @param String $name
      */
-    public function setName(?string $name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -51,9 +51,9 @@ class Metadata
     }
 
     /**
-     * @param String|null $location
+     * @param String $location
      */
-    public function setLocation(?string $location): void
+    public function setLocation(string $location): void
     {
         $this->location = $location;
     }
@@ -67,9 +67,9 @@ class Metadata
     }
 
     /**
-     * @param String|null $uptime
+     * @param String $uptime
      */
-    public function setUptime(?string $uptime): void
+    public function setUptime(string $uptime): void
     {
         $this->uptime = $uptime;
     }
@@ -83,9 +83,9 @@ class Metadata
     }
 
     /**
-     * @param String|null $description
+     * @param String $description
      */
-    public function setDescription(?string $description): void
+    public function setDescription(string $description): void
     {
         $this->description = $description;
     }

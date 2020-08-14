@@ -37,9 +37,9 @@ class SnmpResult
     }
 
     /**
-     * @param Metadata|null $metadata
+     * @param Metadata $metadata
      */
-    public function setMetadata(?Metadata $metadata): void
+    public function setMetadata(Metadata $metadata): void
     {
         $this->metadata = $metadata;
     }
