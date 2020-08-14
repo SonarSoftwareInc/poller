@@ -37,7 +37,7 @@ Loop::run(function () {
             if ($debug === true) {
                 output("Writing results to sonar_debug.log.");
                 $handle = fopen(__DIR__ . '/sonar_debug.log', 'a');
-                fwrite($handle, json_encode($results));
+                fwrite($handle, Formatter::formatMonitoringData($results, false));
                 fclose($handle);
             }
 
@@ -48,7 +48,7 @@ Loop::run(function () {
                         'Accept'     => 'application/json',
                         'Content-Encoding' => 'gzip',
                     ],
-                    'body' => Formatter::formatMonitoringData($results),
+                    'body' => Formatter::formatMonitoringData($results, true),
                 ]);
                 output($response->getStatusCode() . ' - ' . $response->getBody()->getContents());
             } catch (Exception $e) {

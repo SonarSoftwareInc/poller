@@ -12,6 +12,7 @@ use Poller\Models\MonitoringTemplate;
 use Poller\Models\SnmpError;
 use Poller\Models\SnmpResult;
 use Poller\Services\SysObjectIDMatcher;
+use Throwable;
 
 class SnmpGet implements Task
 {
@@ -56,9 +57,9 @@ class SnmpGet implements Task
 
             return $snmpResult;
         } catch (ConnectionException $e) {
-            return new SnmpError(true, $e->getMessage());
-        } catch (Exception $e) {
-            return new SnmpError(false, $e->getMessage());
+            return new SnmpError(true, $e->getMessage(), $this->device->getIp());
+        } catch (Throwable $e) {
+            return new SnmpError(false, $e->getMessage(), $this->device->getIp());
         } finally {
             unset($snmp);
         }

@@ -5,7 +5,7 @@ namespace Poller\Models;
 use FreeDSx\Snmp\OidList;
 use Poller\Models\Device\Metadata;
 
-class SnmpResult
+class SnmpResult implements CoroutineResultInterface
 {
     private OidList $results;
     private ?Metadata $metadata;
@@ -60,7 +60,7 @@ class SnmpResult
         $this->interfaces = array_values($interfaces);
     }
 
-    public function toArray()
+    public function toArray():array
     {
         return [
             'metadata' => [
@@ -79,6 +79,8 @@ class SnmpResult
                     'value' => $oid->getValue()->__toString()
                 ];
             }, $this->getResults()->toArray()),
+            'up' => true,
+            'message' => null,
         ];
     }
 }

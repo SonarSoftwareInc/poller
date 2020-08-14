@@ -2,7 +2,7 @@
 
 namespace Poller\Models;
 
-class PingResult
+class PingResult implements CoroutineResultInterface
 {
     private float $loss;
     private float $low;

@@ -3,6 +3,7 @@
 namespace Poller\Services;
 
 use InvalidArgumentException;
+use Poller\Models\SnmpError;
 use Poller\Models\SnmpResult;
 use const ZLIB_ENCODING_GZIP;
 
@@ -45,31 +46,27 @@ class Formatter
         return $mac;
     }
 
-    public static function formatMonitoringData(array $coroutines):string
+    public static function formatMonitoringData(array $coroutines, bool $gzCompress = true):string
     {
         $data = [];
         foreach ($coroutines as $coroutine) {
+            if (!isset($data[$coroutine->getIp()])) {
+                $data[$coroutine->getIp()] = [
+                    'icmp' => null,
+                    'snmp' => null,
+                ];
+            }
             if (is_array($coroutine)) {
                 foreach ($coroutine as $pingResult) {
-                    if (!isset($data[$pingResult->getIp()])) {
-                        $data[$pingResult->getIp()] = [
-                            'icmp' => null,
-                            'snmp' => null,
-                        ];
-                    }
                     $data[$pingResult->getIp()]['icmp'] = $pingResult->toArray();
                 }
-            } elseif ($coroutine instanceof SnmpResult) {
-                if (!isset($data[$coroutine->getIp()])) {
-                    $data[$coroutine->getIp()] = [
-                        'icmp' => null,
-                        'snmp' => null,
-                    ];
-                }
+            } elseif ($coroutine instanceof SnmpResult || $coroutine instanceof SnmpError) {
                 $data[$coroutine->getIp()]['snmp'] = $coroutine->toArray();
             }
         }
 
-        return gzcompress(json_encode($data), 6, ZLIB_ENCODING_GZIP);
+        return $gzCompress === true
+            ? gzcompress(json_encode($data), 6, ZLIB_ENCODING_GZIP)
+            : json_encode($data);
     }
 }
