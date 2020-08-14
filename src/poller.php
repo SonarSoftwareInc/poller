@@ -19,13 +19,13 @@ Loop::run(function () {
     $poller = new Poller();
     $data = json_decode(file_get_contents(__DIR__ . '/../test_data_DELETE/data.json'));
     $client = new Client();
-    $debug = getenv('SONAR_DEBUG_MODE') == 1;
 
     output("Starting polling loop...");
     $running = false;
     $lastRun = 0;
-    Loop::repeat($msInterval = 1000, function ($watcherId) use (&$running, &$lastRun, $poller, $data, $client, $debug) {
+    Loop::repeat($msInterval = 1000, function ($watcherId) use (&$running, &$lastRun, $poller, $data, $client) {
         if ($running === false && time() - $lastRun >= 60) {
+            $debug = getenv('SONAR_DEBUG_MODE') == 1;
             output("Starting polling cycle.");
             $running = true;
             $lastRun = time();
