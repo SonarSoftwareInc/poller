@@ -19,11 +19,12 @@ Loop::run(function () {
     $poller = new Poller();
     $data = json_decode(file_get_contents(__DIR__ . '/../test_data_DELETE/data.json'));
     $client = new Client();
+    $debug = getenv('SONAR_DEBUG_MODE') == 1;
 
     output("Starting polling loop...");
     $running = false;
     $lastRun = 0;
-    Loop::repeat($msInterval = 1000, function ($watcherId) use (&$running, &$lastRun, $poller, $data, $client) {
+    Loop::repeat($msInterval = 1000, function ($watcherId) use (&$running, &$lastRun, $poller, $data, $client, $debug) {
         if ($running === false && time() - $lastRun >= 60) {
             output("Starting polling cycle.");
             $running = true;
@@ -33,8 +34,15 @@ Loop::run(function () {
             $timeTaken = time() - $start;
             output("Cycle completed in $timeTaken seconds, got " . count($results) . " results.");
 
+            if ($debug === true) {
+                output("Writing results to sonar_debug.log.");
+                $handle = fopen(__DIR__ . '/sonar_debug.log', 'a');
+                fwrite($handle, json_encode($results));
+                fclose($handle);
+            }
+
             try {
-                $response = $client->request('POST', '/sonar', [
+                $response = $client->request('POST', 'https://example.com/sonar', [
                     'headers' => [
                         'User-Agent' => "SonarPoller/" . getenv('SONAR_POLLER_VERSION', true) ?? 'Unknown',
                         'Accept'     => 'application/json',
