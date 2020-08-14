@@ -60,7 +60,7 @@ class PingResult implements CoroutineResultInterface
         return $this->ip;
     }
 
-    public function toArray()
+    public function toArray():array
     {
         return [
             'low' => $this->low,
