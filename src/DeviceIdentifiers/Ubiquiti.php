@@ -19,7 +19,7 @@ class Ubiquiti implements IdentifierInterface
         $this->device = $device;
     }
 
-    public function getMapper():string
+    public function getMapper()
     {
         $interfaces = [];
         try {
