@@ -5,9 +5,9 @@ require __DIR__ . '/../vendor/autoload.php';
 use Amp\Loop;
 use GuzzleHttp\Client;
 use League\BooBoo\BooBoo;
-use League\BooBoo\Formatter\CommandLineFormatter;
 use League\CLImate\CLImate;
 use Poller\Log;
+use Poller\Overrides\CommandLineFormatter;
 use Poller\Services\Formatter;
 use Poller\Services\Poller;
 use function Amp\Promise\all;
@@ -69,14 +69,6 @@ function output(string $message, bool $error = false)
 
 function bootstrap()
 {
-    set_exception_handler(function (Throwable $e) {
-        $bt = debug_backtrace();
-        $caller = array_shift($bt);
-        $log = new Log();
-        $log->error("Uncaught exception thrown in {$caller['file']} on line {$caller['line']}:");
-        $log->error($e->getTraceAsString());
-    });
-
     $booboo = new BooBoo([
         new CommandLineFormatter()
     ]);
