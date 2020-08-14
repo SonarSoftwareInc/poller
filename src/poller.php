@@ -16,13 +16,14 @@ bootstrap();
 
 Loop::run(function () {
     $poller = new Poller();
-    $data = json_decode(file_get_contents('test_data_DELETE/data.json'));
+    $data = json_decode(file_get_contents(__DIR__ . '/../test_data_DELETE/data.json'));
     $client = new Client();
 
-    output("Starting polling cycle...");
+    output("Starting polling loop...");
     $running = false;
     Loop::repeat($msInterval = 60000, function ($watcherId) use (&$running, $poller, $data, $client) {
         if ($running === false) {
+            output("Starting polling cycle.");
             $running = true;
             $start = time();
             $results = yield all($poller->buildCoroutines($data->data));
