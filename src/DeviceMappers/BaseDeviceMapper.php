@@ -122,7 +122,6 @@ abstract class BaseDeviceMapper
      */
     private function mapInterfaces()
     {
-        $interfaces = [];
         $oidList = $this->getBaseData();
         foreach ($oidList as $oid) {
             if (strpos($oid->getOid(), '1.3.6.1.2.1.2.2.1.2.') !== false) {
@@ -132,24 +131,24 @@ abstract class BaseDeviceMapper
                     $this->interfaces[$interfaceID] = new NetworkInterface($interfaceID);
                 }
 
-                $interfaces[$interfaceID]->setName($oid->getValue()->__toString());
+                $this->interfaces[$interfaceID]->setName($oid->getValue()->__toString());
 
                 $macOid = $oidList->get('1.3.6.1.2.1.2.2.1.6.' . $interfaceID);
                 if ($macOid) {
-                    $interfaces[$interfaceID]->setMacAddress($macOid->getValue()->__toString());
+                    $this->interfaces[$interfaceID]->setMacAddress($macOid->getValue()->__toString());
                 }
 
                 $statusOid = $oidList->get('1.3.6.1.2.1.2.2.1.8.' . $interfaceID);
                 if ($statusOid) {
-                    $interfaces[$interfaceID]->setStatus((bool)$statusOid->getValue()->__toString());
+                    $this->interfaces[$interfaceID]->setStatus((bool)$statusOid->getValue()->__toString());
                 }
 
                 $speedOid = $oidList->get('1.3.6.1.2.1.2.2.1.5.' . $interfaceID);
                 if ($speedOid) {
                     $speed = $speedOid->getValue()->__toString();
                     if (is_numeric($speed) && $speed > 0) {
-                        $interfaces[$interfaceID]->setSpeedIn((int)ceil($speed/1000**2));
-                        $interfaces[$interfaceID]->setSpeedOut((int)ceil($speed/1000**2));
+                        $this->interfaces[$interfaceID]->setSpeedIn((int)ceil($speed/1000**2));
+                        $this->interfaces[$interfaceID]->setSpeedOut((int)ceil($speed/1000**2));
                     }
                 }
 
