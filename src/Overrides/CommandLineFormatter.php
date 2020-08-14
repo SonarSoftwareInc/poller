@@ -52,13 +52,15 @@ class CommandLineFormatter extends AbstractFormatter
             $code = '(' . $e->getCode() . ')';
         }
 
-        $error = sprintf($errorString, $type, $code, $message, $file, $line, $trace);
-
         if ($e instanceof TaskFailureError) {
-            $errorString = "+---------------------+\n| ORIGINAL EXCEPTION |\n+---------------------+\n";
+            $errorString .= "\n";
+            $errorString .= "+---------------------+\n| ORIGINAL EXCEPTION |\n+---------------------+\n";
             $errorString .= "Stack Trace:\n%s\n";
-            $error = sprintf($errorString, $e->getOriginalTraceAsString());
+            $error = sprintf($errorString, $type, $code, $message, $file, $line, $trace, $e->getOriginalTraceAsString());
+        } else {
+            $error = sprintf($errorString, $type, $code, $message, $file, $line, $trace);
         }
+
         return $error;
     }
 }

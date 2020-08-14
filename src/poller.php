@@ -21,10 +21,12 @@ Loop::run(function () {
 
     output("Starting polling loop...");
     $running = false;
-    Loop::repeat($msInterval = 60000, function ($watcherId) use (&$running, $poller, $data, $client) {
-        if ($running === false) {
+    $lastRun = 0;
+    Loop::repeat($msInterval = 1000, function ($watcherId) use (&$running, &$lastRun, $poller, $data, $client) {
+        if ($running === false && time() - $lastRun >= 60) {
             output("Starting polling cycle.");
             $running = true;
+            $lastRun = time();
             $start = time();
             $results = yield all($poller->buildCoroutines($data->data));
             $timeTaken = time() - $start;

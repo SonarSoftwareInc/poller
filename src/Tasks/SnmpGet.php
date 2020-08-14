@@ -12,7 +12,6 @@ use Poller\Models\MonitoringTemplate;
 use Poller\Models\SnmpError;
 use Poller\Models\SnmpResult;
 use Poller\Services\SysObjectIDMatcher;
-use Tries\SuffixTrie;
 
 class SnmpGet implements Task
 {
@@ -22,7 +21,7 @@ class SnmpGet implements Task
     /**
      * SnmpGet constructor.
      * @param Device $device
-     * @param SysObjectIDMatcher $trie
+     * @param SysObjectIDMatcher $matcher
      */
     public function __construct(Device $device, SysObjectIDMatcher $matcher)
     {
@@ -43,7 +42,7 @@ class SnmpGet implements Task
                 $this->device->getIp()
             );
 
-            $oid = $snmpResult->results()->get(MonitoringTemplate::SYSTEM_SYSOBJECT_ID);
+            $oid = $snmpResult->getResults()->get(MonitoringTemplate::SYSTEM_SYSOBJECT_ID);
             if ($oid && $oid->getValue()) {
                 $className = $this->matcher->getClass($oid->getValue()->__toString());
                 if ($className !== null) {
