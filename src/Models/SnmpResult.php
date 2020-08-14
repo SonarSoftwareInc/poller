@@ -63,6 +63,8 @@ class SnmpResult implements CoroutineResultInterface
     public function toArray():array
     {
         return [
+            'up' => true,
+            'message' => null,
             'metadata' => [
                 'contact' => $this->metadata ? $this->metadata->getContact() : null,
                 'name' => $this->metadata ? $this->metadata->getName() : null,
@@ -79,8 +81,6 @@ class SnmpResult implements CoroutineResultInterface
                     'value' => $oid->getValue()->__toString()
                 ];
             }, $this->getResults()->toArray()),
-            'up' => true,
-            'message' => null,
         ];
     }
 }

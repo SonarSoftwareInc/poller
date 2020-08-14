@@ -30,7 +30,7 @@ class SnmpError implements CoroutineResultInterface
         return $this->ip;
     }
 
-    public function toArray(): array
+    public function toArray():array
     {
         return [
             'metadata' => [
