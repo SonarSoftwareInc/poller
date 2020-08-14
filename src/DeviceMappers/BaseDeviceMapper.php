@@ -9,6 +9,7 @@ use Poller\Log;
 use Poller\Models\Device;
 use Poller\Models\Device\NetworkInterface;
 use Poller\Models\SnmpResult;
+use Throwable;
 
 abstract class BaseDeviceMapper
 {
@@ -74,7 +75,7 @@ abstract class BaseDeviceMapper
             while ($walk->hasOids()) {
                 $oids[] = $walk->next();
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $log = new Log();
             $log->error($e->getTraceAsString());
         }

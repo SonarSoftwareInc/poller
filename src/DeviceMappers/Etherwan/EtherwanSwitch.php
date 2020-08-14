@@ -25,8 +25,7 @@ class EtherwanSwitch extends BaseDeviceMapper
     {
         $switchingDatabasePortNumbers = $this->walk(".1.3.6.1.4.1.2736.1.1.11.1.1.4");
         $mapping = [];
-        foreach ($switchingDatabasePortNumbers as $oid)
-        {
+        foreach ($switchingDatabasePortNumbers as $oid) {
             $boom = explode(".", $oid->getOid());
             $mapping[$boom[count($boom)-1]] = $oid->getValue()->__toString();
         }
@@ -36,8 +35,7 @@ class EtherwanSwitch extends BaseDeviceMapper
         {
             $macAddress = Formatter::formatMac($oid->getValue()->__toString());
             $boom = explode(".",$oid->getOid());
-            if (isset($mapping[$boom[count($boom)-1]]))
-            {
+            if (isset($mapping[$boom[count($boom)-1]])) {
                 try {
                     $existingMacs = $this->interfaces[$mapping[$boom[count($boom)-1]]]->getConnectedLayer2Macs();
                     $existingMacs[] = $macAddress;
