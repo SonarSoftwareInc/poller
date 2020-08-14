@@ -21,35 +21,32 @@ class AirMaxAccessPoint extends BaseDeviceMapper
      */
     private function setConnectedRadios(SnmpResult $snmpResult):SnmpResult
     {
-        $keyToUse = 0;
         $interfaces = $snmpResult->getInterfaces();
         foreach ($interfaces as $key => $deviceInterface) {
             if (strpos($deviceInterface->getDescription(),"wifi") !== false) {
-                $keyToUse = $key;
-                break;
-            }
-        }
+                $existingMacs = $interfaces[$key]->getConnectedLayer1Macs();
 
-        $existingMacs = $interfaces[$keyToUse]->getConnectedLayer1Macs();
-
-        try {
-            $result = $this->walk("1.3.6.1.4.1.41112.1.4.7.1.1");
-            foreach ($result as $key => $oid) {
                 try {
-                    $existingMacs[] = Formatter::formatMac($oid->getValue()->__toString());
+                    $result = $this->walk("1.3.6.1.4.1.41112.1.4.7.1.1");
+                    foreach ($result as $oid) {
+                        try {
+                            $existingMacs[] = Formatter::formatMac($oid->getValue()->__toString());
+                        } catch (Exception $e) {
+                            $log = new Log();
+                            $log->error($e->getTraceAsString());
+                            continue;
+                        }
+                    }
                 } catch (Exception $e) {
                     $log = new Log();
                     $log->error($e->getTraceAsString());
-                    continue;
                 }
-            }
-        } catch (Exception $e) {
-            $log = new Log();
-            $log->error($e->getTraceAsString());
-        }
 
-        $interfaces[$keyToUse]->setConnectedLayer1Macs($existingMacs);
-        $snmpResult->setInterfaces($interfaces);
+                $interfaces[$key]->setConnectedLayer1Macs($existingMacs);
+                $snmpResult->setInterfaces($interfaces);
+                break;
+            }
+        }
 
         return $snmpResult;
     }

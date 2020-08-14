@@ -254,7 +254,7 @@ abstract class BaseDeviceMapper
                     $ipv4Results[$boom[1]]['subnet'] = $this->maskToCidr($oid->getValue()->__toString());
                     break;
                 default:
-                    continue;
+                    continue 2;
             }
         }
 
@@ -288,7 +288,7 @@ abstract class BaseDeviceMapper
                     );
                     break;
                 default:
-                    continue;
+                    continue 2;
             }
         }
 

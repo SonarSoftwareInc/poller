@@ -22,33 +22,32 @@ class AxAccessPoint extends BaseDeviceMapper
      */
     private function setConnectedRadios(SnmpResult $snmpResult):SnmpResult
     {
-        $keyToUse = 5;
         $interfaces = $snmpResult->getInterfaces();
         foreach ($interfaces as $key => $interface) {
             if (strpos($interface->getName(), "wlan") !== false) {
-                $keyToUse = $key;
+                $existingMacs = $interfaces[$key]->getConnectedLayer1Macs();
+
+                try {
+                    $result = $this->walk("1.3.6.1.4.1.43356.2.1.2.9.6.1.1.2");
+                    foreach ($result as $oid) {
+                        try {
+                            $existingMacs[] = Formatter::formatMac($oid->getValue()->__toString());
+                        } catch (Exception $e) {
+                            $log = new Log();
+                            $log->error($e->getTraceAsString());
+                            continue;
+                        }
+                    }
+                }
+                catch (Exception $e) {
+                }
+
+                $interfaces[$key]->setConnectedLayer1Macs(array_unique($existingMacs));
+                $snmpResult->setInterfaces($interfaces);
                 break;
             }
         }
-        $existingMacs = $interfaces[$keyToUse]->getConnectedLayer1Macs();
 
-        try {
-            $result = $this->walk("1.3.6.1.4.1.43356.2.1.2.9.6.1.1.2");
-            foreach ($result as $oid) {
-                try {
-                    $existingMacs[] = Formatter::formatMac($oid->getValue()->__toString());
-                } catch (Exception $e) {
-                    $log = new Log();
-                    $log->error($e->getTraceAsString());
-                    continue;
-                }
-            }
-        }
-        catch (Exception $e) {
-        }
-
-        $interfaces[$keyToUse]->setConnectedLayer1Macs(array_unique($existingMacs));
-        $snmpResult->setInterfaces($interfaces);
 
         return $snmpResult;
     }
