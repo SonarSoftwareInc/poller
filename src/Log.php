@@ -2,17 +2,23 @@
 
 namespace Poller;
 
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
 class Log
 {
-    private $logger;
+    private Logger $logger;
 
     public function __construct()
     {
         $this->logger = new Logger('sonar_poller');
-        $this->logger->pushHandler(new StreamHandler('/var/log/sonar_poller.log'));
+        $dateFormat = "Y-m-d H:i:s";
+        $output = "[%datetime%] %level_name%: %message% %context% %extra%\n";
+        $formatter = new LineFormatter($output, $dateFormat);
+        $stream = new StreamHandler(__DIR__ . '/../logs/sonar_poller.log', Logger::DEBUG);
+        $stream->setFormatter($formatter);
+        $this->logger->pushHandler($stream);
     }
 
     public function info(string $message)

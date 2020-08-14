@@ -24,7 +24,7 @@ class Fetcher
                 ],
                 'json' => [
                     'api_key' => $key,
-                    'version' => '2.0.0', //TODO: need to store this somewhere - do we even care anymore?
+                    'version' => getenv('SONAR_POLLER_VERSION', true) ?? 'Unknown',
                 ]
             ]);
             //TODO: sort out what I want to do here
