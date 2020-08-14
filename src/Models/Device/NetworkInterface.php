@@ -1,6 +1,6 @@
 <?php
 
-namespace Poller\Models;
+namespace Poller\Models\Device;
 
 use Poller\Services\Formatter;
 use const FILTER_VALIDATE_IP;

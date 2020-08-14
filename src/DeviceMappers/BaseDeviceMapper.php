@@ -7,7 +7,7 @@ use FreeDSx\Snmp\OidList;
 use Leth\IPAddress\IP\Address;
 use Poller\Log;
 use Poller\Models\Device;
-use Poller\Models\NetworkInterface;
+use Poller\Models\Device\NetworkInterface;
 use Poller\Models\SnmpResult;
 
 abstract class BaseDeviceMapper
