@@ -23,19 +23,19 @@ class Ubiquiti implements IdentifierInterface
     {
         $interfaces = [];
         try {
-            $oids = $this->device->getSnmpClient()->walk('1.3.6.1.2.1.2.2.1.2');
+            $oids = $this->walk('1.3.6.1.2.1.2.2.1.2');
             foreach ($oids as $oid) {
                 $interfaces[strtolower($oid->getValue()->__toString())] = true;
             }
             if (isset($interfaces['air0'])) {
-                return AirFiberBackhaul::class;
+                return new AirFiberBackhaul($this->device);
             } else if (isset($interfaces['wifi0'])) {
-                return AirMaxAccessPoint::class;
+                return new AirMaxAccessPoint($this->device);
             } else {
-                return ToughSwitch::class;
+                return new ToughSwitch($this->device);
             }
         } catch (Exception $e) {
-            return AirMaxAccessPoint::class;
+            return new AirMaxAccessPoint($this->device);
         }
     }
 
