@@ -34,7 +34,7 @@ class AxAccessPoint extends BaseDeviceMapper
                             $existingMacs[] = Formatter::formatMac($oid->getValue()->__toString());
                         } catch (Exception $e) {
                             $log = new Log();
-                            $log->error($e->getTraceAsString());
+                            $log->exception($e);
                             continue;
                         }
                     }

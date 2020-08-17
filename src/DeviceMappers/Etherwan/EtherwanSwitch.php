@@ -42,7 +42,7 @@ class EtherwanSwitch extends BaseDeviceMapper
                     $this->interfaces[$mapping[$boom[count($boom)-1]]]->setConnectedLayer2Macs($macAddresses);
                 } catch (Exception $e) {
                     $log = new Log();
-                    $log->error($e->getTraceAsString());
+                    $log->exception($e);
                 }
             }
         }

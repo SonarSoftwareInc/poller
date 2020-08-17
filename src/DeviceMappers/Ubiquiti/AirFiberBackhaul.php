@@ -43,7 +43,7 @@ class AirFiberBackhaul extends BaseDeviceMapper
                 }
             } catch (Exception $e) {
                 $log = new Log();
-                $log->error($e->getTraceAsString());
+                $log->exception($e);
             }
 
             $snmpResult->setInterfaces($interfaces);
@@ -70,14 +70,14 @@ class AirFiberBackhaul extends BaseDeviceMapper
                         $existingMacs[] = Formatter::formatMac($oid->getValue()->__toString());
                     } catch (Exception $e) {
                         $log = new Log();
-                        $log->error($e->getTraceAsString());
+                        $log->exception($e);
                     }
                 }
 
             }
             catch (Exception $e) {
                 $log = new Log();
-                $log->error($e->getTraceAsString());
+                $log->exception($e);
             }
 
             $interfaces[$this->air0]->setConnectedLayer1Macs($existingMacs);

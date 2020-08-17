@@ -128,7 +128,7 @@ class MikroTik extends BaseDeviceMapper
             );
         } catch (Exception $e) {
             $log = new Log();
-            $log->error($e->getTraceAsString());
+            $log->exception($e);
             return null;
         }
 

@@ -41,7 +41,7 @@ class BxBackhaul extends BaseDeviceMapper
                     }
                 } catch (Exception $e) {
                     $log = new Log();
-                    $log->error($e->getTraceAsString());
+                    $log->exception($e);
                 }
 
                 $interfaces[$key]->setConnectedLayer1Macs(array_unique($existingMacs));

@@ -29,7 +29,7 @@ class EPMPAccessPoint extends BaseDeviceMapper
                     }
                 } catch (Exception $e) {
                     $log = new Log();
-                    $log->error($e->getTraceAsString());
+                    $log->exception($e);
                 }
 
                 try {
@@ -40,7 +40,7 @@ class EPMPAccessPoint extends BaseDeviceMapper
                     }
                 } catch (Exception $e) {
                     $log = new Log();
-                    $log->error($e->getTraceAsString());
+                    $log->exception($e);
                 }
 
                 $interfaces[$id]->setConnectedLayer1Macs($existingMacs);

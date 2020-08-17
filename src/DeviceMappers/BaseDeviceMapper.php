@@ -42,7 +42,7 @@ abstract class BaseDeviceMapper
             $snmpResult->setMetadata($this->populateSystemMetadata());
         } catch (Throwable $e) {
             $log = new Log();
-            $log->error($e->getTraceAsString());
+            $log->exception($e);
         }
 
         try {
@@ -50,7 +50,7 @@ abstract class BaseDeviceMapper
             $snmpResult->setInterfaces($this->interfaces);
         } catch (Throwable $e) {
             $log = new Log();
-            $log->error($e->getTraceAsString());
+            $log->exception($e);
         }
 
         if ($this->device->getType() === Device::NETWORKSITE) {
@@ -60,7 +60,7 @@ abstract class BaseDeviceMapper
                 }
             } catch (Throwable $e) {
                 $log = new Log();
-                $log->error($e->getTraceAsString());
+                $log->exception($e);
             }
 
             try {
@@ -69,7 +69,7 @@ abstract class BaseDeviceMapper
                 }
             } catch (Throwable $e) {
                 $log = new Log();
-                $log->error($e->getTraceAsString());
+                $log->exception($e);
             }
 
             try {
@@ -78,7 +78,7 @@ abstract class BaseDeviceMapper
                 }
             } catch (Throwable $e) {
                 $log = new Log();
-                $log->error($e->getTraceAsString());
+                $log->exception($e);
             }
         }
 
@@ -94,12 +94,12 @@ abstract class BaseDeviceMapper
         $oids = [];
         try {
             $walk = $this->device->getSnmpClient()->walk($oid);
-            while ($walk->hasOids()) {
+            while (!$walk->isComplete()) {
                 $oids[] = $walk->next();
             }
         } catch (Throwable $e) {
             $log = new Log();
-            $log->error($e->getTraceAsString());
+            $log->exception($e);
         }
 
         return new OidList(... $oids);

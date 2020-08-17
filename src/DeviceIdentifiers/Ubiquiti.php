@@ -53,7 +53,7 @@ class Ubiquiti implements IdentifierInterface
             }
         } catch (Exception $e) {
             $log = new Log();
-            $log->error($e->getTraceAsString());
+            $log->exception($e);
         }
 
         return new OidList(... $oids);
