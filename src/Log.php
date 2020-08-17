@@ -43,7 +43,9 @@ class Log
 
     public function exception(Throwable $e)
     {
-        foreach ($e->getTrace() as $line) {
+        foreach ($e->getTrace() as $counter => $line) {
+            $this->error("New exception thrown:");
+            $line['position'] = $counter;
             $this->error(json_encode($line));
         }
     }

@@ -48,7 +48,7 @@ class Ubiquiti implements IdentifierInterface
         $oids = [];
         try {
             $walk = $this->device->getSnmpClient()->walk($oid);
-            while ($walk->hasOids()) {
+            while (!$walk->isComplete()) {
                 $oids[] = $walk->next();
             }
         } catch (Exception $e) {
