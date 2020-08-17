@@ -11,7 +11,6 @@ use Throwable;
 class Log
 {
     private Logger $logger;
-    private CLImate $climate;
 
     public function __construct()
     {
@@ -38,13 +37,14 @@ class Log
     public function error(string $message)
     {
         $this->logger->error($message);
-        $this->climate->red($message);
     }
 
     public function exception(Throwable $e)
     {
+        $this->error("\n----------------");
+        $this->error("EXCEPTION CAUGHT:");
+        $this->error("----------------");
         foreach ($e->getTrace() as $counter => $line) {
-            $this->error("New exception thrown:");
             $line['position'] = $counter;
             $this->error(json_encode($line));
         }
