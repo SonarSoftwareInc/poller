@@ -3,6 +3,7 @@
 namespace Poller\Services;
 
 use InvalidArgumentException;
+use Poller\Log;
 use Poller\Models\SnmpError;
 use Poller\Models\SnmpResult;
 use const ZLIB_ENCODING_GZIP;
@@ -49,6 +50,7 @@ class Formatter
     public static function formatMonitoringData(array $coroutines, bool $gzCompress = true):string
     {
         $data = [];
+        $log = new Log();
         foreach ($coroutines as $coroutine) {
             if (is_array($coroutine)) {
                 foreach ($coroutine as $pingResult) {
@@ -58,7 +60,12 @@ class Formatter
                             'snmp' => null,
                         ];
                     }
-                    $data[$pingResult->getIp()]['icmp'] = $pingResult->toArray();
+                    $result = $pingResult->toArray();
+                    if (json_encode($result) === false) {
+                        $log->error("Failed to JSON encode " . serialize($result));
+                        continue;
+                    }
+                    $data[$pingResult->getIp()]['icmp'] = $result;
                 }
             } elseif ($coroutine instanceof SnmpResult || $coroutine instanceof SnmpError) {
                 if (!isset($data[$coroutine->getIp()])) {
@@ -67,7 +74,12 @@ class Formatter
                         'snmp' => null,
                     ];
                 }
-                $data[$coroutine->getIp()]['snmp'] = $coroutine->toArray();
+                $result = $coroutine->toArray();
+                if (json_encode($result) === false) {
+                    $log->error("Failed to JSON encode " . serialize($result));
+                    continue;
+                }
+                $data[$coroutine->getIp()]['snmp'] = $result;
             }
         }
 
