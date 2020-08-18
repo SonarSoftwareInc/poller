@@ -45,7 +45,9 @@ class SnmpClient
     public function get($oids):SnmpResponse
     {
         if (is_array($oids)) {
-            $oidString = implode(' ', $oids);
+            $oidString = implode(' ', array_map(function ($oid) {
+                return escapeshellarg($oid);
+            }, $oids));
         } else {
             $oidString = $oids;
         }
@@ -55,7 +57,7 @@ class SnmpClient
             . ' '
             . escapeshellarg($this->options['host'])
             . ' '
-            . escapeshellarg($oidString);
+            . $oidString;
 
         exec($cmd . ' 2>&1', $output, $returnVar);
         if ($returnVar === 0) {
