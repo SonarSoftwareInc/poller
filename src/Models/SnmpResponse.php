@@ -16,7 +16,7 @@ class SnmpResponse
 
     public function get(string $oid):string
     {
-        $oid = trim(ltrim($oid, '.'));
+        $oid = trim(ltrim(trim($oid), '.'));
         if (isset($this->results[$oid])) {
             return $this->results[$oid];
         }

@@ -36,12 +36,7 @@ Loop::run(function () {
             output("Cycle completed in $timeTaken seconds, got " . count($results) . " results.");
 
             if ($debug === true) {
-                output("Writing results to sonar_debug.log.");
-                $handle = fopen(__DIR__ . '/sonar_debug.log', 'w');
-                fwrite($handle, "Results written at " . Carbon::now()->toIso8601String());
-                fwrite($handle, '--------------------------------');
-                fwrite($handle, Formatter::formatMonitoringData($results, false));
-                fclose($handle);
+                writeDebugLog($results);
             }
 
             try {
@@ -91,4 +86,14 @@ function bootstrap()
     $booboo->pushHandler(new LogHandler($log->getLogger()));
     $booboo->setErrorPageFormatter(new CommandLineFormatter());
     $booboo->register();
+}
+
+function writeDebugLog($results)
+{
+    output("Writing results to sonar_debug.log.");
+    $handle = fopen(__DIR__ . '/sonar_debug.log', 'w');
+    fwrite($handle, "Results written at " . Carbon::now()->toIso8601String());
+    fwrite($handle, '--------------------------------');
+    fwrite($handle, Formatter::formatMonitoringData($results, false));
+    fclose($handle);
 }

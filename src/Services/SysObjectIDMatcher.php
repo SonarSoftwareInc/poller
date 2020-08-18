@@ -2,6 +2,8 @@
 
 namespace Poller\Services;
 
+use Poller\DeviceMappers\GenericDeviceMapper;
+
 class SysObjectIDMatcher
 {
     private $data;
@@ -14,7 +16,8 @@ class SysObjectIDMatcher
     public function getClass(string $oid)
     {
         $matchingCount = 0;
-        $bestMatch = null;
+        $bestMatch = GenericDeviceMapper::class;
+        $oid = trim(ltrim(trim($oid), '.'));
         foreach ($this->data as $datum) {
             if (strpos($oid, $datum->response) === 0) {
                 $length = strlen($datum->response);
