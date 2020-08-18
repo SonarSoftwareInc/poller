@@ -36,7 +36,7 @@ Loop::run(function () {
 
             if ($debug === true) {
                 output("Writing results to sonar_debug.log.");
-                $handle = fopen(__DIR__ . '/sonar_debug.log', 'a');
+                $handle = fopen(__DIR__ . '/sonar_debug.log', 'w');
                 fwrite($handle, Formatter::formatMonitoringData($results, false));
                 fclose($handle);
             }
