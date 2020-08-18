@@ -7,6 +7,7 @@ use Leth\IPAddress\IP\Address;
 use Poller\Exceptions\SnmpException;
 use Poller\Log;
 use Poller\Models\Device;
+use Poller\Models\Device\Metadata;
 use Poller\Models\Device\NetworkInterface;
 use Poller\Models\SnmpResponse;
 use Poller\Models\SnmpResult;
@@ -50,7 +51,6 @@ abstract class BaseDeviceMapper
 
         try {
             $this->mapInterfaces();
-            $snmpResult->setInterfaces($this->interfaces);
         } catch (Throwable $e) {
             $log = new Log();
             $log->exception($e, [
@@ -93,6 +93,7 @@ abstract class BaseDeviceMapper
             }
         }
 
+        $snmpResult->setInterfaces($this->interfaces);
         return $snmpResult;
     }
 
@@ -116,9 +117,9 @@ abstract class BaseDeviceMapper
     /**
      * Set system metadata on the device object
      */
-    private function populateSystemMetadata():Device\Metadata
+    private function populateSystemMetadata():Metadata
     {
-        $metadata = new Device\Metadata();
+        $metadata = new Metadata();
         try {
             $oidList = $this->walk("1.3.6.1.2.1.1");
             foreach ($oidList->getAll() as $oid => $value) {
@@ -199,10 +200,8 @@ abstract class BaseDeviceMapper
                 }
 
                 try {
-                    $typeOid = $oidList->get('1.3.6.1.2.1.2.2.1.3.' . $interfaceID);
-                    if ($typeOid) {
-                        $this->interfaces[$interfaceID]->setType($typeOid);
-                    }
+                    $this->interfaces[$interfaceID]->setType($oidList->get('1.3.6.1.2.1.2.2.1.3.' . $interfaceID));
+
                 } catch (SnmpException $e) {
                     $log->exception($e, [
                         'ip' => $this->device->getIp()
@@ -240,6 +239,7 @@ abstract class BaseDeviceMapper
         }
 
         foreach ($arp as $interfaceID => $macs) {
+
             $this->interfaces[$interfaceID]->setConnectedLayer3Macs($macs);
         }
     }

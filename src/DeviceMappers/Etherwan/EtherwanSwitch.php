@@ -24,6 +24,7 @@ class EtherwanSwitch extends BaseDeviceMapper
     private function getBridgingTable(SnmpResult $snmpResult):SnmpResult
     {
         $switchingDatabasePortNumbers = $this->walk("1.3.6.1.4.1.2736.1.1.11.1.1.4");
+        $interfaces = $snmpResult->getInterfaces();
         $mapping = [];
         foreach ($switchingDatabasePortNumbers->getAll() as $oid => $value) {
             $boom = explode(".", $oid);
@@ -36,9 +37,9 @@ class EtherwanSwitch extends BaseDeviceMapper
                 $macAddress = Formatter::formatMac($value);
                 $boom = explode(".",$oid);
                 if (isset($mapping[$boom[count($boom)-1]])) {
-                    $existingMacs = $this->interfaces[$mapping[$boom[count($boom) - 1]]]->getConnectedLayer2Macs();
+                    $existingMacs = $interfaces[$mapping[$boom[count($boom) - 1]]]->getConnectedLayer2Macs();
                     $existingMacs[] = $macAddress;
-                    $this->interfaces[$mapping[$boom[count($boom) - 1]]]->setConnectedLayer2Macs($macAddresses);
+                    $interfaces[$mapping[$boom[count($boom) - 1]]]->setConnectedLayer2Macs($macAddresses);
                 }
             } catch (Exception $e) {
                 $log = new Log();
@@ -48,7 +49,7 @@ class EtherwanSwitch extends BaseDeviceMapper
             }
         }
 
-        $snmpResult->setInterfaces($this->interfaces);
+        $snmpResult->setInterfaces($interfaces);
         return $snmpResult;
     }
 }

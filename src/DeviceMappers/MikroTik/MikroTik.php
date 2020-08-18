@@ -29,6 +29,7 @@ class MikroTik extends BaseDeviceMapper
      */
     private function getWirelessClients(SnmpResult $snmpResult):SnmpResult
     {
+        $interfaces = $snmpResult->getInterfaces();
         try {
             $result = $this->walk("1.3.6.1.4.1.14988.1.1.1.2.1.1");
             foreach ($result->getAll() as $oid => $value) {
@@ -37,10 +38,10 @@ class MikroTik extends BaseDeviceMapper
                 try {
                     $mac = Formatter::formatMac($value);
 
-                    if(isset($this->interfaces[$interfaceIndex])) {
-                        $existingMacs = $this->interfaces[$interfaceIndex]->setConnectedLayer1Macs();
+                    if(isset($interfaces[$interfaceIndex])) {
+                        $existingMacs = $interfaces[$interfaceIndex]->setConnectedLayer1Macs();
                         $existingMacs[] = $mac;
-                        $this->interfaces[$interfaceIndex]->setConnectedLayer1Macs($existingMacs);
+                        $interfaces[$interfaceIndex]->setConnectedLayer1Macs($existingMacs);
                     }
                 } catch (Exception $e) {
                     continue;
@@ -53,7 +54,7 @@ class MikroTik extends BaseDeviceMapper
             ]);
         }
 
-        $snmpResult->setInterfaces($this->interfaces);
+        $snmpResult->setInterfaces($interfaces);
         return $snmpResult;
     }
 

@@ -3,6 +3,7 @@
 namespace Poller\Models;
 
 use Poller\Exceptions\SnmpException;
+use Poller\Log;
 
 class SnmpResponse
 {
@@ -30,8 +31,13 @@ class SnmpResponse
 
     private function formatResults(array $results)
     {
+        $log = new Log();
         foreach ($results as $line) {
             $boom = explode('=', $line, 2);
+            if (count($boom) !== 2) {
+                $log->error("Unable to split response $line");
+                continue;
+            }
             $oid = trim(ltrim(trim($boom[0]), '.'));
             $value = trim($boom[1]);
             if ($value[0] === '"') {

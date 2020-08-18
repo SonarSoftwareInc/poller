@@ -28,6 +28,7 @@ class Ws6Mini extends BaseDeviceMapper
             return $snmpResult;
         }
 
+        $interfaces = $snmpResult->getInterfaces();
         $readInterfaces = [];
 
         try {
@@ -47,7 +48,6 @@ class Ws6Mini extends BaseDeviceMapper
                 $line = strtok($separator);
             }
 
-            $interfaces = $snmpResult->getInterfaces();
             foreach ($interfaces as $key => $interface) {
                 if (isset($readInterfaces[strtolower($interface->getName())])) {
                     $interfaces[$key]->setMacAddress($readInterfaces[strtolower($interface->getName())]);

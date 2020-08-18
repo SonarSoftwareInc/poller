@@ -126,10 +126,3 @@ class SnmpClient
         }
     }
 }
-
-/**
- * TODO:
- * Inject timeout (read/connect)
- * Capture errors somehow (return code?)
- * Bulk get
- */

@@ -76,6 +76,10 @@ class PingHosts implements Task
                 //-2 here because we don't care about the first two results which are the host and a colon
                 $ip = $boom[0];
                 if (filter_var($ip, FILTER_VALIDATE_IP) === false) {
+                    //Issue with some versions of fping 4.x
+                    if (str_contains($result, "timeout (-t) value larger than period (-p) produces unexpected results")) {
+                        continue;
+                    }
                     $log->error("$ip is not a valid IP address, skipping line '$result'");
                     continue;
                 }
