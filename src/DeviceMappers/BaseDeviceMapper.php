@@ -118,9 +118,9 @@ abstract class BaseDeviceMapper
      */
     private function populateSystemMetadata():Device\Metadata
     {
+        $metadata = new Device\Metadata();
         try {
             $oidList = $this->walk("1.3.6.1.2.1.1");
-            $metadata = new Device\Metadata();
             foreach ($oidList->getAll() as $oid => $value) {
                 switch ($oid) {
                     case "1.3.6.1.2.1.1.1.0":
@@ -144,7 +144,12 @@ abstract class BaseDeviceMapper
             }
             return $metadata;
         } catch (Exception $e) {
-            return new Device\Metadata();
+            $log = new Log();
+            $log->exception($e, [
+                'ip' => $this->device->getIp()
+            ]);
+        } finally {
+            return $metadata;
         }
     }
 

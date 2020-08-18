@@ -7,7 +7,7 @@ use Poller\Models\Device\Metadata;
 class SnmpResult implements CoroutineResultInterface
 {
     private SnmpResponse $results;
-    private ?Metadata $metadata;
+    private ?Metadata $metadata = null;
     private array $interfaces = [];
     private string $ip;
 
