@@ -78,7 +78,7 @@ class SnmpResult implements CoroutineResultInterface
             'results' => array_map(function ($oid) {
                 return [
                     'oid' => $oid->getOid(),
-                    'value' => $oid->getValue()->__toString()
+                    'value' => (string)$oid->getValue(),
                 ];
             }, $this->getResults()->toArray()),
         ];
