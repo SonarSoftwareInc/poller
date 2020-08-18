@@ -3,6 +3,7 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use Amp\Loop;
+use Carbon\Carbon;
 use GuzzleHttp\Client;
 use League\BooBoo\BooBoo;
 use League\BooBoo\Handler\LogHandler;
@@ -69,12 +70,13 @@ function output(string $message, bool $error = false)
 {
     $log = new Log();
     $climate = new CLImate;
+    $now = Carbon::now();
     if ($error === false) {
         $log->info($message);
-        $climate->lightGreen($message);
+        $climate->lightGreen("[{$now->toIso8601String()}] $message");
     } else {
         $log->error($message);
-        $climate->red($message);
+        $climate->red("[{$now->toIso8601String()}] $message");
     }
 }
 

@@ -21,7 +21,8 @@
         "phpseclib/phpseclib": "^2.0",
         "pear2/net_routeros": "dev-develop@dev",
         "pear2/net_transmitter": "^1.0.0@dev",
-        "monolog/monolog": "^2.1"
+        "monolog/monolog": "^2.1",
+        "nesbot/carbon": "^2.38"
     },
     "autoload": {
         "psr-4": {

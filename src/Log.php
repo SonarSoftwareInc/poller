@@ -17,7 +17,7 @@ class Log
         $this->climate = new CLImate();
         $this->logger = new Logger('sonar_poller');
         $dateFormat = "Y-m-d H:i:s";
-        $output = "[%datetime%] %level_name%: %message% %context%\n";
+        $output = "[%datetime%] %level_name%: %message%\n";
         $formatter = new LineFormatter($output, $dateFormat);
         $stream = new StreamHandler(__DIR__ . '/../logs/sonar_poller.log', Logger::DEBUG);
         $stream->setFormatter($formatter);
@@ -34,7 +34,7 @@ class Log
         $this->logger->info($message);
     }
 
-    public function error(string $message, array $context = [])
+    public function error(string $message)
     {
         $this->logger->error($message, []);
     }
@@ -44,10 +44,13 @@ class Log
         $this->error("\n----------------");
         $this->error("EXCEPTION CAUGHT:");
         $this->error($e->getMessage());
+        if (count($context) > 0) {
+            $this->error(json_encode($context));
+        }
         $this->error("----------------");
         foreach ($e->getTrace() as $counter => $line) {
             $line['position'] = $counter;
-            $this->error(json_encode($line), $context);
+            $this->error(json_encode($line));
         }
     }
 }
