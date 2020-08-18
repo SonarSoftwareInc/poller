@@ -31,11 +31,11 @@ class MikroTik extends BaseDeviceMapper
     {
         try {
             $result = $this->walk("1.3.6.1.4.1.14988.1.1.1.2.1.1");
-            foreach ($result as $datum) {
-                $boom = explode(".", $datum->getOid());
+            foreach ($result->getAll() as $oid => $value) {
+                $boom = explode(".", $oid);
                 $interfaceIndex = $boom[count($boom)-1];
                 try {
-                    $mac = Formatter::formatMac($datum->getValue()->__toString());
+                    $mac = Formatter::formatMac($value);
 
                     if(isset($this->interfaces[$interfaceIndex])) {
                         $existingMacs = $this->interfaces[$interfaceIndex]->setConnectedLayer1Macs();

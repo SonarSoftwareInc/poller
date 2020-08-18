@@ -19,8 +19,8 @@ abstract class PTPBackhaulBase extends BaseDeviceMapper
             {
                 $macs = $deviceInterface->getConnectedLayer1Macs();
                 try {
-                    $result = $this->device->getSnmpClient()->getValue($oid);
-                    $existingMacs[] = Formatter::formatMac($result);
+                    $result = $this->device->getSnmpClient()->get($oid);
+                    $existingMacs[] = Formatter::formatMac($result->get($oid));
                 } catch (Throwable $e) {
                     $log = new Log();
                     $log->exception($e, [

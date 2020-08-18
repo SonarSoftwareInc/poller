@@ -29,14 +29,14 @@ class BxBackhaul extends BaseDeviceMapper
                 try {
                     //This is a pretty lame workaround, but it's the only way we can try to get the far end until firmware upgrades are provided.
                     $result = $this->walk("1.3.6.1.2.1.4.22.1.2.5");
-                    foreach ($result as $oid) {
+                    foreach ($result->getAll() as $oid => $value) {
                         try {
-                            $mac = Formatter::formatMac($oid->getValue()->__toString());
+                            $mac = Formatter::formatMac($value);
                         } catch (InvalidArgumentException $e) {
                             continue;
                         }
 
-                        array_push($existingMacs,$mac);
+                        array_push($existingMacs, $mac);
                         break;
                     }
                 } catch (Exception $e) {

@@ -26,21 +26,20 @@ class CanopyPMPAccessPoint extends BaseDeviceMapper
                     $result = $this->walk("1.3.6.1.4.1.161.19.3.1.4.1.3");
                     $states = $this->walk("1.3.6.1.4.1.161.19.3.1.4.1.19");
 
-                    foreach ($states as $oid) {
-                        if ($oid->getValue()->__toString() === '1') {
-                            $boom = explode(".", $oid->getOid());
+                    foreach ($states->getAll() as $oid => $value) {
+                        if ($value === '1') {
+                            $boom = explode(".", $oid);
                             $registeredStates[] = $boom[count($boom) - 1];
                         }
                     }
 
-                    foreach ($result as $oid) {
-                        $boom = explode(".", $oid->getOid());
-                        $mac = $oid->getValue()->__toString();
-                        if (in_array($boom[count($boom) - 1], $registeredStates) && $mac) {
-                            $existingMacs[] = $mac;
+                    foreach ($result->getAll() as $oid => $value) {
+                        $boom = explode(".", $oid);
+                        if (in_array($boom[count($boom) - 1], $registeredStates) && $value) {
+                            $existingMacs[] = $value;
                             //Manipulate this to be the 2A and 3A as well, in case the SM itself isn't being monitored
-                            $existingMacs[] =  "2" . substr($mac, 1);
-                            $existingMacs[] = "3" . substr($mac, 1);
+                            $existingMacs[] =  "2" . substr($value, 1);
+                            $existingMacs[] = "3" . substr($value, 1);
                         }
                     }
 

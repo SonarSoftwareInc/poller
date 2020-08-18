@@ -29,9 +29,9 @@ class AirMaxAccessPoint extends BaseDeviceMapper
 
                 try {
                     $result = $this->walk("1.3.6.1.4.1.41112.1.4.7.1.1");
-                    foreach ($result as $oid) {
+                    foreach ($result->getAll() as $oid => $value) {
                         try {
-                            $existingMacs[] = Formatter::formatMac($oid->getValue()->__toString());
+                            $existingMacs[] = Formatter::formatMac($value);
                         } catch (Exception $e) {
                             $log = new Log();
                             $log->exception($e, [

@@ -36,8 +36,8 @@ class AirFiberBackhaul extends BaseDeviceMapper
         if (isset($interfaces[$this->air0])) {
             $interfaces = $snmpResult->getInterfaces();
             try {
-                $capacity = $this->device->getSnmpClient()->getValue("1.3.6.1.4.1.41112.1.3.2.1.5");
-                $interfaces[$this->air0]->setInterfaceSpeed(($capacity)/1000**2);
+                $capacity = $this->device->getSnmpClient()->get("1.3.6.1.4.1.41112.1.3.2.1.5");
+                $interfaces[$this->air0]->setInterfaceSpeed(($capacity->get("1.3.6.1.4.1.41112.1.3.2.1.5"))/1000**2);
             } catch (Throwable $e) {
                 $log = new Log();
                 $log->exception($e, [
@@ -64,10 +64,10 @@ class AirFiberBackhaul extends BaseDeviceMapper
 
             try {
                 $result = $this->walk("1.3.6.1.4.1.41112.1.3.2.1.45");
-                foreach ($result as $oid)
+                foreach ($result->getAll() as $oid => $value)
                 {
                     try {
-                        $existingMacs[] = Formatter::formatMac($oid->getValue()->__toString());
+                        $existingMacs[] = Formatter::formatMac($value);
                     } catch (Exception $e) {
                         $log = new Log();
                         $log->exception($e);
