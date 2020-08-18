@@ -4,6 +4,7 @@ namespace Poller\Tasks;
 
 use Amp\Parallel\Worker\Environment;
 use Amp\Parallel\Worker\Task;
+use Poller\Log;
 use Poller\Models\PingResult;
 
 class PingHosts implements Task
@@ -67,12 +68,17 @@ class PingHosts implements Task
      */
     private function formatResults(array $results):array
     {
+        $log = new Log();
         $formattedResults = [];
         if (count($results) > 0) {
             foreach ($results as $result) {
                 $boom = preg_split('/\s+/', $result);
                 //-2 here because we don't care about the first two results which are the host and a colon
                 $ip = $boom[0];
+                if (filter_var($ip, FILTER_VALIDATE_IP) === false) {
+                    $log->error("$ip is not a valid IP address, skipping line '$result'");
+                    continue;
+                }
                 unset($boom[0]);
                 unset($boom[1]);
                 sort($boom);
@@ -81,7 +87,7 @@ class PingHosts implements Task
                 }));
 
                 $formattedResults[] = new PingResult(
-                    $ip,
+                    trim($ip),
                     round(($lossCount / (count($boom)))*100,2),
                     (float)round($boom[0],2),
                     (float)round($boom[count($boom)-1],2),
