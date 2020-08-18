@@ -85,6 +85,6 @@ class Formatter
 
         return $gzCompress === true
             ? gzcompress(json_encode($data), 6, ZLIB_ENCODING_GZIP)
-            : json_encode($data);
+            : json_encode($data, JSON_PRETTY_PRINT);
     }
 }

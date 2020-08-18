@@ -77,7 +77,7 @@ class SnmpClient
             '-Ot',
             '-OU',
             '-O0',
-            '-LO 0-4',
+            '-Lo',
         ];
 
         if ($this->options['version'] !== 3) {

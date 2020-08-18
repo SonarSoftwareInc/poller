@@ -36,7 +36,7 @@ class Log
 
     public function error(string $message)
     {
-        $this->logger->error($message, []);
+        $this->logger->error($message);
     }
 
     public function exception(Throwable $e, array $context = [])
