@@ -2,7 +2,6 @@
 
 require(__DIR__ . '/../../vendor/autoload.php');
 
-use FreeDSx\Snmp\SnmpClient;
 use League\BooBoo\BooBoo;
 use League\BooBoo\Formatter\CommandLineFormatter;
 

@@ -3,8 +3,6 @@
 namespace Poller\DeviceIdentifiers;
 
 use Exception;
-use FreeDSx\Snmp\Exception\SnmpRequestException;
-use FreeDSx\Snmp\OidList;
 use Poller\DeviceMappers\Ubiquiti\AirFiberBackhaul;
 use Poller\DeviceMappers\Ubiquiti\AirMaxAccessPoint;
 use Poller\DeviceMappers\Ubiquiti\ToughSwitch;

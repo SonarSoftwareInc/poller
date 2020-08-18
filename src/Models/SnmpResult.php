@@ -2,17 +2,16 @@
 
 namespace Poller\Models;
 
-use FreeDSx\Snmp\OidList;
 use Poller\Models\Device\Metadata;
 
 class SnmpResult implements CoroutineResultInterface
 {
-    private OidList $results;
+    private SnmpResponse $results;
     private ?Metadata $metadata;
     private array $interfaces = [];
     private string $ip;
 
-    public function __construct(OidList $results, string $ip)
+    public function __construct(SnmpResponse $results, string $ip)
     {
         $this->results = $results;
         $this->ip = $ip;
@@ -23,7 +22,7 @@ class SnmpResult implements CoroutineResultInterface
         return $this->ip;
     }
 
-    public function getResults():OidList
+    public function getResults():SnmpResponse
     {
         return $this->results;
     }
@@ -75,12 +74,7 @@ class SnmpResult implements CoroutineResultInterface
             'interfaces' => array_map(function ($interface) {
                 return $interface->toArray();
             }, $this->interfaces),
-            'results' => array_map(function ($oid) {
-                return [
-                    'oid' => $oid->getOid(),
-                    'value' => (string)$oid->getValue(),
-                ];
-            }, $this->getResults()->toArray()),
+            'results' => $this->results->getAll(),
         ];
     }
 }

@@ -3,7 +3,6 @@
 namespace Poller\DeviceMappers;
 
 use Exception;
-use FreeDSx\Snmp\OidList;
 use Leth\IPAddress\IP\Address;
 use Poller\Exceptions\SnmpException;
 use Poller\Log;

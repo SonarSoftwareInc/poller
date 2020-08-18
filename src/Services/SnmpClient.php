@@ -57,7 +57,7 @@ class SnmpClient
             . ' '
             . escapeshellarg($oidString);
 
-        exec($cmd, $output, $returnVar);
+        exec($cmd . ' 2>&1', $output, $returnVar);
         if ($returnVar === 0) {
             return new SnmpResponse($output);
         } else {

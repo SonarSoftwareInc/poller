@@ -4,9 +4,8 @@ namespace Poller\Tasks;
 
 use Amp\Parallel\Worker\Environment;
 use Amp\Parallel\Worker\Task;
-use Exception;
-use FreeDSx\Snmp\Exception\ConnectionException;
 use Poller\DeviceIdentifiers\IdentifierInterface;
+use Poller\Exceptions\SnmpException;
 use Poller\Models\Device;
 use Poller\Models\MonitoringTemplate;
 use Poller\Models\SnmpError;
@@ -39,24 +38,21 @@ class SnmpGet implements Task
         $snmp = $this->device->getSnmpClient();
         try {
             $snmpResult = new SnmpResult(
-                $snmp->get(...$this->device->getMonitoringTemplate()->getOids()),
+                $snmp->get($this->device->getMonitoringTemplate()->getOids()),
                 $this->device->getIp()
             );
 
-            $oid = $snmpResult->getResults()->get(MonitoringTemplate::SYSTEM_SYSOBJECT_ID);
-            if ($oid && $oid->getValue()) {
-                $className = $this->matcher->getClass($oid->getValue()->__toString());
-                if ($className !== null) {
-                    $mapper = new $className($this->device);
-                    if ($mapper instanceof IdentifierInterface) {
-                        $mapper = $mapper->getMapper();
-                    }
-                    $snmpResult = $mapper->map($snmpResult);
+            $className = $this->matcher->getClass($snmpResult->getResults()->get(MonitoringTemplate::SYSTEM_SYSOBJECT_ID));
+            if ($className !== null) {
+                $mapper = new $className($this->device);
+                if ($mapper instanceof IdentifierInterface) {
+                    $mapper = $mapper->getMapper();
                 }
+                $snmpResult = $mapper->map($snmpResult);
             }
 
             return $snmpResult;
-        } catch (ConnectionException $e) {
+        } catch (SnmpException $e) {
             return new SnmpError(true, $e->getMessage(), $this->device->getIp());
         } catch (Throwable $e) {
             return new SnmpError(false, $e->getMessage(), $this->device->getIp());
