@@ -42,7 +42,9 @@ abstract class BaseDeviceMapper
             $snmpResult->setMetadata($this->populateSystemMetadata());
         } catch (Throwable $e) {
             $log = new Log();
-            $log->exception($e);
+            $log->exception($e, [
+                'ip' => $this->device->getIp()
+            ]);
         }
 
         try {
@@ -50,7 +52,9 @@ abstract class BaseDeviceMapper
             $snmpResult->setInterfaces($this->interfaces);
         } catch (Throwable $e) {
             $log = new Log();
-            $log->exception($e);
+            $log->exception($e, [
+                'ip' => $this->device->getIp()
+            ]);
         }
 
         if ($this->device->getType() === Device::NETWORKSITE) {
@@ -60,7 +64,9 @@ abstract class BaseDeviceMapper
                 }
             } catch (Throwable $e) {
                 $log = new Log();
-                $log->exception($e);
+                $log->exception($e, [
+                    'ip' => $this->device->getIp()
+                ]);
             }
 
             try {
@@ -69,7 +75,9 @@ abstract class BaseDeviceMapper
                 }
             } catch (Throwable $e) {
                 $log = new Log();
-                $log->exception($e);
+                $log->exception($e, [
+                    'ip' => $this->device->getIp()
+                ]);
             }
 
             try {
@@ -78,7 +86,9 @@ abstract class BaseDeviceMapper
                 }
             } catch (Throwable $e) {
                 $log = new Log();
-                $log->exception($e);
+                $log->exception($e, [
+                    'ip' => $this->device->getIp()
+                ]);
             }
         }
 

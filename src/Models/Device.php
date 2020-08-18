@@ -103,12 +103,13 @@ class Device
     {
         //TODO: Deal with SNMP overrides
         if (!$this->snmpClient) {
-            if ($this->monitoringTemplate->getSnmpVersion() === 3) {
+            if ($this->monitoringTemplate->getSnmpVersion() !== 3) {
                 $this->snmpClient =  new SnmpClient([
                     'host' => $this->getIp(),
                     'version' => $this->monitoringTemplate->getSnmpVersion(),
                     'timeout_connect' => 2,
                     'timeout_read' => 2,
+                    'community' => $this->monitoringTemplate->getSnmpCommunity(),
                 ]);
             } else {
                 $this->snmpClient = new SnmpClient([
