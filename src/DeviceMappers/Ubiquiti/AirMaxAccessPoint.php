@@ -34,13 +34,17 @@ class AirMaxAccessPoint extends BaseDeviceMapper
                             $existingMacs[] = Formatter::formatMac($oid->getValue()->__toString());
                         } catch (Exception $e) {
                             $log = new Log();
-                            $log->exception($e);
+                            $log->exception($e, [
+                                'ip' => $this->device->getIp(),
+                            ]);
                             continue;
                         }
                     }
                 } catch (Throwable $e) {
                     $log = new Log();
-                    $log->exception($e);
+                    $log->exception($e, [
+                        'ip' => $this->device->getIp(),
+                    ]);
                 }
 
                 $interfaces[$key]->setConnectedLayer1Macs($existingMacs);

@@ -33,14 +33,19 @@ class AxAccessPoint extends BaseDeviceMapper
                             $existingMacs[] = Formatter::formatMac($oid->getValue()->__toString());
                         } catch (Exception $e) {
                             $log = new Log();
-                            $log->exception($e);
+                            $log->exception($e, [
+                                'ip' => $this->device->getIp(),
+                                'oid' => isset($oid) ? $oid->getOid() : null,
+                            ]);
                             continue;
                         }
                     }
                 }
                 catch (Exception $e) {
                     $log = new Log();
-                    $log->exception($e);
+                    $log->exception($e, [
+                        'ip' => $this->device->getIp(),
+                    ]);
                 }
 
                 $interfaces[$key]->setConnectedLayer1Macs(array_unique($existingMacs));

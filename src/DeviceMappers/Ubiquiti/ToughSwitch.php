@@ -66,7 +66,9 @@ class ToughSwitch extends BaseDeviceMapper
             $snmpResult->setInterfaces($interfaces);
         } catch (Throwable $e) {
             $log = new Log();
-            $log->exception($e);
+            $log->exception($e, [
+                'ip' => $this->device->getIp(),
+            ]);
         }
 
         return $snmpResult;

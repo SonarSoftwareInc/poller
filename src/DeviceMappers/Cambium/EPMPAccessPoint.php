@@ -30,16 +30,21 @@ class EPMPAccessPoint extends BaseDeviceMapper
                     }
                 } catch (Exception $e) {
                     $log = new Log();
-                    $log->exception($e);
+                    $log->exception($e, [
+                        'ip' => $this->device->getIp(),
+                    ]);
                 }
 
                 //If this is a station (slave end of a backhaul, for example) we need to query this OID as well
                 try {
-                    $result = $this->device->getSnmpClient()->getValue("1.3.6.1.4.1.17713.21.1.2.19.0");
+                    $result = $this->device->getSnmpClient()->getValue('1.3.6.1.4.1.17713.21.1.2.19.0');
                     $existingMacs[] = Formatter::formatMac($result);
                 } catch (Throwable $e) {
                     $log = new Log();
-                    $log->exception($e);
+                    $log->exception($e, [
+                        'ip' => $this->device->getIp(),
+                        'oid' => '1.3.6.1.4.1.17713.21.1.2.19.0',
+                    ]);
                 }
 
                 $interfaces[$id]->setConnectedLayer1Macs($existingMacs);

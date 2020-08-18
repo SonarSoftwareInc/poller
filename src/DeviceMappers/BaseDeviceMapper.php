@@ -99,7 +99,10 @@ abstract class BaseDeviceMapper
             }
         } catch (Throwable $e) {
             $log = new Log();
-            $log->exception($e);
+            $log->exception($e, [
+                'ip' => $this->device->getIp(),
+                'oid' => $oid
+            ]);
         }
 
         return new OidList(... $oids);

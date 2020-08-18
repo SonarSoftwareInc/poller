@@ -55,7 +55,9 @@ class Ws6Mini extends BaseDeviceMapper
             }
         } catch (Throwable $e) {
             $log = new Log();
-            $log->exception($e);
+            $log->exception($e, [
+                'ip' => $this->device->getIp(),
+            ]);
         }
 
 

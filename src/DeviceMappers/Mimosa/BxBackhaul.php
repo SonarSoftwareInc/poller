@@ -41,7 +41,9 @@ class BxBackhaul extends BaseDeviceMapper
                     }
                 } catch (Exception $e) {
                     $log = new Log();
-                    $log->exception($e);
+                    $log->exception($e, [
+                        'ip' => $this->device->getIp(),
+                    ]);
                 }
 
                 $interfaces[$key]->setConnectedLayer1Macs(array_unique($existingMacs));

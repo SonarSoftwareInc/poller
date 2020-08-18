@@ -47,7 +47,10 @@ class MikroTik extends BaseDeviceMapper
                 }
             }
         } catch (Exception $e) {
-            //
+            $log = new Log();
+            $log->exception($e, [
+                'ip' => $this->device->getIp(),
+            ]);
         }
 
         $snmpResult->setInterfaces($this->interfaces);

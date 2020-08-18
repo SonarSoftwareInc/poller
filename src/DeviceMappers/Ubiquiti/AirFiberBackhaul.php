@@ -40,7 +40,10 @@ class AirFiberBackhaul extends BaseDeviceMapper
                 $interfaces[$this->air0]->setInterfaceSpeed(($capacity)/1000**2);
             } catch (Throwable $e) {
                 $log = new Log();
-                $log->exception($e);
+                $log->exception($e, [
+                    'ip' => $this->device->getIp(),
+                    'oid' => '1.3.6.1.4.1.41112.1.3.2.1.5',
+                ]);
             }
 
             $snmpResult->setInterfaces($interfaces);
