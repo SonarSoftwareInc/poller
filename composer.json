@@ -10,10 +10,8 @@
         "ext-json": "*",
         "ext-gmp": "*",
         "guzzlehttp/guzzle": "^6.5",
-        "blackfire/php-sdk": "^1.21",
         "psy/psysh": "@stable",
         "league/booboo": "^2.0",
-        "freedsx/snmp": "^0.4.0",
         "amphp/socket": "^1.1",
         "league/climate": "^3.5",
         "leth/ip-address": "^1.1",
@@ -23,6 +21,9 @@
         "pear2/net_transmitter": "^1.0.0@dev",
         "monolog/monolog": "^2.1",
         "nesbot/carbon": "^2.38"
+    },
+    "require-dev": {
+        "blackfire/php-sdk": "^1.21"
     },
     "autoload": {
         "psr-4": {

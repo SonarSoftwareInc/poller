@@ -23,7 +23,7 @@ class EtherwanSwitch extends BaseDeviceMapper
      */
     private function getBridgingTable(SnmpResult $snmpResult):SnmpResult
     {
-        $switchingDatabasePortNumbers = $this->walk(".1.3.6.1.4.1.2736.1.1.11.1.1.4");
+        $switchingDatabasePortNumbers = $this->walk("1.3.6.1.4.1.2736.1.1.11.1.1.4");
         $mapping = [];
         foreach ($switchingDatabasePortNumbers as $oid) {
             $boom = explode(".", $oid->getOid());

@@ -2,8 +2,7 @@
 
 namespace Poller\Models;
 
-use FreeDSx\Snmp\SnmpClient;
-use Poller\Models\Device\Metadata;
+use Poller\Services\SnmpClient;
 
 class Device
 {
@@ -104,7 +103,7 @@ class Device
         //TODO: Deal with SNMP overrides
         if (!$this->snmpClient) {
             if ($this->monitoringTemplate->getSnmpVersion() !== 3) {
-                $this->snmpClient =  new SnmpClient([
+                $this->snmpClient = new SnmpClient([
                     'host' => $this->getIp(),
                     'version' => $this->monitoringTemplate->getSnmpVersion(),
                     'timeout_connect' => 2,
@@ -117,23 +116,13 @@ class Device
                     'version' => $this->monitoringTemplate->getSnmpVersion(),
                     'timeout_connect' => 2,
                     'timeout_read' => 2,
-                    # The SNMP user to connect with
                     'user' => $this->monitoringTemplate->getSnmpCommunity(),
-                    # Specify to use authentication
-                    'use_auth' => $this->monitoringTemplate->getSnmp3SecLevel() !== 'NO_AUTH_NO_PRIV',
-                    # Specify the authentication mechanism for the user
+                    'sec_level' => $this->monitoringTemplate->getSnmp3SecLevel(),
                     'auth_mech' => $this->monitoringTemplate->getSnmp3AuthProtocol() === 'SHA' ? 'sha' : 'md5',
-                    # Specify the user's password
                     'auth_pwd' => $this->monitoringTemplate->getSnmp3AuthProtocol(),
-                    # Specify to use privacy
-                    'use_priv' => $this->monitoringTemplate->getSnmp3SecLevel() === 'AUTH_PRIV',
-                    # Specify the privacy mechanism for the user
                     'priv_mech' => $this->monitoringTemplate->getSnmp3PrivProtocol() === 'AES' ? 'aes' : 'des',
-                    # Specify the privacy password for the user (different from the authentication password)
                     'priv_pwd' => $this->monitoringTemplate->getSnmp3PrivPassphrase(),
-                    # Specify the engine ID
                     'engine_id' => $this->monitoringTemplate->getSnmp3ContextEngineID(),
-                    # Specify the context name
                     'context_name' => $this->monitoringTemplate->getSnmp3ContextName(),
                 ]);
             }

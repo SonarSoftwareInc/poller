@@ -5,16 +5,18 @@ namespace Poller\DeviceMappers;
 use Exception;
 use FreeDSx\Snmp\OidList;
 use Leth\IPAddress\IP\Address;
+use Poller\Exceptions\SnmpException;
 use Poller\Log;
 use Poller\Models\Device;
 use Poller\Models\Device\NetworkInterface;
+use Poller\Models\SnmpResponse;
 use Poller\Models\SnmpResult;
 use Throwable;
 
 abstract class BaseDeviceMapper
 {
     protected Device $device;
-    protected ?OidList $baseData = null;
+    protected ?SnmpResponse $baseData = null;
 
     //Set to true if this device has an ARP table at the standard SNMP location
     protected bool $hasArp = true;
@@ -97,16 +99,12 @@ abstract class BaseDeviceMapper
 
     /**
      * @param string $oid
-     * @return OidList
+     * @return SnmpResponse
      */
-    protected function walk(string $oid): OidList
+    protected function walk(string $oid):SnmpResponse
     {
-        $oids = [];
         try {
-            $walk = $this->device->getSnmpClient()->walk($oid);
-            while ($walk->hasOids()) {
-                $oids[] = $walk->next();
-            }
+            return $this->device->getSnmpClient()->walk($oid);
         } catch (Throwable $e) {
             $log = new Log();
             $log->exception($e, [
@@ -114,8 +112,6 @@ abstract class BaseDeviceMapper
                 'oid' => $oid
             ]);
         }
-
-        return new OidList(... $oids);
     }
 
     /**
@@ -126,22 +122,22 @@ abstract class BaseDeviceMapper
         try {
             $oidList = $this->walk("1.3.6.1.2.1.1");
             $metadata = new Device\Metadata();
-            foreach ($oidList as $oid) {
-                switch (ltrim($oid->getOid(), ".")) {
+            foreach ($oidList->getAll() as $oid => $value) {
+                switch ($oid) {
                     case "1.3.6.1.2.1.1.1.0":
-                        $metadata->setDescription($oid->getValue());
+                        $metadata->setDescription($value);
                         break;
                     case "1.3.6.1.2.1.1.3.0":
-                        $metadata->setUptime($oid->getValue());
+                        $metadata->setUptime($value);
                         break;
                     case "1.3.6.1.2.1.1.4.0":
-                        $metadata->setContact($oid->getValue());
+                        $metadata->setContact($value);
                         break;
                     case "1.3.6.1.2.1.1.5.0":
-                        $metadata->setName($oid->getValue());
+                        $metadata->setName($value);
                         break;
                     case "1.3.6.1.2.1.1.6.0":
-                        $metadata->setLocation($oid->getValue());
+                        $metadata->setLocation($value);
                         break;
                     default:
                         break;
@@ -158,48 +154,64 @@ abstract class BaseDeviceMapper
      */
     private function mapInterfaces()
     {
+        $log = new Log();
         $oidList = $this->getBaseData();
-        foreach ($oidList as $oid) {
-            if (strpos($oid->getOid(), '1.3.6.1.2.1.2.2.1.2.') !== false) {
-                $boom = explode(".", $oid->getOid());
+        foreach ($oidList->getAll() as $oid => $value) {
+            if (strpos($oid, '1.3.6.1.2.1.2.2.1.2.') !== false) {
+                $boom = explode(".", $oid);
                 $interfaceID = $boom[count($boom) - 1];
                 if (!isset($this->interfaces[$interfaceID])) {
                     $this->interfaces[$interfaceID] = new NetworkInterface($interfaceID);
                 }
 
-                $this->interfaces[$interfaceID]->setName($oid->getValue()->__toString());
+                $this->interfaces[$interfaceID]->setName($value);
 
-                $macOid = $oidList->get('1.3.6.1.2.1.2.2.1.6.' . $interfaceID);
-                if ($macOid) {
-                    $this->interfaces[$interfaceID]->setMacAddress($macOid->getValue()->__toString());
+                try {
+                    $this->interfaces[$interfaceID]->setMacAddress($oidList->get('1.3.6.1.2.1.2.2.1.6.' . $interfaceID));
+                } catch (SnmpException $e) {
+                    $log->exception($e, [
+                        'ip' => $this->device->getIp()
+                    ]);
                 }
 
-                $statusOid = $oidList->get('1.3.6.1.2.1.2.2.1.8.' . $interfaceID);
-                if ($statusOid) {
-                    $this->interfaces[$interfaceID]->setStatus((bool)$statusOid->getValue()->__toString());
+                try {
+                    $this->interfaces[$interfaceID]->setStatus((bool)$oidList->get('1.3.6.1.2.1.2.2.1.8.' . $interfaceID));
+                } catch (SnmpException $e) {
+                    $log->exception($e, [
+                        'ip' => $this->device->getIp()
+                    ]);
                 }
 
-                $speedOid = $oidList->get('1.3.6.1.2.1.2.2.1.5.' . $interfaceID);
-                if ($speedOid) {
-                    $speed = $speedOid->getValue()->__toString();
+                try {
+                    $speed = $oidList->get('1.3.6.1.2.1.2.2.1.5.' . $interfaceID);
                     if (is_numeric($speed) && $speed > 0) {
                         $this->interfaces[$interfaceID]->setSpeedIn((int)ceil($speed/1000**2));
                         $this->interfaces[$interfaceID]->setSpeedOut((int)ceil($speed/1000**2));
                     }
+                } catch (SnmpException $e) {
+                    $log->exception($e, [
+                        'ip' => $this->device->getIp()
+                    ]);
                 }
 
-                $typeOid = $oidList->get('1.3.6.1.2.1.2.2.1.3.' . $interfaceID);
-                if ($typeOid) {
-                    $this->interfaces[$interfaceID]->setType($typeOid->getValue()->__toString());
+                try {
+                    $typeOid = $oidList->get('1.3.6.1.2.1.2.2.1.3.' . $interfaceID);
+                    if ($typeOid) {
+                        $this->interfaces[$interfaceID]->setType($typeOid);
+                    }
+                } catch (SnmpException $e) {
+                    $log->exception($e, [
+                        'ip' => $this->device->getIp()
+                    ]);
                 }
             }
         }
     }
 
     /**
-     * @return OidList
+     * @return SnmpResponse
      */
-    private function getBaseData(): OidList
+    private function getBaseData(): SnmpResponse
     {
         if ($this->baseData === null) {
             $this->baseData = $this->walk('1.3.6.1.2.1.2.2.1');
@@ -211,15 +223,15 @@ abstract class BaseDeviceMapper
     {
         $result = $this->walk("1.3.6.1.2.1.4.22.1.2");
         $arp = [];
-        foreach ($result as $oid) {
-            $key = ltrim($oid->getOid(), ".");
+        foreach ($result->getAll() as $oid => $value) {
+            $key = ltrim($oid, ".");
             $boom = explode(".", $key);
             $interfaceID = $boom[count($boom) - 5];
             if (isset($this->interfaces[$interfaceID])) {
                 if (!isset($arp[$interfaceID])) {
                     $arp[$interfaceID] = [];
                 }
-                $arp[$interfaceID][] = $oid->getValue()->__toString();
+                $arp[$interfaceID][] = $value;
             }
         }
 
@@ -232,24 +244,24 @@ abstract class BaseDeviceMapper
     {
         $result = $this->walk('1.3.6.1.2.1.17.4.3.1');
         $mappings = [];
-        foreach ($result as $oid) {
-            if (strpos($oid->getOid(), '1.3.6.1.2.1.17.4.3.1.2.') !== false) {
-                $key = ltrim($oid->getOid(), ".");
+        foreach ($result->getAll() as $oid => $value) {
+            if (strpos($oid, '1.3.6.1.2.1.17.4.3.1.2.') !== false) {
+                $key = ltrim($oid, ".");
                 $boom = explode(".", $key, 12);
-                $mappings[$boom[11]] = $oid->getValue()->__toString();
+                $mappings[$boom[11]] = $value;
             }
         }
 
         $bridgingTables = [];
-        foreach ($result as $oid) {
-            if (strpos($oid->getOid(), '1.3.6.1.2.1.17.4.3.1.1.') !== false) {
-                $key = ltrim($oid->getOid(), ".");
+        foreach ($result->getAll() as $oid => $value) {
+            if (strpos($oid, '1.3.6.1.2.1.17.4.3.1.1.') !== false) {
+                $key = ltrim($oid, ".");
                 $boom = explode(".", $key, 12);
                 if (isset($mappings[$boom[11]]) && isset($this->interfaces[$mappings[$boom[11]]])) {
                     if (!isset($bridgingTables[$mappings[$boom[11]]])) {
                         $bridgingTables[$mappings[$boom[11]]] = [];
                     }
-                    $bridgingTables[$mappings[$boom[11]]][] = $oid->getValue()->__toString();
+                    $bridgingTables[$mappings[$boom[11]]][] = $value;
                 }
             }
         }
@@ -264,8 +276,8 @@ abstract class BaseDeviceMapper
         //IPv4
         $result = $this->walk('1.3.6.1.2.1.4.20.1');
         $ipv4Results = [];
-        foreach ($result as $oid) {
-            $key = ltrim($oid->getOid(), ".");
+        foreach ($result->getAll() as $oid => $value) {
+            $key = ltrim($oid, ".");
             $key = str_replace("1.3.6.1.2.1.4.20.1.", "", $key);
             $boom = explode(".", $key, 2);
 
@@ -280,13 +292,13 @@ abstract class BaseDeviceMapper
             switch ($boom[0]) {
                 //If 1, it's the IP. If 2, it's the interface index. If 3, it's the subnet mask.
                 case 1:
-                    $ipv4Results[$boom[1]]['ip'] = $oid->getValue()->__toString();
+                    $ipv4Results[$boom[1]]['ip'] = $value;
                     break;
                 case 2:
-                    $ipv4Results[$boom[1]]['index'] = $oid->getValue()->__toString();
+                    $ipv4Results[$boom[1]]['index'] = $value;
                     break;
                 case 3:
-                    $ipv4Results[$boom[1]]['subnet'] = $this->maskToCidr($oid->getValue()->__toString());
+                    $ipv4Results[$boom[1]]['subnet'] = $this->maskToCidr($value);
                     break;
                 default:
                     continue 2;
@@ -296,8 +308,8 @@ abstract class BaseDeviceMapper
         //IPv6
         $ipv6Results = [];
         $result = $this->walk("1.3.6.1.2.1.55.1.8");
-        foreach ($result as $oid) {
-            $key = ltrim($oid->getOid(), ".");
+        foreach ($result->getAll() as $oid => $value) {
+            $key = ltrim($oid, ".");
             $key = str_replace("1.3.6.1.2.1.55.1.8.1.", "", $key);
             $boom = explode(".", $key, 3);
 
@@ -312,14 +324,14 @@ abstract class BaseDeviceMapper
             switch ($boom[0]) {
                 //If  1, it's the IP. If 2, it's the prefix.
                 case 1:
-                    $address = Address::factory($oid->getValue()->__toString());
+                    $address = Address::factory($value);
                     $resultsToBeInserted[$boom[1]]['ip'] = $address->__toString();
                     break;
                 case 2:
                     $resultsToBeInserted[$boom[1]]['subnet'] = preg_replace(
                         "/[^0-9]/",
                         "",
-                        $oid->getValue()->__toString()
+                        $value
                     );
                     break;
                 default:
