@@ -94,7 +94,7 @@ abstract class BaseDeviceMapper
         $oids = [];
         try {
             $walk = $this->device->getSnmpClient()->walk($oid);
-            while (!$walk->isComplete()) {
+            while ($walk->hasOids()) {
                 $oids[] = $walk->next();
             }
         } catch (Throwable $e) {

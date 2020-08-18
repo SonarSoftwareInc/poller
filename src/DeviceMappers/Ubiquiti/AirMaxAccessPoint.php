@@ -7,6 +7,7 @@ use Poller\DeviceMappers\BaseDeviceMapper;
 use Poller\Log;
 use Poller\Models\SnmpResult;
 use Poller\Services\Formatter;
+use Throwable;
 
 class AirMaxAccessPoint extends BaseDeviceMapper
 {
@@ -37,7 +38,7 @@ class AirMaxAccessPoint extends BaseDeviceMapper
                             continue;
                         }
                     }
-                } catch (Exception $e) {
+                } catch (Throwable $e) {
                     $log = new Log();
                     $log->exception($e);
                 }

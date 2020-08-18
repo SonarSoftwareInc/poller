@@ -3,8 +3,10 @@
 namespace Poller\DeviceMappers\Cambium;
 
 use Poller\DeviceMappers\BaseDeviceMapper;
+use Poller\Log;
 use Poller\Models\SnmpResult;
 use Poller\Services\Formatter;
+use Throwable;
 
 class PTP670Backhaul extends BaseDeviceMapper
 {
@@ -21,9 +23,12 @@ class PTP670Backhaul extends BaseDeviceMapper
             if (strpos($deviceInterface->getName(),"wireless") !== false)
             {
                 $macs = $deviceInterface->getConnectedLayer1Macs();
-                $result = $this->device->getSnmpClient()->get("1.3.6.1.4.1.17713.11.5.4.0");
-                if ($result->has("1.3.6.1.4.1.17713.11.5.4.0")) {
-                    $macs[] = Formatter::formatMac($result->get("11.3.6.1.4.1.17713.11.5.4.0")->getValue()->__toString());
+                try {
+                    $result = $this->device->getSnmpClient()->getValue("1.3.6.1.4.1.17713.11.5.4.0");
+                    $existingMacs[] = Formatter::formatMac($result);
+                } catch (Throwable $e) {
+                    $log = new Log();
+                    $log->exception($e);
                 }
 
                 $interfaces[$id]->setConnectedLayer1Macs($macs);

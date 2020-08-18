@@ -4,8 +4,10 @@ namespace Poller\DeviceMappers\Netonix;
 
 use phpseclib\Net\SSH2;
 use Poller\DeviceMappers\BaseDeviceMapper;
+use Poller\Log;
 use Poller\Models\SnmpResult;
 use Poller\Services\Formatter;
+use Throwable;
 
 class Ws6Mini extends BaseDeviceMapper
 {
@@ -28,28 +30,34 @@ class Ws6Mini extends BaseDeviceMapper
 
         $readInterfaces = [];
 
-        $ssh->read('[#]', SSH2::READ_REGEX);
-        $ssh->write("cmdline\n");
-        $ssh->read('(BusyBox)', SSH2::READ_REGEX);
-        $interfaceMacs = $ssh->exec("ip -o link | awk '$2 != \"lo:\" {print $2, $(NF-2)}' | grep -v @\n");
-        $separator = "\r\n";
-        $line = strtok($interfaceMacs, $separator);
-        while ($line !== false) {
-            $boom = explode(' ', $interfaceMacs);
-            $interface = str_replace(':', '', $boom[0]);
-            $interface = str_replace('eth', '', $interface);
-            $interface = 'Port ' . (string)((int)$interface+1);
-            $mac = Formatter::formatMac($boom[1]);
-            $readInterfaces[strtolower($interface)] = $mac;
-            $line = strtok($separator);
+        try {
+            $ssh->read('[#]', SSH2::READ_REGEX);
+            $ssh->write("cmdline\n");
+            $ssh->read('(BusyBox)', SSH2::READ_REGEX);
+            $interfaceMacs = $ssh->exec("ip -o link | awk '$2 != \"lo:\" {print $2, $(NF-2)}' | grep -v @\n");
+            $separator = "\r\n";
+            $line = strtok($interfaceMacs, $separator);
+            while ($line !== false) {
+                $boom = explode(' ', $interfaceMacs);
+                $interface = str_replace(':', '', $boom[0]);
+                $interface = str_replace('eth', '', $interface);
+                $interface = 'Port ' . (string)((int)$interface+1);
+                $mac = Formatter::formatMac($boom[1]);
+                $readInterfaces[strtolower($interface)] = $mac;
+                $line = strtok($separator);
+            }
+
+            $interfaces = $snmpResult->getInterfaces();
+            foreach ($interfaces as $key => $interface) {
+                if (isset($readInterfaces[strtolower($interface->getName())])) {
+                    $interfaces[$key]->setMacAddress($readInterfaces[strtolower($interface->getName())]);
+                }
+            }
+        } catch (Throwable $e) {
+            $log = new Log();
+            $log->exception($e);
         }
 
-        $interfaces = $snmpResult->getInterfaces();
-        foreach ($interfaces as $key => $interface) {
-            if (isset($readInterfaces[strtolower($interface->getName())])) {
-                $interfaces[$key]->setMacAddress($readInterfaces[strtolower($interface->getName())]);
-            }
-        }
 
         $snmpResult->setInterfaces($interfaces);
         return $snmpResult;

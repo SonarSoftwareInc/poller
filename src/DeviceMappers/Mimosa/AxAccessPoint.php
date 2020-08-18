@@ -26,7 +26,6 @@ class AxAccessPoint extends BaseDeviceMapper
         foreach ($interfaces as $key => $interface) {
             if (strpos($interface->getName(), "wlan") !== false) {
                 $existingMacs = $interfaces[$key]->getConnectedLayer1Macs();
-
                 try {
                     $result = $this->walk("1.3.6.1.4.1.43356.2.1.2.9.6.1.1.2");
                     foreach ($result as $oid) {
@@ -40,6 +39,8 @@ class AxAccessPoint extends BaseDeviceMapper
                     }
                 }
                 catch (Exception $e) {
+                    $log = new Log();
+                    $log->exception($e);
                 }
 
                 $interfaces[$key]->setConnectedLayer1Macs(array_unique($existingMacs));

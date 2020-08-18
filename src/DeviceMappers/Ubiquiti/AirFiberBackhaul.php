@@ -7,6 +7,7 @@ use Poller\DeviceMappers\BaseDeviceMapper;
 use Poller\Log;
 use Poller\Models\SnmpResult;
 use Poller\Services\Formatter;
+use Throwable;
 
 class AirFiberBackhaul extends BaseDeviceMapper
 {
@@ -35,13 +36,9 @@ class AirFiberBackhaul extends BaseDeviceMapper
         if (isset($interfaces[$this->air0])) {
             $interfaces = $snmpResult->getInterfaces();
             try {
-                $capacity = $this->device->getSnmpClient()->get("1.3.6.1.4.1.41112.1.3.2.1.5");
-                if ($capacity->has('1.3.6.1.4.1.41112.1.3.2.1.5')) {
-                    $interfaces[$this->air0]->setInterfaceSpeed(
-                        ($capacity->get('1.3.6.1.4.1.41112.1.3.2.1.5')->getValue()->__toString())/1000**2
-                    );
-                }
-            } catch (Exception $e) {
+                $capacity = $this->device->getSnmpClient()->getValue("1.3.6.1.4.1.41112.1.3.2.1.5");
+                $interfaces[$this->air0]->setInterfaceSpeed(($capacity)/1000**2);
+            } catch (Throwable $e) {
                 $log = new Log();
                 $log->exception($e);
             }

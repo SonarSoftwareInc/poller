@@ -31,19 +31,18 @@ class EtherwanSwitch extends BaseDeviceMapper
         }
 
         $macAddresses = $this->walk("1.3.6.1.4.1.2736.1.1.11.1.1.2");
-        foreach ($macAddresses as $oid)
-        {
-            $macAddress = Formatter::formatMac($oid->getValue()->__toString());
-            $boom = explode(".",$oid->getOid());
-            if (isset($mapping[$boom[count($boom)-1]])) {
-                try {
-                    $existingMacs = $this->interfaces[$mapping[$boom[count($boom)-1]]]->getConnectedLayer2Macs();
+        foreach ($macAddresses as $oid) {
+            try {
+                $macAddress = Formatter::formatMac($oid->getValue()->__toString());
+                $boom = explode(".",$oid->getOid());
+                if (isset($mapping[$boom[count($boom)-1]])) {
+                    $existingMacs = $this->interfaces[$mapping[$boom[count($boom) - 1]]]->getConnectedLayer2Macs();
                     $existingMacs[] = $macAddress;
-                    $this->interfaces[$mapping[$boom[count($boom)-1]]]->setConnectedLayer2Macs($macAddresses);
-                } catch (Exception $e) {
-                    $log = new Log();
-                    $log->exception($e);
+                    $this->interfaces[$mapping[$boom[count($boom) - 1]]]->setConnectedLayer2Macs($macAddresses);
                 }
+            } catch (Exception $e) {
+                $log = new Log();
+                $log->exception($e);
             }
         }
 

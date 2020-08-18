@@ -2,7 +2,7 @@
 
 add-apt-repository ppa:ondrej/php
 apt-get update
-apt-get install -y fping php7.4-cli php7.4-common php7.4-json php7.4-gmp php7.4-dev pkg-php-tools php7.4-zip composer
+apt-get install -y fping php7.4-cli php7.4-common php7.4-json php7.4-gmp php7.4-dev pkg-php-tools php7.4-zip composer openssl
 setcap cap_net_raw+ep /usr/bin/fping
 pecl install ev
 echo "extension=ev.so" >> /etc/php/7.4/cli/php.ini
