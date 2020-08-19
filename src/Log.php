@@ -43,7 +43,7 @@ class Log
     {
         $this->error("\n----------------");
         $this->error("EXCEPTION CAUGHT:");
-        $this->error($e->getMessage());
+        $this->error(get_class($e) . " | " . $e->getMessage());
         if (count($context) > 0) {
             $this->error(json_encode($context));
         }

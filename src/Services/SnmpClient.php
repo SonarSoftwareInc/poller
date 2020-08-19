@@ -71,7 +71,7 @@ class SnmpClient
     {
         $options = [
             '-v' . $this->convertVersion(),
-            '-r0',
+            '-r1',
             '-t2',
             '-Oe',
             '-On',

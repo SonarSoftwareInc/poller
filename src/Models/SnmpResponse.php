@@ -44,7 +44,9 @@ class SnmpResponse
                 $value = substr($value, 1, -1);
             }
             $value = trim($value);
-            $this->results[$oid] = $value;
+            if (strpos($value, 'No Such Object available on this agent at this OID') === false) {
+                $this->results[$oid] = $value;
+            }
         }
     }
 }

@@ -39,7 +39,7 @@ class EtherwanSwitch extends BaseDeviceMapper
                 if (isset($mapping[$boom[count($boom)-1]])) {
                     $existingMacs = $interfaces[$mapping[$boom[count($boom) - 1]]]->getConnectedLayer2Macs();
                     $existingMacs[] = $macAddress;
-                    $interfaces[$mapping[$boom[count($boom) - 1]]]->setConnectedLayer2Macs($macAddresses);
+                    $interfaces[$mapping[$boom[count($boom) - 1]]]->setConnectedLayer2Macs($existingMacs);
                 }
             } catch (Exception $e) {
                 $log = new Log();
