@@ -284,6 +284,9 @@ abstract class BaseDeviceMapper
             $key = ltrim($oid, ".");
             $key = str_replace("1.3.6.1.2.1.4.20.1.", "", $key);
             $boom = explode(".", $key, 2);
+            if (!isset($boom[1])) {
+                continue;
+            }
 
             if (!isset($ipv4Results[$boom[1]])) {
                 $ipv4Results[$boom[1]] = [
@@ -316,6 +319,10 @@ abstract class BaseDeviceMapper
             $key = ltrim($oid, ".");
             $key = str_replace("1.3.6.1.2.1.55.1.8.1.", "", $key);
             $boom = explode(".", $key, 3);
+
+            if (!isset($boom[1])) {
+                continue;
+            }
 
             if (!isset($resultsToBeInserted[$boom[1]])) {
                 $resultsToBeInserted[$boom[1]] = [
