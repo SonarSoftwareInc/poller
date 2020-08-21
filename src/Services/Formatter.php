@@ -24,10 +24,10 @@ class Formatter
             throw new InvalidArgumentException("$mac cannot be converted to a 12 character MAC address.");
         }
         $macSplit = str_split($cleanMac,2);
-        return implode(":",$macSplit);
+        return strtoupper(implode(":",$macSplit));
     }
 
-    public static function validateMac(string $mac):string
+    public static function validateMac(string $mac):bool
     {
         $mac = self::addMacLeadingZeroes($mac);
         $cleanMac = strtoupper(preg_replace("/[^A-Fa-f0-9]/", '', $mac));
@@ -35,7 +35,7 @@ class Formatter
             return false;
         }
         $macSplit = str_split($cleanMac,2);
-        $mac = implode(":",$macSplit);
+        $mac = strtoupper(implode(":",$macSplit));
         return filter_var($mac, FILTER_VALIDATE_MAC) !== false;
     }
 

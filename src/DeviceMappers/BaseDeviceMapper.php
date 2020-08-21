@@ -206,7 +206,6 @@ abstract class BaseDeviceMapper
 
                     try {
                         $this->interfaces[$interfaceID]->setType($oidList->get('1.3.6.1.2.1.2.2.1.3.' . $interfaceID));
-
                     } catch (SnmpException $e) {
                         $log->exception($e, [
                             'ip' => $this->device->getIp()
