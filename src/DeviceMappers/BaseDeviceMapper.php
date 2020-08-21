@@ -11,6 +11,7 @@ use Poller\Models\Device\Metadata;
 use Poller\Models\Device\NetworkInterface;
 use Poller\Models\SnmpResponse;
 use Poller\Models\SnmpResult;
+use Poller\Services\Formatter;
 use Throwable;
 
 abstract class BaseDeviceMapper
@@ -174,7 +175,9 @@ abstract class BaseDeviceMapper
                     $this->interfaces[$interfaceID]->setName($value);
 
                     try {
-                        $this->interfaces[$interfaceID]->setMacAddress($oidList->get('1.3.6.1.2.1.2.2.1.6.' . $interfaceID));
+                        if (Formatter::validateMac($oidList->get('1.3.6.1.2.1.2.2.1.6.' . $interfaceID)) === true) {
+                            $this->interfaces[$interfaceID]->setMacAddress($oidList->get('1.3.6.1.2.1.2.2.1.6.' . $interfaceID));
+                        }
                     } catch (SnmpException $e) {
                         $log->exception($e, [
                             'ip' => $this->device->getIp()
