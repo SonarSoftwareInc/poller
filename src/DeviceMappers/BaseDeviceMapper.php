@@ -163,46 +163,52 @@ abstract class BaseDeviceMapper
         $oidList = $this->getBaseData();
         foreach ($oidList->getAll() as $oid => $value) {
             if (strpos($oid, '1.3.6.1.2.1.2.2.1.2.') !== false) {
-                $boom = explode(".", $oid);
-                $interfaceID = $boom[count($boom) - 1];
-                if (!isset($this->interfaces[$interfaceID])) {
-                    $this->interfaces[$interfaceID] = new NetworkInterface($interfaceID);
-                }
-
-                $this->interfaces[$interfaceID]->setName($value);
-
                 try {
-                    $this->interfaces[$interfaceID]->setMacAddress($oidList->get('1.3.6.1.2.1.2.2.1.6.' . $interfaceID));
-                } catch (SnmpException $e) {
-                    $log->exception($e, [
-                        'ip' => $this->device->getIp()
-                    ]);
-                }
-
-                try {
-                    $this->interfaces[$interfaceID]->setStatus((bool)$oidList->get('1.3.6.1.2.1.2.2.1.8.' . $interfaceID));
-                } catch (SnmpException $e) {
-                    $log->exception($e, [
-                        'ip' => $this->device->getIp()
-                    ]);
-                }
-
-                try {
-                    $speed = $oidList->get('1.3.6.1.2.1.2.2.1.5.' . $interfaceID);
-                    if (is_numeric($speed) && $speed > 0) {
-                        $this->interfaces[$interfaceID]->setSpeedIn((int)ceil($speed/1000**2));
-                        $this->interfaces[$interfaceID]->setSpeedOut((int)ceil($speed/1000**2));
+                    $boom = explode(".", $oid);
+                    $interfaceID = $boom[count($boom) - 1];
+                    if (!isset($this->interfaces[$interfaceID])) {
+                        $this->interfaces[$interfaceID] = new NetworkInterface($interfaceID);
                     }
-                } catch (SnmpException $e) {
-                    $log->exception($e, [
-                        'ip' => $this->device->getIp()
-                    ]);
-                }
 
-                try {
-                    $this->interfaces[$interfaceID]->setType($oidList->get('1.3.6.1.2.1.2.2.1.3.' . $interfaceID));
+                    $this->interfaces[$interfaceID]->setName($value);
 
-                } catch (SnmpException $e) {
+                    try {
+                        $this->interfaces[$interfaceID]->setMacAddress($oidList->get('1.3.6.1.2.1.2.2.1.6.' . $interfaceID));
+                    } catch (SnmpException $e) {
+                        $log->exception($e, [
+                            'ip' => $this->device->getIp()
+                        ]);
+                    }
+
+                    try {
+                        $this->interfaces[$interfaceID]->setStatus((bool)$oidList->get('1.3.6.1.2.1.2.2.1.8.' . $interfaceID));
+                    } catch (SnmpException $e) {
+                        $log->exception($e, [
+                            'ip' => $this->device->getIp()
+                        ]);
+                    }
+
+                    try {
+                        $speed = $oidList->get('1.3.6.1.2.1.2.2.1.5.' . $interfaceID);
+                        if (is_numeric($speed) && $speed > 0) {
+                            $this->interfaces[$interfaceID]->setSpeedIn((int)ceil($speed/1000**2));
+                            $this->interfaces[$interfaceID]->setSpeedOut((int)ceil($speed/1000**2));
+                        }
+                    } catch (SnmpException $e) {
+                        $log->exception($e, [
+                            'ip' => $this->device->getIp()
+                        ]);
+                    }
+
+                    try {
+                        $this->interfaces[$interfaceID]->setType($oidList->get('1.3.6.1.2.1.2.2.1.3.' . $interfaceID));
+
+                    } catch (SnmpException $e) {
+                        $log->exception($e, [
+                            'ip' => $this->device->getIp()
+                        ]);
+                    }
+                } catch (Throwable $e) {
                     $log->exception($e, [
                         'ip' => $this->device->getIp()
                     ]);

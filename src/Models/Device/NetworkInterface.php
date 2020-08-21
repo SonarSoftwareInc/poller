@@ -47,14 +47,9 @@ class NetworkInterface
 
     public function setConnectedLayer1Macs(array $macs)
     {
-        $this->connectedLayer1Macs = array_map(
-            function ($mac) {
-                return Formatter::formatMac($mac);
-            },
-            array_filter($macs, function ($value) {
-                return $this->validateMac($value);
-            })
-        );
+        $this->connectedLayer1Macs = array_map(function ($mac) {
+            return Formatter::formatMac($mac);
+        }, $macs);
     }
 
     public function getConnectedLayer1Macs():array
@@ -64,14 +59,9 @@ class NetworkInterface
 
     public function setConnectedLayer2Macs(array $macs)
     {
-        $this->connectedLayer2Macs = array_map(
-            function ($mac) {
-                return Formatter::formatMac($mac);
-            },
-            array_filter($macs, function ($value) {
-                return $this->validateMac($value);
-            })
-        );
+        $this->connectedLayer2Macs = array_map(function ($mac) {
+            return Formatter::formatMac($mac);
+        }, $macs);
     }
 
     public function getConnectedLayer2Macs():array
@@ -81,14 +71,9 @@ class NetworkInterface
 
     public function setConnectedLayer3Macs(array $macs)
     {
-        $this->connectedLayer3Macs = array_map(
-            function ($mac) {
-                return Formatter::formatMac($mac);
-            },
-            array_filter($macs, function ($value) {
-                return $this->validateMac($value);
-            })
-        );
+        $this->connectedLayer3Macs = array_map(function ($mac) {
+            return Formatter::formatMac($mac);
+        }, $macs);
     }
 
     public function getConnectedLayer3Macs():array
@@ -98,9 +83,7 @@ class NetworkInterface
 
     public function setIpAddresses(array $ips)
     {
-        $this->ipAddresses = array_filter($ips, function ($ip) {
-            return filter_var($ip, FILTER_VALIDATE_IP) !== false;
-        });
+        $this->ipAddresses = $ips;
     }
 
     public function getIpAddresses():array

@@ -17,7 +17,7 @@ abstract class PTPBackhaulBase extends BaseDeviceMapper
         {
             if (strpos($deviceInterface->getName(),"wireless") !== false)
             {
-                $macs = $deviceInterface->getConnectedLayer1Macs();
+                $existingMacs = $deviceInterface->getConnectedLayer1Macs();
                 try {
                     $result = $this->device->getSnmpClient()->get($oid);
                     $existingMacs[] = Formatter::formatMac($result->get($oid));
@@ -29,7 +29,7 @@ abstract class PTPBackhaulBase extends BaseDeviceMapper
                     ]);
                 }
 
-                $interfaces[$id]->setConnectedLayer1Macs($macs);
+                $interfaces[$id]->setConnectedLayer1Macs($existingMacs);
                 break;
             }
         }
