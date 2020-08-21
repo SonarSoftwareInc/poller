@@ -7,6 +7,7 @@ use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Throwable;
+use const JSON_PRETTY_PRINT;
 
 class Log
 {
@@ -41,16 +42,19 @@ class Log
 
     public function exception(Throwable $e, array $context = [])
     {
-        $this->error("\n----------------");
-        $this->error("EXCEPTION CAUGHT:");
-        $this->error(get_class($e) . " | " . $e->getMessage());
+        $log = null;
+
+        $log .= "\n----------------\n";
+        $log .= "EXCEPTION CAUGHT:\n";
+        $log .= get_class($e) . " | " . $e->getMessage() . "\n";
         if (count($context) > 0) {
-            $this->error(json_encode($context));
+            $log .= json_encode($context, JSON_PRETTY_PRINT) . "\n";
         }
-        $this->error("----------------");
+        $log .= "----------------\n";
         foreach ($e->getTrace() as $counter => $line) {
             $line['position'] = $counter;
-            $this->error(json_encode($line));
+            $log .= json_encode($line, JSON_PRETTY_PRINT) . "\n";
         }
+        $this->error($log);
     }
 }
