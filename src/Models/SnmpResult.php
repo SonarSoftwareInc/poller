@@ -56,7 +56,7 @@ class SnmpResult implements CoroutineResultInterface
      */
     public function setInterfaces(array $interfaces): void
     {
-        $this->interfaces = array_values($interfaces);
+        $this->interfaces = $interfaces;
     }
 
     public function toArray():array
