@@ -28,7 +28,7 @@ class EPMPAccessPoint extends BaseDeviceMapper
                     foreach ($result->getAll() as $datum) {
                         $existingMacs[] = Formatter::formatMac($datum);
                     }
-                } catch (Exception $e) {
+                } catch (Throwable $e) {
                     $log = new Log();
                     $log->exception($e, [
                         'ip' => $this->device->getIp(),

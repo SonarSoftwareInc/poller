@@ -47,9 +47,14 @@ class NetworkInterface
 
     public function setConnectedLayer1Macs(array $macs)
     {
-        $this->connectedLayer1Macs = array_map(function ($mac) {
-            return Formatter::formatMac($mac);
-        }, $macs);
+        $this->connectedLayer1Macs = array_map(
+            function ($mac) {
+                return Formatter::formatMac($mac);
+            },
+            array_filter($macs, function ($value) {
+                return Formatter::validateMac($value);
+            })
+        );
     }
 
     public function getConnectedLayer1Macs():array
@@ -59,9 +64,14 @@ class NetworkInterface
 
     public function setConnectedLayer2Macs(array $macs)
     {
-        $this->connectedLayer2Macs = array_map(function ($mac) {
-            return Formatter::formatMac($mac);
-        }, $macs);
+        $this->connectedLayer2Macs = array_map(
+            function ($mac) {
+                return Formatter::formatMac($mac);
+            },
+            array_filter($macs, function ($value) {
+                return Formatter::validateMac($value);
+            })
+        );
     }
 
     public function getConnectedLayer2Macs():array
@@ -71,9 +81,14 @@ class NetworkInterface
 
     public function setConnectedLayer3Macs(array $macs)
     {
-        $this->connectedLayer3Macs = array_map(function ($mac) {
-            return Formatter::formatMac($mac);
-        }, $macs);
+        $this->connectedLayer3Macs = array_map(
+            function ($mac) {
+                return Formatter::formatMac($mac);
+            },
+            array_filter($macs, function ($value) {
+                return Formatter::validateMac($value);
+            })
+        );
     }
 
     public function getConnectedLayer3Macs():array
@@ -151,11 +166,6 @@ class NetworkInterface
             'speed_out' => $this->speedOut,
             'type' => $this->type,
         ];
-    }
-
-    private function validateMac(string $mac)
-    {
-        return filter_var(Formatter::addMacLeadingZeroes($mac), FILTER_VALIDATE_MAC) !== false;
     }
 
     /**

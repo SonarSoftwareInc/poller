@@ -6,6 +6,7 @@ use InvalidArgumentException;
 use Poller\Log;
 use Poller\Models\SnmpError;
 use Poller\Models\SnmpResult;
+use const FILTER_VALIDATE_MAC;
 use const ZLIB_ENCODING_GZIP;
 
 class Formatter
@@ -24,6 +25,18 @@ class Formatter
         }
         $macSplit = str_split($cleanMac,2);
         return implode(":",$macSplit);
+    }
+
+    public static function validateMac(string $mac):string
+    {
+        $mac = self::addMacLeadingZeroes($mac);
+        $cleanMac = strtoupper(preg_replace("/[^A-Fa-f0-9]/", '', $mac));
+        if (strlen($cleanMac) !== 12) {
+            return false;
+        }
+        $macSplit = str_split($cleanMac,2);
+        $mac = implode(":",$macSplit);
+        return filter_var($mac, FILTER_VALIDATE_MAC) !== false;
     }
 
     /**

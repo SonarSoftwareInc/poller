@@ -111,6 +111,7 @@ abstract class BaseDeviceMapper
                 'ip' => $this->device->getIp(),
                 'oid' => $oid
             ]);
+            return new SnmpResponse([]);
         }
     }
 
