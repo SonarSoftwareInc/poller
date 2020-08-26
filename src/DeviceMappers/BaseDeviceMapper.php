@@ -293,6 +293,11 @@ abstract class BaseDeviceMapper
         foreach ($result->getAll() as $oid => $value) {
             $key = ltrim($oid, ".");
             $boom = explode(".", $key);
+            if (count($boom) < 5) {
+                $log = new Log();
+                $log->error("Could not determine the interface from ARP result $key");
+                continue;
+            }
             $interfaceID = $boom[count($boom) - 5];
             if (isset($this->interfaces[$interfaceID])) {
                 if (!isset($arp[$interfaceID])) {
