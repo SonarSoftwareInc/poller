@@ -50,8 +50,7 @@ class DeviceFactory
     {
         return array_filter($this->devices, function ($device) {
             $template = $device->getMonitoringTemplate();
-            return $template->getCollectInterfaceStatistics() === true
-                || count($template->getOids()) > 0;
+            return !empty($template->getSnmpCommunity());
         });
     }
 }
