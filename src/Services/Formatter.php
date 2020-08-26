@@ -60,11 +60,9 @@ class Formatter
         return $mac;
     }
 
-    public static function formatMonitoringData(array $coroutines, bool $gzCompress = true):string
+    public static function formatMonitoringData(array $coroutines, int $timeTaken, bool $gzCompress = true):string
     {
         $data = [];
-        $icmpTime = 0;
-        $snmpTime = 0;
         $log = new Log();
         foreach ($coroutines as $coroutine) {
             if (is_array($coroutine)) {
@@ -81,7 +79,6 @@ class Formatter
                         continue;
                     }
                     $data[$pingResult->getIp()]['icmp'] = $result;
-                    $icmpTime += $pingResult->getTimeTaken();
                 }
             } elseif ($coroutine instanceof SnmpResult || $coroutine instanceof SnmpError) {
                 if (!isset($data[$coroutine->getIp()])) {
@@ -96,18 +93,13 @@ class Formatter
                     continue;
                 }
                 $data[$coroutine->getIp()]['snmp'] = $result;
-
-                if ($coroutine instanceof SnmpResult) {
-                    $snmpTime += $coroutine->getTimeTaken();
-                }
             }
         }
 
         $results = [
             'api_key' => getenv('SONAR_POLLER_API_KEY'),
             'version' => getenv('SONAR_POLLER_VERSION'),
-            'icmp_time_taken' => $icmpTime,
-            'snmp_time_taken' => $snmpTime,
+            'time_taken' => 0,
             'results' => $data,
         ];
 

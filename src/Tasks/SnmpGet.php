@@ -54,7 +54,6 @@ class SnmpGet implements Task
                 $snmpResult = $mapper->map($snmpResult);
             }
 
-            $snmpResult->setTimeTaken(Carbon::now()->diffInSeconds($start));
             return $snmpResult;
         } catch (SnmpException $e) {
             return new SnmpError(true, $e->getMessage(), $this->device->getIp());

@@ -37,7 +37,7 @@ Loop::run(function () {
             output("Cycle completed in $timeTaken seconds, got " . count($results) . " results.");
 
             if ($debug === true) {
-                writeDebugLog($results);
+                writeDebugLog($results, $timeTaken);
                 Loop::disable($watcherId);
             } else {
                 try {
@@ -47,7 +47,7 @@ Loop::run(function () {
                             'Accept'     => 'application/json',
                             'Content-Encoding' => 'gzip',
                         ],
-                        'body' => Formatter::formatMonitoringData($results, true),
+                        'body' => Formatter::formatMonitoringData($results, $timeTaken, true),
                     ]);
                     output($response->getStatusCode() . ' - ' . $response->getBody()->getContents());
                 } catch (Exception $e) {
@@ -89,12 +89,12 @@ function bootstrap()
     $booboo->register();
 }
 
-function writeDebugLog($results)
+function writeDebugLog($results, $timeTaken)
 {
     output("Writing results to sonar_debug.log.");
     $handle = fopen(__DIR__ . '/sonar_debug.log', 'w');
     fwrite($handle, "Results written at " . Carbon::now()->toIso8601String());
     fwrite($handle, '--------------------------------');
-    fwrite($handle, Formatter::formatMonitoringData($results, false));
+    fwrite($handle, Formatter::formatMonitoringData($results, $timeTaken, false));
     fclose($handle);
 }
