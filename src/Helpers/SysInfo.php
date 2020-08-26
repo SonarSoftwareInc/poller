@@ -21,7 +21,7 @@ class SysInfo
     public function optimalSnmpQueueSize():int
     {
         $maxSize = 220;
-        $coreMultiplier = 30;
+        $coreMultiplier = 50;
         return $this->numberOfCpus() * $coreMultiplier > $maxSize
             ? $maxSize
             : $this->numberOfCpus() * $coreMultiplier;

@@ -53,6 +53,10 @@ class SnmpResponse
                 continue;
             }
             $oid = trim(ltrim(trim($boom[0]), '.'));
+            if (!str_contains($oid, '.')) {
+                $log->error("'$oid' is not a valid OID, received it in line $line.");
+                continue;
+            }
 
             $value = $this->cleanValue($boom[1]);
             if (strpos($value, 'No Such Object available on this agent at this OID') === false) {
@@ -64,6 +68,10 @@ class SnmpResponse
     private function cleanValue(string $value)
     {
         $value = trim($value);
+        if (strlen($value) === 0) {
+            return $value;
+        }
+
         if ($value[0] === '"') {
             $value = substr($value, 1, -1);
         }
