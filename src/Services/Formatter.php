@@ -99,7 +99,7 @@ class Formatter
         $results = [
             'api_key' => getenv('SONAR_POLLER_API_KEY'),
             'version' => getenv('SONAR_POLLER_VERSION'),
-            'time_taken' => 0,
+            'time_taken' => $timeTaken,
             'results' => $data,
         ];
 
