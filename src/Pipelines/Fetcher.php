@@ -11,23 +11,21 @@ class Fetcher
 {
     public function fetch()
     {
-        //todo: need to store/load the proper URL and API key
-        $url = null;
-        $key = null;
-
         $client = new Client();
         try {
-            $result = $client->post("$url/api/poller", [
+            $response = $client->post(getenv('SONAR_INSTANCE_URL') . 'api/poller', [
                 'headers' => [
-                    'Content-Type' => 'application/json',
-                    'timeout' => 30,
+                    'User-Agent' => "SonarPoller/" . getenv('SONAR_POLLER_VERSION') ?? 'Unknown',
+                    'Accept' => 'application/json',
+                    'Accept-Encoding' => 'gzip',
                 ],
+                'timeout' => 30,
                 'json' => [
-                    'api_key' => $key,
-                    'version' => getenv('SONAR_POLLER_VERSION', true) ?? 'Unknown',
+                    'api_key' => getenv('SONAR_POLLER_API_KEY'),
+                    'version' => getenv('SONAR_POLLER_VERSION')
                 ]
             ]);
-            //TODO: sort out what I want to do here
+            $data = json_decode($response->getBody()->getContents());
         } catch (ClientException $e) {
             $response = $e->getResponse();
             try {
@@ -40,7 +38,6 @@ class Fetcher
             throw new RuntimeException($e->getMessage());
         }
 
-        //todo: finish
-        print_r($result->getBody()->getContents());
+        return $data;
     }
 }
