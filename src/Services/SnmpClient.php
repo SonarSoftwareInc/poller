@@ -80,7 +80,8 @@ class SnmpClient
             '-OU',
             '-O0',
             '-Lo',
-            '--hexOutputLength=0'
+            '--hexOutputLength=0',
+            '-Oa'
         ];
 
         if ($this->options['version'] !== 3) {
