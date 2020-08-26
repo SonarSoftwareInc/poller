@@ -38,7 +38,7 @@ Loop::run(function () {
 
             if ($debug === true) {
                 writeDebugLog($results);
-                Loop::stop();
+                Loop::disable($watcherId);
             } else {
                 try {
                     $response = $client->request('POST', getenv('SONAR_INSTANCE_URL') . '/api/batch_poller', [

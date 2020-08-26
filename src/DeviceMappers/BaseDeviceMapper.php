@@ -250,10 +250,10 @@ abstract class BaseDeviceMapper
                     }
 
                     try {
-                        $this->interfaces[$interfaceID]->setOctetsOut($oidList->get('1.3.6.1.2.1.31.1.1.1.11.' . $interfaceID));
+                        $this->interfaces[$interfaceID]->setPpsOut($oidList->get('1.3.6.1.2.1.31.1.1.1.11.' . $interfaceID));
                     } catch (Throwable $e) {
                         try {
-                            $this->interfaces[$interfaceID]->setOctetsOut($oidList->get('1.3.6.1.2.1.2.2.1.17.' . $interfaceID));
+                            $this->interfaces[$interfaceID]->setPpsOut($oidList->get('1.3.6.1.2.1.2.2.1.17.' . $interfaceID));
                         } catch (Throwable $e) {
                             $log->exception($e, [
                                 'ip' => $this->device->getIp()

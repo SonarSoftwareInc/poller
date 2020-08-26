@@ -38,25 +38,36 @@ class SnmpResponse
     {
         $log = new Log();
         foreach ($results as $line) {
+            if (trim($line) === 'End of MIB') {
+                return;
+            }
+
             $boom = explode('=', $line, 2);
             if (count($boom) !== 2) {
                 //Multiline response, needs to be appended to previous response
                 if (isset($oid)) {
-                    $this->results[$oid] .= ' ' . trim($line);
+                    $this->results[$oid] .= ' ' . $this->cleanValue($line);
                     continue;
                 }
-                $log->error("Unable to split response $line and no previous OID set.");
+                $log->error("Unable to split response '$line' and no previous OID set.");
                 continue;
             }
             $oid = trim(ltrim(trim($boom[0]), '.'));
-            $value = trim($boom[1]);
-            if ($value[0] === '"') {
-                $value = substr($value, 1, -1);
-            }
-            $value = trim($value);
+
+            $value = $this->cleanValue($boom[1]);
             if (strpos($value, 'No Such Object available on this agent at this OID') === false) {
                 $this->results[$oid] = $value;
             }
         }
+    }
+
+    private function cleanValue(string $value)
+    {
+        $value = trim($value);
+        if ($value[0] === '"') {
+            $value = substr($value, 1, -1);
+        }
+        $value = trim($value);
+        return $value;
     }
 }
