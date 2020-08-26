@@ -105,10 +105,10 @@ class Formatter
 
         $results = [
             'api_key' => getenv('SONAR_POLLER_API_KEY'),
-            'results' => $data,
-            'version' => getenv('SONAR_POLLER_VERSION', true),
+            'version' => getenv('SONAR_POLLER_VERSION'),
             'icmp_time_taken' => $icmpTime,
             'snmp_time_taken' => $snmpTime,
+            'results' => $data,
         ];
 
         return $gzCompress === true
