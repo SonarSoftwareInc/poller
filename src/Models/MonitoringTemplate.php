@@ -7,7 +7,6 @@ class MonitoringTemplate
     const SYSTEM_SYSOBJECT_ID = '1.3.6.1.2.1.1.2.0';
 
     private bool $icmp;
-    private bool $collectInterfaceStatistics;
     private int $snmpVersion;
     private $snmpCommunity;
     private $snmp3SecLevel;
@@ -22,7 +21,6 @@ class MonitoringTemplate
     public function __construct($monitoringTemplate)
     {
         $this->icmp = (bool)$monitoringTemplate->icmp;
-        $this->collectInterfaceStatistics = (bool)$monitoringTemplate->collect_interface_statistics;
         $this->snmpVersion = (int)$monitoringTemplate->snmp_version;
         $this->snmpCommunity = $monitoringTemplate->snmp_community;
         $this->snmp3SecLevel = $monitoringTemplate->snmp3_sec_level;
@@ -43,13 +41,6 @@ class MonitoringTemplate
         return $this->icmp;
     }
 
-    /**
-     * @return bool
-     */
-    public function getCollectInterfaceStatistics():bool
-    {
-        return $this->collectInterfaceStatistics;
-    }
 
     /**
      * @return int

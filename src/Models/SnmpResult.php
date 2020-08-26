@@ -10,6 +10,7 @@ class SnmpResult implements CoroutineResultInterface
     private ?Metadata $metadata = null;
     private array $interfaces = [];
     private string $ip;
+    private int $timeTaken = 0;
 
     public function __construct(SnmpResponse $results, string $ip)
     {
@@ -57,6 +58,16 @@ class SnmpResult implements CoroutineResultInterface
     public function setInterfaces(array $interfaces): void
     {
         $this->interfaces = $interfaces;
+    }
+
+    public function setTimeTaken(int $timeTaken)
+    {
+        $this->timeTaken = $timeTaken;
+    }
+
+    public function getTimeTaken():int
+    {
+        return $this->timeTaken;
     }
 
     public function toArray():array

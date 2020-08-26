@@ -18,6 +18,7 @@ bootstrap();
 
 Loop::run(function () {
     $poller = new Poller();
+    //TODO: Fetch this data from Sonar
     $data = json_decode(file_get_contents(__DIR__ . '/../test_data_DELETE/data.json'));
     $client = new Client();
 
@@ -37,23 +38,23 @@ Loop::run(function () {
 
             if ($debug === true) {
                 writeDebugLog($results);
+                Loop::stop();
+            } else {
+                try {
+                    $response = $client->request('POST', getenv('SONAR_INSTANCE_URL') . '/api/batch_poller', [
+                        'headers' => [
+                            'User-Agent' => "SonarPoller/" . getenv('SONAR_POLLER_VERSION') ?? 'Unknown',
+                            'Accept'     => 'application/json',
+                            'Content-Encoding' => 'gzip',
+                        ],
+                        'body' => Formatter::formatMonitoringData($results, true),
+                    ]);
+                    output($response->getStatusCode() . ' - ' . $response->getBody()->getContents());
+                } catch (Exception $e) {
+                    output($e->getMessage(), true);
+                }
             }
 
-            try {
-                $response = $client->request('POST', 'https://example.com/sonar', [
-                    'headers' => [
-                        'User-Agent' => "SonarPoller/" . getenv('SONAR_POLLER_VERSION', true) ?? 'Unknown',
-                        'Accept'     => 'application/json',
-                        'Content-Encoding' => 'gzip',
-                    ],
-                    'body' => Formatter::formatMonitoringData($results, true),
-                ]);
-                output($response->getStatusCode() . ' - ' . $response->getBody()->getContents());
-            } catch (Exception $e) {
-                output($e->getMessage(), true);
-            }
-            //todo: post to Sonar instance, where it it configured?
-            //todo: log output to file system, setup logrotate and display using logio.org or something similar
             $running = false;
         }
     });

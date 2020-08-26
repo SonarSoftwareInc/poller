@@ -16,13 +16,81 @@ class NetworkInterface
     private ?string $macAddress = null;
     private ?int $speedIn = null;
     private ?int $speedOut = null;
-    private ?int $interfaceSpeed = null;
     private ?string $type = null;
+    private ?int $ppsIn = null;
+
+    private ?int $ppsOut = null;
+    private ?int $octetsIn = null;
+    private ?int $octetsOut = null;
     private int $id;
 
     public function __construct(int $id)
     {
         $this->id = $id;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getPpsIn(): ?int
+    {
+        return $this->ppsIn;
+    }
+
+    /**
+     * @param int|null $ppsIn
+     */
+    public function setPpsIn(int $ppsIn): void
+    {
+        $this->ppsIn = $ppsIn;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getPpsOut(): ?int
+    {
+        return $this->ppsOut;
+    }
+
+    /**
+     * @param int|null $ppsOut
+     */
+    public function setPpsOut(int $ppsOut): void
+    {
+        $this->ppsOut = $ppsOut;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getOctetsIn(): ?int
+    {
+        return $this->octetsIn;
+    }
+
+    /**
+     * @param int|null $octetsIn
+     */
+    public function setOctetsIn(int $octetsIn): void
+    {
+        $this->octetsIn = $octetsIn;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getOctetsOut(): ?int
+    {
+        return $this->octetsOut;
+    }
+
+    /**
+     * @param int|null $octetsOut
+     */
+    public function setOctetsOut(int $octetsOut): void
+    {
+        $this->octetsOut = $octetsOut;
     }
 
     public function setName(string $name)
@@ -165,22 +233,10 @@ class NetworkInterface
             'speed_in' => $this->speedIn,
             'speed_out' => $this->speedOut,
             'type' => $this->type,
+            'pps_in' => $this->ppsIn,
+            'pps_out' => $this->ppsOut,
+            'octets_in' => $this->octetsIn,
+            'octets_out' => $this->octetsOut,
         ];
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getInterfaceSpeed(): ?int
-    {
-        return $this->interfaceSpeed;
-    }
-
-    /**
-     * @param int|null $interfaceSpeed
-     */
-    public function setInterfaceSpeed(?int $interfaceSpeed): void
-    {
-        $this->interfaceSpeed = $interfaceSpeed;
     }
 }

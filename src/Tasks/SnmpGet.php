@@ -4,6 +4,7 @@ namespace Poller\Tasks;
 
 use Amp\Parallel\Worker\Environment;
 use Amp\Parallel\Worker\Task;
+use Carbon\Carbon;
 use Poller\DeviceIdentifiers\IdentifierInterface;
 use Poller\Exceptions\SnmpException;
 use Poller\Models\Device;
@@ -35,11 +36,13 @@ class SnmpGet implements Task
      */
     public function run(Environment $environment)
     {
+        $start = Carbon::now();
         $snmp = $this->device->getSnmpClient();
         try {
             $snmpResult = new SnmpResult(
                 $snmp->get($this->device->getMonitoringTemplate()->getOids()),
-                $this->device->getIp()
+                $this->device->getIp(),
+
             );
 
             $className = $this->matcher->getClass($snmpResult->getResults()->get(MonitoringTemplate::SYSTEM_SYSOBJECT_ID));
@@ -51,6 +54,7 @@ class SnmpGet implements Task
                 $snmpResult = $mapper->map($snmpResult);
             }
 
+            $snmpResult->setTimeTaken(Carbon::now()->diffInSeconds($start));
             return $snmpResult;
         } catch (SnmpException $e) {
             return new SnmpError(true, $e->getMessage(), $this->device->getIp());

@@ -4,6 +4,7 @@ namespace Poller\Tasks;
 
 use Amp\Parallel\Worker\Environment;
 use Amp\Parallel\Worker\Task;
+use Carbon\Carbon;
 use Poller\Log;
 use Poller\Models\PingResult;
 
@@ -70,6 +71,7 @@ class PingHosts implements Task
     {
         $log = new Log();
         $formattedResults = [];
+        $start = Carbon::now();
         if (count($results) > 0) {
             foreach ($results as $result) {
                 $boom = preg_split('/\s+/', $result);
@@ -95,7 +97,8 @@ class PingHosts implements Task
                     round(($lossCount / (count($boom)))*100,2),
                     (float)round($boom[0],2),
                     (float)round($boom[count($boom)-1],2),
-                    $this->calculateMedian($boom)
+                    $this->calculateMedian($boom),
+                    Carbon::now()->diffInSeconds($start)
                 );
             }
         }

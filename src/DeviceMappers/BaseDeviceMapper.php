@@ -211,6 +211,55 @@ abstract class BaseDeviceMapper
                             'ip' => $this->device->getIp()
                         ]);
                     }
+
+                    //Try 64bit counters first, then fall back to 32bit
+                    try {
+                        $this->interfaces[$interfaceID]->setOctetsIn($oidList->get('1.3.6.1.2.1.31.1.1.1.6.' . $interfaceID));
+                    } catch (Throwable $e) {
+                        try {
+                            $this->interfaces[$interfaceID]->setOctetsIn($oidList->get('1.3.6.1.2.1.2.2.1.10.' . $interfaceID));
+                        } catch (Throwable $e) {
+                            $log->exception($e, [
+                                'ip' => $this->device->getIp()
+                            ]);
+                        }
+                    }
+
+                    try {
+                        $this->interfaces[$interfaceID]->setOctetsOut($oidList->get('1.3.6.1.2.1.31.1.1.1.10.' . $interfaceID));
+                    } catch (Throwable $e) {
+                        try {
+                            $this->interfaces[$interfaceID]->setOctetsOut($oidList->get('1.3.6.1.2.1.2.2.1.16.' . $interfaceID));
+                        } catch (Throwable $e) {
+                            $log->exception($e, [
+                                'ip' => $this->device->getIp()
+                            ]);
+                        }
+                    }
+
+                    try {
+                        $this->interfaces[$interfaceID]->setPpsIn($oidList->get('1.3.6.1.2.1.31.1.1.1.7.' . $interfaceID));
+                    } catch (Throwable $e) {
+                        try {
+                            $this->interfaces[$interfaceID]->setPpsIn($oidList->get('1.3.6.1.2.1.2.2.1.11.' . $interfaceID));
+                        } catch (Throwable $e) {
+                            $log->exception($e, [
+                                'ip' => $this->device->getIp()
+                            ]);
+                        }
+                    }
+
+                    try {
+                        $this->interfaces[$interfaceID]->setOctetsOut($oidList->get('1.3.6.1.2.1.31.1.1.1.11.' . $interfaceID));
+                    } catch (Throwable $e) {
+                        try {
+                            $this->interfaces[$interfaceID]->setOctetsOut($oidList->get('1.3.6.1.2.1.2.2.1.17.' . $interfaceID));
+                        } catch (Throwable $e) {
+                            $log->exception($e, [
+                                'ip' => $this->device->getIp()
+                            ]);
+                        }
+                    }
                 } catch (Throwable $e) {
                     $log->exception($e, [
                         'ip' => $this->device->getIp()
@@ -227,6 +276,12 @@ abstract class BaseDeviceMapper
     {
         if ($this->baseData === null) {
             $this->baseData = $this->walk('1.3.6.1.2.1.2.2.1');
+            try {
+                $hc = $this->walk('1.3.6.1.2.1.31.1.1.1');
+                $this->baseData->merge($hc);
+            } catch (Throwable $e) {
+                //
+            }
         }
         return $this->baseData;
     }

@@ -14,6 +14,11 @@ class SnmpResponse
         $this->formatResults($results);
     }
 
+    public function merge(SnmpResponse $snmpResponse)
+    {
+        $this->results = array_merge($this->results, $snmpResponse->getAll());
+    }
+
     public function get(string $oid):string
     {
         $oid = trim(ltrim(trim($oid), '.'));

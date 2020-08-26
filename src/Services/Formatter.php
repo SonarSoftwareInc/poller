@@ -63,6 +63,8 @@ class Formatter
     public static function formatMonitoringData(array $coroutines, bool $gzCompress = true):string
     {
         $data = [];
+        $icmpTime = 0;
+        $snmpTime = 0;
         $log = new Log();
         foreach ($coroutines as $coroutine) {
             if (is_array($coroutine)) {
@@ -79,6 +81,7 @@ class Formatter
                         continue;
                     }
                     $data[$pingResult->getIp()]['icmp'] = $result;
+                    $icmpTime += $pingResult->getTimeTaken();
                 }
             } elseif ($coroutine instanceof SnmpResult || $coroutine instanceof SnmpError) {
                 if (!isset($data[$coroutine->getIp()])) {
@@ -93,11 +96,23 @@ class Formatter
                     continue;
                 }
                 $data[$coroutine->getIp()]['snmp'] = $result;
+
+                if ($coroutine instanceof SnmpResult) {
+                    $snmpTime += $coroutine->getTimeTaken();
+                }
             }
         }
 
+        $results = [
+            'api_key' => getenv('SONAR_POLLER_API_KEY'),
+            'results' => $data,
+            'version' => getenv('SONAR_POLLER_VERSION', true),
+            'icmp_time_taken' => $icmpTime,
+            'snmp_time_taken' => $snmpTime,
+        ];
+
         return $gzCompress === true
-            ? gzcompress(json_encode($data), 6, ZLIB_ENCODING_GZIP)
-            : json_encode($data, JSON_PRETTY_PRINT);
+            ? gzcompress(json_encode($results), 6, ZLIB_ENCODING_GZIP)
+            : json_encode($results, JSON_PRETTY_PRINT);
     }
 }
