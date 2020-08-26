@@ -40,7 +40,12 @@ class SnmpResponse
         foreach ($results as $line) {
             $boom = explode('=', $line, 2);
             if (count($boom) !== 2) {
-                $log->error("Unable to split response $line");
+                //Multiline response, needs to be appended to previous response
+                if (isset($oid)) {
+                    $this->results[$oid] .= ' ' . trim($line);
+                    continue;
+                }
+                $log->error("Unable to split response $line and no previous OID set.");
                 continue;
             }
             $oid = trim(ltrim(trim($boom[0]), '.'));
