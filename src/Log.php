@@ -12,6 +12,7 @@ use const JSON_PRETTY_PRINT;
 class Log
 {
     private Logger $logger;
+    private bool $logExceptions = false;
 
     public function __construct()
     {
@@ -23,6 +24,7 @@ class Log
         $stream = new StreamHandler('php://stdout', Logger::DEBUG);
         $stream->setFormatter($formatter);
         $this->logger->pushHandler($stream);
+        $this->logExceptions = getenv('SONAR_LOG_EXCEPTIONS');
     }
 
     public function getLogger():Logger
@@ -42,19 +44,21 @@ class Log
 
     public function exception(Throwable $e, array $context = [])
     {
-        $log = null;
+        if ($this->logExceptions === true) {
+            $log = null;
 
-        $log .= "\n----------------\n";
-        $log .= "EXCEPTION CAUGHT:\n";
-        $log .= get_class($e) . " | " . $e->getMessage() . "\n";
-        if (count($context) > 0) {
-            $log .= json_encode($context, JSON_PRETTY_PRINT) . "\n";
+            $log .= "\n----------------\n";
+            $log .= "EXCEPTION CAUGHT:\n";
+            $log .= get_class($e) . " | " . $e->getMessage() . "\n";
+            if (count($context) > 0) {
+                $log .= json_encode($context, JSON_PRETTY_PRINT) . "\n";
+            }
+            $log .= "----------------\n";
+            foreach ($e->getTrace() as $counter => $line) {
+                $line['position'] = $counter;
+                $log .= json_encode($line, JSON_PRETTY_PRINT) . "\n";
+            }
+            $this->error($log);
         }
-        $log .= "----------------\n";
-        foreach ($e->getTrace() as $counter => $line) {
-            $line['position'] = $counter;
-            $log .= json_encode($line, JSON_PRETTY_PRINT) . "\n";
-        }
-        $this->error($log);
     }
 }
