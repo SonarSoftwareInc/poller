@@ -7,7 +7,7 @@ use Poller\Models\MonitoringTemplate;
 
 class DeviceFactory
 {
-    private array $devices = [];
+    private array $devices;
 
     /**
      * DeviceFactory constructor.
@@ -22,7 +22,7 @@ class DeviceFactory
 
         $devices = [];
         foreach ($data->hosts as $id => $host) {
-            $devices[] = new Device($id, $host, $monitoringTemplates[$host->monitoring_template_id]);
+            $devices[$host->ip] = new Device($id, $host, $monitoringTemplates[$host->monitoring_template_id]);
         }
 
         $this->devices = $devices;

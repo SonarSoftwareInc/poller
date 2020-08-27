@@ -36,13 +36,11 @@ class SnmpGet implements Task
      */
     public function run(Environment $environment)
     {
-        $start = Carbon::now();
         $snmp = $this->device->getSnmpClient();
         try {
             $snmpResult = new SnmpResult(
                 $snmp->get($this->device->getMonitoringTemplate()->getOids()),
-                $this->device->getIp(),
-
+                $this->device->getInventoryItemID(),
             );
 
             $className = $this->matcher->getClass($snmpResult->getResults()->get(MonitoringTemplate::SYSTEM_SYSOBJECT_ID));
@@ -56,9 +54,9 @@ class SnmpGet implements Task
 
             return $snmpResult;
         } catch (SnmpException $e) {
-            return new SnmpError(true, $e->getMessage(), $this->device->getIp());
+            return new SnmpError(true, $e->getMessage(), $this->device->getInventoryItemID());
         } catch (Throwable $e) {
-            return new SnmpError(false, $e->getMessage(), $this->device->getIp());
+            return new SnmpError(false, $e->getMessage(), $this->device->getInventoryItemID());
         } finally {
             unset($snmp);
         }

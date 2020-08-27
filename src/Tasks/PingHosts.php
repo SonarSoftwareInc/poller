@@ -10,23 +10,19 @@ use Poller\Models\PingResult;
 
 class PingHosts implements Task
 {
-    private array $ipAddress = [];
+    private array $devices;
     private int $timeout;
     private int $repeats;
 
     /**
      * PingHost constructor.
-     * @param array $ipAddresses
+     * @param array $devices
      * @param int $timeout (seconds)
      * @param int $repeats
      */
-    public function __construct(array $ipAddresses, int $timeout = 2, int $repeats = 10)
+    public function __construct(array $devices, int $timeout = 2, int $repeats = 10)
     {
-        $ips = [];
-        foreach ($ipAddresses as $ipAddress) {
-            $ips[] = $ipAddress->getIp();
-        }
-        $this->ipAddress = $ips;
+        $this->devices = $devices;
         $this->timeout = $timeout*1000;
         $this->repeats = $repeats;
     }
@@ -51,7 +47,7 @@ class PingHosts implements Task
             . escapeshellcmd("-t {$this->timeout} ")
             . implode(' ', $flags)
             . ' '
-            . implode(' ', $this->ipAddress)
+            . implode(' ', array_keys($this->devices))
             . ' 2>&1';
 
         exec(
@@ -92,7 +88,7 @@ class PingHosts implements Task
                 }));
 
                 $formattedResults[] = new PingResult(
-                    trim($ip),
+                    $this->devices[trim($ip)]->getInventoryItemID(),
                     round(($lossCount / (count($boom)))*100,2),
                     (float)round($boom[0],2),
                     (float)round($boom[count($boom)-1],2),

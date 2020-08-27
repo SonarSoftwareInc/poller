@@ -67,8 +67,8 @@ class Formatter
         foreach ($coroutines as $coroutine) {
             if (is_array($coroutine)) {
                 foreach ($coroutine as $pingResult) {
-                    if (!isset($data[$pingResult->getIp()])) {
-                        $data[$pingResult->getIp()] = [
+                    if (!isset($data[$pingResult->getID()])) {
+                        $data[$pingResult->getID()] = [
                             'icmp' => null,
                             'snmp' => null,
                         ];
@@ -78,11 +78,11 @@ class Formatter
                         $log->error("Failed to JSON encode " . serialize($result));
                         continue;
                     }
-                    $data[$pingResult->getIp()]['icmp'] = $result;
+                    $data[$pingResult->getID()]['icmp'] = $result;
                 }
             } elseif ($coroutine instanceof SnmpResult || $coroutine instanceof SnmpError) {
-                if (!isset($data[$coroutine->getIp()])) {
-                    $data[$coroutine->getIp()] = [
+                if (!isset($data[$coroutine->getID()])) {
+                    $data[$coroutine->getID()] = [
                         'icmp' => null,
                         'snmp' => null,
                     ];
@@ -92,7 +92,7 @@ class Formatter
                     $log->error("Failed to JSON encode " . serialize($result));
                     continue;
                 }
-                $data[$coroutine->getIp()]['snmp'] = $result;
+                $data[$coroutine->getID()]['snmp'] = $result;
             }
         }
 

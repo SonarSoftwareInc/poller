@@ -6,13 +6,13 @@ class SnmpError implements CoroutineResultInterface
 {
     private bool $down;
     private string $message;
-    private string $ip;
+    private int $id;
 
-    public function __construct(bool $down, string $message, string $ip)
+    public function __construct(bool $down, string $message, int $id)
     {
         $this->down = $down;
         $this->message = $message;
-        $this->ip = $ip;
+        $this->id = $id;
     }
 
     public function down():bool
@@ -25,9 +25,9 @@ class SnmpError implements CoroutineResultInterface
         return $this->message;
     }
 
-    public function getIp(): string
+    public function getID(): int
     {
-        return $this->ip;
+        return $this->id;
     }
 
     public function toArray():array

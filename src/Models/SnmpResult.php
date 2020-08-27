@@ -9,17 +9,17 @@ class SnmpResult implements CoroutineResultInterface
     private SnmpResponse $results;
     private ?Metadata $metadata = null;
     private array $interfaces = [];
-    private string $ip;
+    private int $id;
 
-    public function __construct(SnmpResponse $results, string $ip)
+    public function __construct(SnmpResponse $results, int $id)
     {
         $this->results = $results;
-        $this->ip = $ip;
+        $this->id = $id;
     }
 
-    public function getIp():string
+    public function getID(): int
     {
-        return $this->ip;
+        return $this->id;
     }
 
     public function getResults():SnmpResponse

@@ -8,16 +8,15 @@ class PingResult implements CoroutineResultInterface
     private float $low;
     private float $high;
     private float $median;
-    private string $ip;
-    private int $timeTaken;
+    private int $id;
 
-    public function __construct(string $ip, float $loss, float $low, float $high, float $median)
+    public function __construct(int $id, float $loss, float $low, float $high, float $median)
     {
+        $this->id = $id;
         $this->loss = $loss;
         $this->low = $low;
         $this->high = $high;
         $this->median = $median;
-        $this->ip = $ip;
     }
 
     /**
@@ -56,9 +55,9 @@ class PingResult implements CoroutineResultInterface
     /**
      * @return string
      */
-    public function getIp(): string
+    public function getID(): int
     {
-        return $this->ip;
+        return $this->id;
     }
 
     public function toArray():array
@@ -67,7 +66,7 @@ class PingResult implements CoroutineResultInterface
             'low' => $this->low,
             'high' => $this->high,
             'median' => $this->median,
-            'loss' => $this->loss,
+            'loss_percentage' => $this->loss,
         ];
     }
 }
