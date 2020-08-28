@@ -8,6 +8,7 @@ use Poller\Log;
 class SnmpResponse
 {
     private array $results = [];
+    private array $counters = [];
 
     public function __construct(array $results)
     {
@@ -24,6 +25,8 @@ class SnmpResponse
         $oid = trim(ltrim(trim($oid), '.'));
         if (isset($this->results[$oid])) {
             return $this->results[$oid];
+        } elseif (isset($this->counters[$oid])) {
+            return $this->counters[$oid];
         }
 
         throw new SnmpException("$oid is not found.");
@@ -31,7 +34,10 @@ class SnmpResponse
 
     public function getAll():array
     {
-        return $this->results;
+        return [
+            'counters' => $this->counters,
+            'others' => $this->results,
+        ];
     }
 
     private function formatResults(array $results)
@@ -58,15 +64,14 @@ class SnmpResponse
                 continue;
             }
 
-            $value = $this->cleanValue($boom[1]);
-            if (strpos($value, 'No Such Object available on this agent at this OID') === false) {
-                $this->results[$oid] = $value;
-            }
+            $this->storeValue($oid, $boom[1]);
         }
     }
 
-    private function cleanValue(string $value)
+    private function storeValue(string $oid, string $result)
     {
+        $boom = explode(':', $result);
+        $value = $result[1];
         $value = trim($value);
         if (strlen($value) === 0) {
             return $value;
@@ -76,6 +81,14 @@ class SnmpResponse
             $value = substr($value, 1, -1);
         }
         $value = trim($value);
+
+        if (strpos($value, 'No Such Object available on this agent at this OID') === false) {
+            if (trim($boom[0]) === 'COUNTER') {
+                $this->results[$oid] = $value;
+            } else {
+                $this->counters[$oid] = $value;
+            }
+        }
         return $value;
     }
 }
