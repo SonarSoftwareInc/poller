@@ -223,20 +223,21 @@ class NetworkInterface
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'status' => $this->status,
-            'connected_layer1' => $this->connectedLayer1Macs,
-            'connected_layer2' => $this->connectedLayer2Macs,
-            'connected_layer3' => $this->connectedLayer3Macs,
+            'description' => $this->name,
+            'up' => $this->status,
+            'connected_l1' => $this->connectedLayer1Macs,
+            'connected_l2' => $this->connectedLayer2Macs,
+            'connected_l3' => $this->connectedLayer3Macs,
             'ip_addresses '=> $this->ipAddresses,
             'mac_address' => $this->macAddress,
-            'speed_in' => $this->speedIn,
-            'speed_out' => $this->speedOut,
+            'speed_mbps_in' => $this->speedIn,
+            'speed_mbps_out' => $this->speedOut,
             'type' => $this->type,
             'pps_in' => $this->ppsIn,
             'pps_out' => $this->ppsOut,
             'octets_in' => $this->octetsIn,
             'octets_out' => $this->octetsOut,
+            'metadata' => null, //TODO: check what this was in v1
         ];
     }
 }
