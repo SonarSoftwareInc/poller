@@ -2,6 +2,8 @@
 
 namespace Poller\Models;
 
+use Jawira\CaseConverter\Convert;
+
 class MonitoringTemplate
 {
     const SYSTEM_SYSOBJECT_ID = '1.3.6.1.2.1.1.2.0';
@@ -15,7 +17,7 @@ class MonitoringTemplate
     private $snmp3PrivProtocol;
     private $snmp3PrivPassphrase;
     private $snmp3ContextName;
-    private $snmp3ContextEngineID;
+    private $snmp3ContextEngineId;
     private array $oids;
 
     public function __construct($monitoringTemplate)
@@ -29,8 +31,23 @@ class MonitoringTemplate
         $this->snmp3PrivProtocol = $monitoringTemplate->snmp3_priv_protocol;
         $this->snmp3PrivPassphrase = $monitoringTemplate->snmp3_priv_passphrase;
         $this->snmp3ContextName = $monitoringTemplate->snmp3_context_name;
-        $this->snmp3ContextEngineID = $monitoringTemplate->snmp3_context_engine_id;
+        $this->snmp3ContextEngineId = $monitoringTemplate->snmp3_context_engine_id;
         $this->oids = array_unique(array_merge([MonitoringTemplate::SYSTEM_SYSOBJECT_ID], $monitoringTemplate->oids));
+    }
+
+    /**
+     * @param array $snmpOverrides
+     * @throws \Jawira\CaseConverter\CaseConverterException
+     */
+    public function applySnmpOverrides(array $snmpOverrides)
+    {
+        foreach ($snmpOverrides as $key => $value) {
+            if ($value) {
+                $key = new Convert($key);
+                $key = $key->toCamel();
+                $this->$key = $value;
+            }
+        }
     }
 
     /**
@@ -119,9 +136,9 @@ class MonitoringTemplate
     /**
      * @return null|string
      */
-    public function getSnmp3ContextEngineID():?string
+    public function getSnmp3ContextEngineId():?string
     {
-        return $this->snmp3ContextEngineID;
+        return $this->snmp3ContextEngineId;
     }
 
     /**

@@ -20,7 +20,8 @@
         "pear2/net_routeros": "dev-develop@dev",
         "pear2/net_transmitter": "^1.0.0@dev",
         "monolog/monolog": "^2.1",
-        "nesbot/carbon": "^2.38"
+        "nesbot/carbon": "^2.38",
+        "jawira/case-converter": "^3.4"
     },
     "require-dev": {
         "blackfire/php-sdk": "^1.21"

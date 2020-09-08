@@ -11,7 +11,6 @@ class Device
 
     private $inventoryItemID;
     private $ip;
-    private $snmpOverrides = [];
     private $type;
     private $pollingPriority;
     private $inventoryModelID;
@@ -36,10 +35,10 @@ class Device
         $this->inventoryItemID = $inventoryItemID;
         $this->ip = $hostData->ip;
         $this->monitoringTemplate = $monitoringTemplate;
-        $this->snmpOverrides = $hostData->snmp_overrides;
         $this->type = $hostData->type;
         $this->pollingPriority = (int)$hostData->polling_priority;
         $this->inventoryModelID = (int)$hostData->inventory_model_id;
+        $this->monitoringTemplate->applySnmpOverrides($hostData->snmp_overrides);
     }
 
     /**
@@ -56,14 +55,6 @@ class Device
     public function getIp():string
     {
         return $this->ip;
-    }
-
-    /**
-     * @return array
-     */
-    public function getSnmpOverrides():array
-    {
-        return $this->snmpOverrides;
     }
 
     /**
@@ -100,7 +91,6 @@ class Device
 
     public function getSnmpClient():SnmpClient
     {
-        //TODO: Deal with SNMP overrides
         if (!$this->snmpClient) {
             if ($this->monitoringTemplate->getSnmpVersion() !== 3) {
                 $this->snmpClient = new SnmpClient([
@@ -122,7 +112,7 @@ class Device
                     'auth_pwd' => $this->monitoringTemplate->getSnmp3AuthProtocol(),
                     'priv_mech' => $this->monitoringTemplate->getSnmp3PrivProtocol() === 'AES' ? 'aes' : 'des',
                     'priv_pwd' => $this->monitoringTemplate->getSnmp3PrivPassphrase(),
-                    'engine_id' => $this->monitoringTemplate->getSnmp3ContextEngineID(),
+                    'engine_id' => $this->monitoringTemplate->getSnmp3ContextEngineId(),
                     'context_name' => $this->monitoringTemplate->getSnmp3ContextName(),
                 ]);
             }

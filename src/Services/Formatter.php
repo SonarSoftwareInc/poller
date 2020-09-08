@@ -18,7 +18,11 @@ class Formatter
      */
     public static function formatMac(string $mac):string
     {
-        $mac = self::addMacLeadingZeroes($mac);
+        if (strlen($mac) === 6) {
+            $mac = bin2hex($mac);
+        } else {
+            $mac = self::addMacLeadingZeroes($mac);
+        }
         $cleanMac = strtoupper(preg_replace("/[^A-Fa-f0-9]/", '', $mac));
         if (strlen($cleanMac) !== 12) {
             throw new InvalidArgumentException("$mac cannot be converted to a 12 character MAC address.");

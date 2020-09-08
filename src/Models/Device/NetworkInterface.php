@@ -237,7 +237,6 @@ class NetworkInterface
             'pps_out' => $this->ppsOut,
             'octets_in' => $this->octetsIn,
             'octets_out' => $this->octetsOut,
-            'metadata' => null, //TODO: check what this was in v1
         ];
     }
 }
