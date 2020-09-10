@@ -168,11 +168,32 @@ abstract class BaseDeviceMapper
                 try {
                     $boom = explode(".", $oid);
                     $interfaceID = $boom[count($boom) - 1];
-                    if (!isset($this->interfaces[$interfaceID])) {
-                        $this->interfaces[$interfaceID] = new NetworkInterface($interfaceID);
-                    }
 
-                    $this->interfaces[$interfaceID]->setName($value);
+                    try {
+                        $interfaceType = $oidList->get('1.3.6.1.2.1.2.2.1.3.' . $interfaceID);
+                        /**
+                         * Some interface types, we don't want to show.
+                         * 6 = Ethernet
+                         * 71 = Radio Spread Spectrum
+                         * 157 = Wireless P2P
+                         */
+                        if (!in_array($interfaceType, [6, 71, 157])) {
+                            continue;
+                        }
+
+                        if (!isset($this->interfaces[$interfaceID])) {
+                            $this->interfaces[$interfaceID] = new NetworkInterface($interfaceID);
+                        }
+
+                        $this->interfaces[$interfaceID]->setName($value);
+
+                        $this->interfaces[$interfaceID]->setType($interfaceType);
+                    } catch (SnmpException $e) {
+                        $log->exception($e, [
+                            'ip' => $this->device->getIp()
+                        ]);
+                        continue;
+                    }
 
                     try {
                         if (Formatter::validateMac($oidList->get('1.3.6.1.2.1.2.2.1.6.' . $interfaceID)) === true) {
@@ -198,14 +219,6 @@ abstract class BaseDeviceMapper
                             $this->interfaces[$interfaceID]->setSpeedIn((int)ceil($speed/1000**2));
                             $this->interfaces[$interfaceID]->setSpeedOut((int)ceil($speed/1000**2));
                         }
-                    } catch (SnmpException $e) {
-                        $log->exception($e, [
-                            'ip' => $this->device->getIp()
-                        ]);
-                    }
-
-                    try {
-                        $this->interfaces[$interfaceID]->setType($oidList->get('1.3.6.1.2.1.2.2.1.3.' . $interfaceID));
                     } catch (SnmpException $e) {
                         $log->exception($e, [
                             'ip' => $this->device->getIp()
