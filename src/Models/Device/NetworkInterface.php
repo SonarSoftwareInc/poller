@@ -18,6 +18,10 @@ class NetworkInterface
     private ?int $speedOut = null;
     private ?string $type = null;
     private ?int $ppsIn = null;
+    private ?int $errorsIn = null;
+    private ?int $errorsOut = null;
+    private ?int $discardsIn = null;
+    private ?int $discardsOut = null;
 
     private ?int $ppsOut = null;
     private ?int $octetsIn = null;
@@ -27,6 +31,70 @@ class NetworkInterface
     public function __construct(int $id)
     {
         $this->id = $id;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getErrorsIn(): ?int
+    {
+        return $this->errorsIn;
+    }
+
+    /**
+     * @param int $errorsIn
+     */
+    public function setErrorsIn(int $errorsIn): void
+    {
+        $this->errorsIn = $errorsIn;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getErrorsOut(): ?int
+    {
+        return $this->errorsOut;
+    }
+
+    /**
+     * @param int $errorsOut
+     */
+    public function setErrorsOut(int $errorsOut): void
+    {
+        $this->errorsOut = $errorsOut;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getDiscardsIn(): ?int
+    {
+        return $this->discardsIn;
+    }
+
+    /**
+     * @param int $discardsIn
+     */
+    public function setDiscardsIn(int $discardsIn): void
+    {
+        $this->discardsIn = $discardsIn;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getDiscardsOut(): ?int
+    {
+        return $this->discardsOut;
+    }
+
+    /**
+     * @param int $discardsOut
+     */
+    public function setDiscardsOut(int $discardsOut): void
+    {
+        $this->discardsOut = $discardsOut;
     }
 
     /**
@@ -237,6 +305,10 @@ class NetworkInterface
             'pps_out' => $this->ppsOut,
             'octets_in' => $this->octetsIn,
             'octets_out' => $this->octetsOut,
+            'errors_in' => $this->errorsIn,
+            'errors_out' => $this->errorsOut,
+            'discards_in' => $this->discardsIn,
+            'discards_out' => $this->discardsOut,
         ];
     }
 }

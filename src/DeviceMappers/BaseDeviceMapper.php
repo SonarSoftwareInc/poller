@@ -273,6 +273,38 @@ abstract class BaseDeviceMapper
                             ]);
                         }
                     }
+
+                    try {
+                        $this->interfaces[$interfaceID]->setDiscardsIn($oidList->get('1.3.6.1.2.1.2.2.1.13.' . $interfaceID));
+                    } catch (Throwable $e) {
+                        $log->exception($e, [
+                            'ip' => $this->device->getIp()
+                        ]);
+                    }
+
+                    try {
+                        $this->interfaces[$interfaceID]->setErrorsIn($oidList->get('1.3.6.1.2.1.2.2.1.14.' . $interfaceID));
+                    } catch (Throwable $e) {
+                        $log->exception($e, [
+                            'ip' => $this->device->getIp()
+                        ]);
+                    }
+
+                    try {
+                        $this->interfaces[$interfaceID]->setDiscardsOut($oidList->get('1.3.6.1.2.1.2.2.1.19.' . $interfaceID));
+                    } catch (Throwable $e) {
+                        $log->exception($e, [
+                            'ip' => $this->device->getIp()
+                        ]);
+                    }
+
+                    try {
+                        $this->interfaces[$interfaceID]->setErrorsOut($oidList->get('1.3.6.1.2.1.2.2.1.20.' . $interfaceID));
+                    } catch (Throwable $e) {
+                        $log->exception($e, [
+                            'ip' => $this->device->getIp()
+                        ]);
+                    }
                 } catch (Throwable $e) {
                     $log->exception($e, [
                         'ip' => $this->device->getIp()
