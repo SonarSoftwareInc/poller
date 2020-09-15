@@ -11,16 +11,13 @@
 
     <!-- Sonar Dark Night Theme CSS -->
     <link href="assets/css/sonar-darkrye.css" rel="stylesheet">
-
-    <!-- Doc Page CSS -->
-    <link href="assets/css/doc.css" rel="stylesheet">
 </head>
-<body class="sonar-darkrye">
+<body class="sonar-darkrye mt-5">
 
 <div class="section section--header">
     <div class="container">
         <div class="row">
-            <div class="col-12">
+            <div class="col-10">
                 <div class="sonar--branding  d-flex align-items-center">
                     <img class="sonar--logo" src="assets/brand/george.png">
                     <h1 class="sonar--logo--text">sonar
@@ -28,9 +25,42 @@
                     </h1>
                 </div>
             </div>
+            <div class="col-2">
+                <a href="/logout" class="btn btn-light">Log Out</a>
+            </div>
         </div>
     </div>
-    <div>
-        {% block content %}{% endblock %}
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link {% if tabs.home is same as('true') %} active {% endif %}" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="{{ tabs.home }}">Home</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link {% if tabs.settings is same as('true') %} active {% endif %}" id="pills-settings-tab" data-toggle="pill" href="#pills-settings" role="tab" aria-controls="pills-settings" aria-selected="{{ tabs.settings }}">Settings</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link {% if tabs.logs is same as('true') %} active {% endif %}" id="pills-logs-tab" data-toggle="pill" href="#pills-logs" role="tab" aria-controls="pills-logs" aria-selected="{{ tabs.logs }}">Logs</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="pills-tabContent">
+                <div class="tab-pane fade {% if tabs.home is same as('true') %} show active {% endif %}" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                    {{ include('dashboard.html') }}
+                </div>
+                <div class="tab-pane fade {% if tabs.settings is same as('true') %} show active {% endif %}" id="pills-settings" role="tabpanel" aria-labelledby="pills-settings-tab">
+                    {{ include('settings.html') }}
+                </div>
+                <div class="tab-pane fade {% if tabs.logs is same as('true') %} show active {% endif %}" id="pills-logs" role="tabpanel" aria-labelledby="pills-logs-tab">
+                    {{ include('logs.html') }}
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
+<!-- JS, Popper.js, and jQuery -->
+<script src="assets/js/jquery-3.5.1.slim.min.js"></script>
+<script src="assets/js/popper.min.js"></script>
+<script src="assets/js/bootstrap.min.js"></script>

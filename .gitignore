@@ -3,3 +3,4 @@ vendor/
 logs/
 node_modules/
 www/assets/
+permanent_config/database
