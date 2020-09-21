@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c9602d766c0b01ba48cfc1a6473d7694",
+    "content-hash": "ae6860bed7454692eaf8b311f5cc5a2e",
     "packages": [
         {
             "name": "amphp/amp",
@@ -1487,16 +1487,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "2.39.2",
+            "version": "2.40.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "326efde1bc09077a26cb77f6e2e32e13f06c27f2"
+                "reference": "6c7646154181013ecd55e80c201b9fd873c6ee5d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/326efde1bc09077a26cb77f6e2e32e13f06c27f2",
-                "reference": "326efde1bc09077a26cb77f6e2e32e13f06c27f2",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/6c7646154181013ecd55e80c201b9fd873c6ee5d",
+                "reference": "6c7646154181013ecd55e80c201b9fd873c6ee5d",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -1546,7 +1546,7 @@
                     "Carbon\\": "src/Carbon/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "notification-url": "https://repo.packagist.com/sonar/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1568,7 +1568,11 @@
                 "datetime",
                 "time"
             ],
-            "time": "2020-09-10T12:16:42+00:00"
+            "support": {
+                "issues": "https://github.com/briannesbitt/Carbon/issues",
+                "source": "https://github.com/briannesbitt/Carbon"
+            },
+            "time": "2020-09-11T19:00:58+00:00"
         },
         {
             "name": "nikic/fast-route",
@@ -2373,16 +2377,16 @@
         },
         {
             "name": "sonarsoftwareinc/external_tool_template",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "git@github.com:SonarSoftwareInc/external_tool_template.git",
-                "reference": "d16a7d5a492b8252de80e354ab2d5194e2a4d7f9"
+                "reference": "3cc0d72ee1a84e0234376fe25ee349abe27a3dfc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SonarSoftwareInc/external_tool_template/zipball/d16a7d5a492b8252de80e354ab2d5194e2a4d7f9",
-                "reference": "d16a7d5a492b8252de80e354ab2d5194e2a4d7f9",
+                "url": "https://api.github.com/repos/SonarSoftwareInc/external_tool_template/zipball/3cc0d72ee1a84e0234376fe25ee349abe27a3dfc",
+                "reference": "3cc0d72ee1a84e0234376fe25ee349abe27a3dfc",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -2395,10 +2399,10 @@
             "notification-url": "https://repo.packagist.com/sonar/downloads/",
             "description": "A template for building external tools for use with Sonar",
             "support": {
-                "source": "https://github.com/SonarSoftwareInc/external_tool_template/tree/1.0.0",
+                "source": "https://github.com/SonarSoftwareInc/external_tool_template/tree/1.0.1",
                 "issues": "https://github.com/SonarSoftwareInc/external_tool_template/issues"
             },
-            "time": "2020-09-14T20:13:00+00:00"
+            "time": "2020-09-17T17:21:53+00:00"
         },
         {
             "name": "symfony/console",
@@ -3496,7 +3500,9 @@
         "ext-sockets": "*",
         "ext-json": "*",
         "ext-gmp": "*",
-        "ext-zlib": "*"
+        "ext-sqlite3": "*",
+        "ext-zlib": "*",
+        "ext-pdo": "*"
     },
     "platform-dev": []
 }

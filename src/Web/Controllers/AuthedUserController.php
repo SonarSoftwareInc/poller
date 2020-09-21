@@ -22,13 +22,18 @@ class AuthedUserController
             'tabs' => [
                 'home' => 'false',
                 'settings' => 'false',
+                'devicecreds' => false,
                 'logs' => 'false'
             ],
             'form_values' => [
                 'settings' => [],
             ],
+            'table_values' => [
+                'credentials' => [],
+            ],
             'validation_errors' => [
                 'settings' => [],
+                'devicecreds' => [],
             ]
         ];
 
@@ -42,6 +47,24 @@ class AuthedUserController
                     }
                     $template = 'main.html';
                     $variables['tabs']['settings'] = 'true';
+                    break;
+                case '/credentials':
+                    try {
+                        $this->createCredentials();
+                    } catch (ValidationException $e) {
+                        $variables['validation_errors']['devicecreds'][$e->getField()] = $e->getMessage();
+                    }
+                    $template = 'main.html';
+                    $variables['tabs']['devicecreds'] = 'true';
+                    break;
+                case '/delete_credential':
+                    try {
+                        $this->deleteCredential();
+                    } catch (ValidationException $e) {
+                        $variables['validation_errors']['devicecreds'][$e->getField()] = $e->getMessage();
+                    }
+                    $template = 'main.html';
+                    $variables['tabs']['devicecreds'] = 'true';
                     break;
                 case '/home':
                 default:
@@ -71,10 +94,74 @@ class AuthedUserController
             ]
         ];
 
+        $variables['table_values']['credentials'] = $database->getAllCredentials();
+
         $loader = new Loader();
         $template = $loader->load($template);
         echo $template->render($variables);
         die();
+    }
+
+    private function deleteCredential()
+    {
+        $database = new Database();
+        $database->deleteCredential($_POST['type']);
+    }
+
+    private function createCredentials()
+    {
+        $credentialType = trim($_POST['credentialType']);
+        if (!$credentialType) {
+            $exception = new ValidationException('Credential type is required');
+            $exception->setField('credentialType');
+            throw $exception;
+        }
+
+        $username = trim($_POST['username']);
+        if (!$username) {
+            $exception = new ValidationException('Username is required');
+            $exception->setField('username');
+            throw $exception;
+        }
+
+        $password = trim($_POST['password']);
+        if (!$password) {
+            $exception = new ValidationException('Password is required');
+            $exception->setField('password');
+            throw $exception;
+        }
+
+        $repeatPassword = trim($_POST['repeatPassword']);
+        if ($repeatPassword !== $password) {
+            $exception = new ValidationException('The passwords do not match.');
+            $exception->setField('password');
+            throw $exception;
+        }
+
+        $port = trim($_POST['port']);
+        if (!$port) {
+            $exception = new ValidationException('Port is required');
+            $exception->setField('port');
+            throw $exception;
+        }
+
+        $database = new Database();
+        if ($database->getCredential($credentialType) !== null) {
+            $exception = new ValidationException('There is already an existing credential for this type.');
+            $exception->setField('credentialType');
+        }
+
+        if (!is_numeric($port) || (int)$port < 1 || (int)$port > 65535) {
+            $exception = new ValidationException('That is not a valid port.');
+            $exception->setField('port');
+        }
+
+        $database->setCredential(
+            $credentialType,
+            $username,
+            $password,
+            $port
+        );
     }
 
     private function updateSettings()

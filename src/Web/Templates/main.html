@@ -42,6 +42,9 @@
                     <a class="nav-link {% if tabs.settings is same as('true') %} active {% endif %}" id="pills-settings-tab" data-toggle="pill" href="#pills-settings" role="tab" aria-controls="pills-settings" aria-selected="{{ tabs.settings }}">Settings</a>
                 </li>
                 <li class="nav-item" role="presentation">
+                    <a class="nav-link {% if tabs.devicecreds is same as('true') %} active {% endif %}" id="pills-devicecreds-tab" data-toggle="pill" href="#pills-devicecreds" role="tab" aria-controls="pills-devicecreds" aria-selected="{{ tabs.devicecreds }}">Device Credentials</a>
+                </li>
+                <li class="nav-item" role="presentation">
                     <a class="nav-link {% if tabs.logs is same as('true') %} active {% endif %}" id="pills-logs-tab" data-toggle="pill" href="#pills-logs" role="tab" aria-controls="pills-logs" aria-selected="{{ tabs.logs }}">Logs</a>
                 </li>
             </ul>
@@ -51,6 +54,9 @@
                 </div>
                 <div class="tab-pane fade {% if tabs.settings is same as('true') %} show active {% endif %}" id="pills-settings" role="tabpanel" aria-labelledby="pills-settings-tab">
                     {{ include('settings.html') }}
+                </div>
+                <div class="tab-pane fade {% if tabs.devicecreds is same as('true') %} show active {% endif %}" id="pills-devicecreds" role="tabpanel" aria-labelledby="pills-devicecreds-tab">
+                    {{ include('devicecreds.html') }}
                 </div>
                 <div class="tab-pane fade {% if tabs.logs is same as('true') %} show active {% endif %}" id="pills-logs" role="tabpanel" aria-labelledby="pills-logs-tab">
                     {{ include('logs.html') }}
@@ -64,3 +70,4 @@
 <script src="assets/js/jquery-3.5.1.slim.min.js"></script>
 <script src="assets/js/popper.min.js"></script>
 <script src="assets/js/bootstrap.min.js"></script>
+<script src="assets/js/custom.js"></script>

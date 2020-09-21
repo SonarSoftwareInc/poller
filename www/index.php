@@ -4,6 +4,7 @@ require(__DIR__ . '/../vendor/autoload.php');
 
 use Poller\Web\Controllers\AuthedUserController;
 use Poller\Web\Controllers\LoginController;
+use Poller\Web\Loader;
 
 session_start();
 
@@ -11,9 +12,10 @@ $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/', [LoginController::class, 'show']);
     $r->addRoute('POST', '/', [LoginController::class, 'auth']);
     $r->addRoute('GET', '/home', [AuthedUserController::class, 'handle']);
-    $r->addRoute('POST', '/settings', [AuthedUserController::class, 'handle']);
-    $r->addRoute('GET', '/settings', [AuthedUserController::class, 'handle']);
+    $r->addRoute(['GET', 'POST'], '/settings', [AuthedUserController::class, 'handle']);
     $r->addRoute('GET', '/logout', [AuthedUserController::class, 'handle']);
+    $r->addRoute(['GET', 'POST'], '/credentials', [AuthedUserController::class, 'handle']);
+    $r->addRoute(['GET', 'POST'], '/delete_credential', [AuthedUserController::class, 'handle']);
 });
 
 $httpMethod = $_SERVER['REQUEST_METHOD'];
@@ -33,8 +35,9 @@ switch ($routeInfo[0]) {
         $method = $handler[1];
         return $controller->$method($uri, $httpMethod, $vars);
     case FastRoute\Dispatcher::NOT_FOUND:
-        break;
     default:
-        //TODO: Do something;
+        $loader = new Loader();
+        $template = $loader->load('404.html');
+        $template->display();
         break;
 }

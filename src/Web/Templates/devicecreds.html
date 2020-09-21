@@ -1,0 +1,122 @@
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <small class="text-muted">
+                The Sonar poller uses SNMP to retrieve information from devices by default. For some types of devices, additional access credentials can be entered here, which
+                this poller will then use to obtain additional information to aid in drawing more accurate Pulse maps.
+            </small>
+            <div class="mb-3 d-flex justify-content-end">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createCredentials">
+                    Create
+                </button>
+            </div>
+
+            {% for field, message in validation_errors.devicecreds %}
+            <div class="alert alert-danger" role="alert">
+                {{ message }}
+            </div>
+            {% endfor %}
+
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">Type</th>
+                    <th scope="col">Username</th>
+                    <th scope="col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for credential in table_values.credentials %}
+                    <tr>
+                        <td>{{credential.english_type}}</td>
+                        <td class="text-monospace">{{credential.username}}</td>
+                        <td class="text-right">
+                            <form action="/delete_credential" method="POST">
+                                <input type="hidden" name="type" value="{{credential.type}}">
+                                <button type="submit" class="btn btn-danger deleteCredential">
+                                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                    </svg>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="createCredentials" tabindex="-1" aria-labelledby="createCredentialsLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createCredentialsLabel">Create Device Credentials</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form class="form" action="/credentials" method="POST">
+                <div class="modal-body">
+                    <div class="form__body">
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="credentialType">Credential Type</label>
+                                <select id="credentialType" name="credentialType" class="form-control" required>
+                                    <option selected>Choose...</option>
+                                    <option value="MIKROTIK_API">MikroTik API</option>
+                                    <option value="NETONIX_SSH">Netonix SSH</option>
+                                    <option value="UBIQUITI_TOUGHSWITCH_SSH">Ubiquiti Toughswitch SSH</option>
+                                </select>
+                                <div class="invalid-feedback" id="credentialTypeError">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="username">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                            <div class="invalid-feedback" id="usernameError">
+
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="password">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                                <div class="invalid-feedback" id="passwordError">
+
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="password">Repeat Password</label>
+                                <input type="password" class="form-control" id="repeatPassword" name="repeatPassword" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="port">Port</label>
+                                <input type="number" min="0" max="65535" step="1" class="form-control" id="port" name="port" required>
+                                <div class="invalid-feedback" id="portError">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert alert-warning" role="alert">
+                            These credentials will be used by the poller to connect to matching devices and obtain additional information. The devices must be accessible on the provided port from the poller directly.
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary btn--submit">Save</button>
+                    <button type="button" class="btn btn-secondary btn--cancel" data-dismiss="modal" onclick="createCredentials()">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
