@@ -6,6 +6,7 @@ use League\CLImate\CLImate;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use Poller\Web\Services\Database;
 use Throwable;
 use const JSON_PRETTY_PRINT;
 
@@ -24,7 +25,8 @@ class Log
         $stream = new StreamHandler('php://stdout', Logger::DEBUG);
         $stream->setFormatter($formatter);
         $this->logger->pushHandler($stream);
-        $this->logExceptions = getenv('SONAR_LOG_EXCEPTIONS');
+        $database = new Database();
+        $this->logExceptions = (bool)$database->get(Database::LOG_EXCEPTIONS);
     }
 
     public function getLogger():Logger

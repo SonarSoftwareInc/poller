@@ -6,6 +6,8 @@ use InvalidArgumentException;
 use Poller\Log;
 use Poller\Models\SnmpError;
 use Poller\Models\SnmpResult;
+use Poller\Web\Services\Database;
+use Symfony\Component\VarDumper\Cloner\Data;
 use const FILTER_VALIDATE_MAC;
 use const ZLIB_ENCODING_GZIP;
 
@@ -100,8 +102,9 @@ class Formatter
             }
         }
 
+        $database = new Database();
         $results = [
-            'api_key' => getenv('SONAR_POLLER_API_KEY'),
+            'api_key' => $database->get(Database::POLLER_API_KEY),
             'version' => getenv('SONAR_POLLER_VERSION'),
             'time_taken' => $timeTaken,
             'results' => $data,

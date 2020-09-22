@@ -5,6 +5,7 @@ namespace Poller\Pipelines;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use Poller\Web\Services\Database;
 use RuntimeException;
 
 class Fetcher
@@ -12,8 +13,11 @@ class Fetcher
     public function fetch()
     {
         $client = new Client();
+        $database = new Database();
+        $sonarUrl = $database->get(Database::SONAR_URL);
+        $fullUrl = 'https://' . $sonarUrl . '.sonar.software';
         try {
-            $response = $client->post(getenv('SONAR_INSTANCE_URL') . 'api/poller', [
+            $response = $client->post("$fullUrl/api/poller", [
                 'headers' => [
                     'User-Agent' => "SonarPoller/" . getenv('SONAR_POLLER_VERSION') ?? 'Unknown',
                     'Accept' => 'application/json',
@@ -21,8 +25,8 @@ class Fetcher
                 ],
                 'timeout' => 30,
                 'json' => [
-                    'api_key' => getenv('SONAR_POLLER_API_KEY'),
-                    'version' => getenv('SONAR_POLLER_VERSION')
+                    'api_key' => $database->get(Database::POLLER_API_KEY),
+                    'version' => getenv('SONAR_POLLER_VERSION') ?? 'Unknown',
                 ]
             ]);
             $data = json_decode($response->getBody()->getContents());

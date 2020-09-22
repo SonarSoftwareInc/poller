@@ -13,6 +13,7 @@ use Poller\Overrides\CommandLineFormatter;
 use Poller\Pipelines\Fetcher;
 use Poller\Services\Formatter;
 use Poller\Services\Poller;
+use Poller\Web\Services\Database;
 use function Amp\Promise\all;
 
 bootstrap();
@@ -21,11 +22,12 @@ Loop::run(function () {
     $poller = new Poller();
     $client = new Client();
     $fetcher = new Fetcher();
+    $database = new Database();
 
     output("Starting polling loop...");
     $running = false;
     $lastRun = 0;
-    Loop::repeat($msInterval = 1000, function ($watcherId) use (&$running, &$lastRun, $poller, $client, $fetcher) {
+    Loop::repeat($msInterval = 1000, function ($watcherId) use (&$running, &$lastRun, $poller, $client, $fetcher, $database) {
         if ($running === false && time() - $lastRun >= 60) {
             $running = true;
             $debug = getenv('SONAR_DEBUG_MODE') == 1;
@@ -33,6 +35,14 @@ Loop::run(function () {
                 output("---DEBUG MODE ENABLED---");
             }
             output("Starting polling cycle, fetching work from Sonar.");
+
+            $sonarUrl = $database->get(Database::SONAR_URL);
+            if (!$sonarUrl) {
+                output("No Sonar URL defined, skipping.");
+                return;
+            }
+
+            $fullUrl = 'https://' . $sonarUrl . '.sonar.software';
 
             try {
                 $data = $fetcher->fetch();
@@ -47,7 +57,7 @@ Loop::run(function () {
                     Loop::disable($watcherId);
                 } else {
                     try {
-                        $response = $client->request('POST', getenv('SONAR_INSTANCE_URL') . '/api/batch_poller', [
+                        $response = $client->request('POST', "$fullUrl/api/batch_poller", [
                             'headers' => [
                                 'User-Agent' => "SonarPoller/" . getenv('SONAR_POLLER_VERSION') ?? 'Unknown',
                                 'Accept' => 'application/json',
