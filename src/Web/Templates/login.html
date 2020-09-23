@@ -1,0 +1,59 @@
+{% extends "plain.html" %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-12">
+                <div class="form__header">
+                    <div class="sonar--branding  d-flex justify-content-center align-items-center">
+                        <img class="sonar--logo" src="assets/brand/george.png">
+                        <h2 class="sonar--logo--text">sonar</h2>
+                    </div>
+                </div>
+        </div>
+    </div>
+    <form class="form form-signin text-center" action="/" method="POST">
+        <div class="row justify-content-center">
+            <div class="col-6">
+                <div class="form__body">
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">https://</div>
+                            </div>
+                            <label for="sonarUrl" class="sr-only">Sonar Instance URL</label>
+                            <input type="text" id="sonarUrl" name="sonarUrl" class="form-control" placeholder="yourinstance" required value="{{ url }}"><!-- autofocus -->
+                            <div class="input-group-append">
+                                <div class="input-group-text">.sonar.software</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputUsername" class="sr-only">Username</label>
+                        <input type="text" id="inputUsername" name="inputUsername" class="form-control" placeholder="Username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputPassword" class="sr-only">Password</label>
+                        <input type="password" id="inputPassword" name="inputPassword" class="form-control" placeholder="Password" required>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-6">
+                <div class="form__footer">
+                    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+                </div>
+            </div>
+        </div>
+    </form>
+    {% if error %}
+    <div class="row justify-content-center">
+        <div class="col-8">
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

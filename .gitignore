@@ -1,2 +1,7 @@
 vendor/
 .idea/
+logs/*.log
+node_modules/
+www/assets/
+permanent_config/database
+version

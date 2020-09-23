@@ -4,73 +4,61 @@ namespace Poller\Tasks;
 
 use Amp\Parallel\Worker\Environment;
 use Amp\Parallel\Worker\Task;
-use Exception;
-use SNMP;
-use SNMPException;
+use Carbon\Carbon;
+use Poller\DeviceIdentifiers\IdentifierInterface;
+use Poller\Exceptions\SnmpException;
+use Poller\Models\Device;
+use Poller\Models\MonitoringTemplate;
+use Poller\Models\SnmpError;
+use Poller\Models\SnmpResult;
+use Poller\Services\SysObjectIDMatcher;
+use Throwable;
 
 class SnmpGet implements Task
 {
-    private $ipAddress;
-    private $version;
-    private $community;
-    private $oids;
+    private Device $device;
+    private SysObjectIDMatcher $matcher;
 
-    public function __construct(string $ipAddress, string $version, string $community, array $oids)
+    /**
+     * SnmpGet constructor.
+     * @param Device $device
+     * @param SysObjectIDMatcher $matcher
+     */
+    public function __construct(Device $device, SysObjectIDMatcher $matcher)
     {
-        $this->ipAddress = $ipAddress;
-        $this->version = $version;
-        $this->community = $community;
-        $this->oids = $oids;
+        $this->device = $device;
+        $this->matcher = $matcher;
     }
 
     /**
-     * @inheritDoc
+     * @param Environment $environment
+     * @return SnmpError|SnmpResult
      */
     public function run(Environment $environment)
     {
-        $snmp = $this->buildSnmpObject();
+        $snmp = $this->device->getSnmpClient();
         try {
-            if (count($this->oids) > 0) {
-                return $snmp->get(array_values($this->oids));
-            }
-            return [];
-        } catch (SNMPException $e) {
-            //TODO: need to deal with the code here and returning good/warning/down
-            //print_r($e->getMessage());
-            return [];
-        } catch (Exception $e) {
-            return [];
-        }
-    }
-
-    private function buildSnmpObject()
-    {
-        $snmp = new SNMP(
-            $this->version,
-            $this->ipAddress,
-            $this->community,
-            2000000, //microseconds
-            1
-        );
-        $snmp->valueretrieval = SNMP_VALUE_LIBRARY;
-        $snmp->oid_output_format = SNMP_OID_OUTPUT_NUMERIC;
-        $snmp->enum_print = true;
-        $snmp->exceptions_enabled = SNMP::ERRNO_ANY;
-
-        //TODO: Fix this part
-        if ($this->version === SNMP::VERSION_3)
-        {
-            $snmp->setSecurity(
-                isset($host['snmp_overrides']['snmp3_sec_level']) ? $host['snmp_overrides']['snmp3_sec_level'] : $templateDetails['snmp3_sec_level'],
-                isset($host['snmp_overrides']['snmp3_auth_protocol']) ? $host['snmp_overrides']['snmp3_auth_protocol'] : $templateDetails['snmp3_auth_protocol'],
-                isset($host['snmp_overrides']['snmp3_auth_passphrase']) ? $host['snmp_overrides']['snmp3_auth_passphrase'] : $templateDetails['snmp3_auth_passphrase'],
-                isset($host['snmp_overrides']['snmp3_priv_protocol']) ? $host['snmp_overrides']['snmp3_priv_protocol'] : $templateDetails['snmp3_priv_protocol'],
-                isset($host['snmp_overrides']['snmp3_priv_passphrase']) ? $host['snmp_overrides']['snmp3_priv_passphrase'] : $templateDetails['snmp3_priv_passphrase'],
-                isset($host['snmp_overrides']['snmp3_context_name']) ? $host['snmp_overrides']['snmp3_context_name'] : $templateDetails['snmp3_context_name'],
-                isset($host['snmp_overrides']['snmp3_context_engine_id']) ? $host['snmp_overrides']['snmp3_context_engine_id'] : $templateDetails['snmp3_context_engine_id']
+            $snmpResult = new SnmpResult(
+                $snmp->get($this->device->getMonitoringTemplate()->getOids()),
+                $this->device->getInventoryItemID(),
             );
-        }
 
-        return $snmp;
+            $className = $this->matcher->getClass($snmpResult->getResults()->get(MonitoringTemplate::SYSTEM_SYSOBJECT_ID));
+            if ($className !== null) {
+                $mapper = new $className($this->device);
+                if ($mapper instanceof IdentifierInterface) {
+                    $mapper = $mapper->getMapper();
+                }
+                $snmpResult = $mapper->map($snmpResult);
+            }
+
+            return $snmpResult;
+        } catch (SnmpException $e) {
+            return new SnmpError(true, $e->getMessage(), $this->device->getInventoryItemID());
+        } catch (Throwable $e) {
+            return new SnmpError(false, $e->getMessage(), $this->device->getInventoryItemID());
+        } finally {
+            unset($snmp);
+        }
     }
 }

@@ -1,0 +1,31 @@
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <p>
+                <small class="text-muted">
+                    The last 250 log entries are shown here. The entire log file is available at /usr/share/sonar_poller/poller/logs/poller.log if needed.
+                </small>
+            </p>
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Level</th>
+                    <th scope="col">Message</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{log.date}}</td>
+                    <td>{{log.time}}</td>
+                    <td>{{log.level}}</td>
+                    <td>{{log.message}}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,72 @@
+{
+  "devices": [
+    {
+      "response": "1.3.6.1.4.1.161",
+      "device": "Poller\\DeviceMappers\\Cambium\\CanopyPMPAccessPoint"
+    },
+    {
+      "response": "1.3.6.1.4.1.2736.1.1",
+      "device": "Poller\\DeviceMappers\\Etherwan\\EtherwanSwitch"
+    },
+    {
+      "response": "1.3.6.1.4.1.10002.1",
+      "device": "Poller\\DeviceIdentifiers\\Ubiquiti"
+    },
+    {
+      "response": "1.3.6.1.4.1.14988.1",
+      "device": "Poller\\DeviceMappers\\MikroTik\\MikroTik"
+    },
+    {
+      "response": "1.3.6.1.4.1.17713.5",
+      "device": "Poller\\DeviceMappers\\Cambium\\PTP500Backhaul"
+    },
+    {
+      "response": "1.3.6.1.4.1.17713.6",
+      "device": "Poller\\DeviceMappers\\Cambium\\PTP600Backhaul"
+    },
+    {
+      "response": "1.3.6.1.4.1.17713.7",
+      "device": "Poller\\DeviceMappers\\Cambium\\PTP650Backhaul"
+    },
+    {
+      "response": "1.3.6.1.4.1.17713.8",
+      "device": "Poller\\DeviceMappers\\Cambium\\PTP800Backhaul"
+    },
+    {
+      "response": "1.3.6.1.4.1.17713.9",
+      "device": "Poller\\DeviceMappers\\Cambium\\PTP700Backhaul"
+    },
+    {
+      "response": "1.3.6.1.4.1.17713.11",
+      "device": "Poller\\DeviceMappers\\Cambium\\PTP670Backhaul"
+    },
+    {
+      "response": "1.3.6.1.4.1.17713.21",
+      "device": "Poller\\DeviceMappers\\Cambium\\EPMPAccessPoint"
+    },
+    {
+      "response": "1.3.6.1.4.1.17713.250",
+      "device": "Poller\\DeviceMappers\\Cambium\\PTP250Backhaul"
+    },
+    {
+      "response": "1.3.6.1.4.1.41112.1.4",
+      "device": "Poller\\DeviceMappers\\Ubiquiti\\AirMaxAccessPoint"
+    },
+    {
+      "response": "1.3.6.1.4.1.43356.1.1.1",
+      "device": "Poller\\DeviceMappers\\Mimosa\\BxBackhaul"
+    },
+    {
+      "response": "1.3.6.1.4.1.43356.1.1.2",
+      "device": "Poller\\DeviceMappers\\Mimosa\\BxBackhaul"
+    },
+    {
+      "response": "1.3.6.1.4.1.43356.1.1.3",
+      "device": "Poller\\DeviceMappers\\Mimosa\\AxAccessPoint"
+    },
+    {
+      "response": "1.3.6.1.4.1.46242",
+      "device": "Poller\\DeviceMappers\\Netonix\\Ws6Mini"
+    }
+  ]
+}
