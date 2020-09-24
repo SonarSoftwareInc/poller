@@ -13,6 +13,7 @@ class PingHosts implements Task
     private array $devices;
     private int $timeout;
     private int $repeats;
+    private array $ips;
 
     /**
      * PingHost constructor.
@@ -42,9 +43,8 @@ class PingHosts implements Task
             '-R', //Use random bytes instead of all zeroes
         ];
 
-        $ips = [];
         foreach ($this->devices as $device) {
-            $ips[] = $device->getIp();
+            $this->ips[$device->getIp()] = $device->getInventoryItemID();
         }
 
         $command = '/usr/local/sbin/fping '
@@ -52,7 +52,7 @@ class PingHosts implements Task
             . escapeshellcmd("-t {$this->timeout} ")
             . implode(' ', $flags)
             . ' '
-            . implode(' ', $ips)
+            . implode(' ', array_keys($this->ips))
             . ' 2>&1';
 
         exec(
@@ -93,7 +93,7 @@ class PingHosts implements Task
                 }));
 
                 $formattedResults[] = new PingResult(
-                    $this->devices[trim($ip)]->getInventoryItemID(),
+                    $this->ips[trim($ip)],
                     round(($lossCount / (count($boom)))*100,2),
                     (float)round($boom[0],2),
                     (float)round($boom[count($boom)-1],2),
