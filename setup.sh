@@ -36,7 +36,7 @@ echo "* soft nofile 65535" >> /etc/security/limits.conf
 echo "* hard nofile 65535" >> /etc/security/limits.conf
 
 ## Clone the repo and run initial setup
-(cd /usr/share; mkdir sonar_poller; cd sonar_poller; git clone https://github.com/SonarSoftwareInc/poller.git .; composer install;)
+(cd /usr/share; rm -rf sonar_poller; mkdir sonar_poller; cd sonar_poller; git clone https://github.com/SonarSoftwareInc/poller.git .; composer install;)
 
 ## Write version
 (cd /usr/share/sonar_poller; git describe --tags > version;)
