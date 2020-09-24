@@ -42,12 +42,17 @@ class PingHosts implements Task
             '-R', //Use random bytes instead of all zeroes
         ];
 
+        $ips = [];
+        foreach ($this->devices as $device) {
+            $ips[] = $device->getIp();
+        }
+
         $command = '/usr/local/sbin/fping '
             . escapeshellcmd("-C {$this->repeats} ")
             . escapeshellcmd("-t {$this->timeout} ")
             . implode(' ', $flags)
             . ' '
-            . implode(' ', array_keys($this->devices))
+            . implode(' ', $ips)
             . ' 2>&1';
 
         exec(
@@ -70,7 +75,6 @@ class PingHosts implements Task
         if (count($results) > 0) {
             foreach ($results as $result) {
                 $boom = preg_split('/\s+/', $result);
-                //-2 here because we don't care about the first two results which are the host and a colon
                 $ip = $boom[0];
                 if (filter_var($ip, FILTER_VALIDATE_IP) === false) {
                     //Issue with some versions of fping 4.x
@@ -80,6 +84,7 @@ class PingHosts implements Task
                     $log->error("$ip is not a valid IP address, skipping line '$result'");
                     continue;
                 }
+                //-2 here because we don't care about the first two results which are the host and a colon
                 unset($boom[0]);
                 unset($boom[1]);
                 sort($boom);
