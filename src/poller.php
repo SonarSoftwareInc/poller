@@ -25,7 +25,7 @@ Loop::run(function () {
     output("Starting polling loop...");
     $running = false;
     $lastRun = 0;
-    Loop::repeat($msInterval = 1000, function ($watcherId) use (&$running, &$lastRun, $poller, $client, $fetcher, $database) {
+    Loop::repeat($msInterval = 1000, function ($watcherId) use (&$running, &$lastRun, $poller, $client) {
         if ($running === false && time() - $lastRun >= 60) {
             $running = true;
             $debug = getenv('SONAR_DEBUG_MODE') == 1;
