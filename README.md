@@ -14,7 +14,7 @@ The poller is designed to run on [Ubuntu 20](https://releases.ubuntu.com/20.04.1
 
 1. From the command line, enter `wget https://raw.githubusercontent.com/SonarSoftwareInc/poller/master/setup.sh`
 2. Enter `chmod +x setup.sh`
-3. Enter `./setup.sh`
+3. Enter `sudo ./setup.sh`
 
 The poller should automatically install and get up and running. Once this is complete, you can access the poller web interface by navigating to `https://SERVER_IP` in a browser, where `SERVER_IP` is the IP address of the server you installed the poller on.
 
