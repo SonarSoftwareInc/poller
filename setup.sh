@@ -58,7 +58,7 @@ cp /usr/share/sonar_poller/config/sonar_poller_logs /etc/logrotate.d/
 
 ## Check for upgrades daily
 chmod +x /usr/share/sonar_poller/upgrade.sh
-echo "0 0 * * * root /usr/share/sonar_poller/upgrade.sh" > /etc/cron.d/sonar_poller_upgrade
+echo "0 0 * * * root bash /usr/share/sonar_poller/upgrade.sh" > /etc/cron.d/sonar_poller_upgrade
 
 ## Reboot to apply ulimit changes
 echo "Rebooting...";

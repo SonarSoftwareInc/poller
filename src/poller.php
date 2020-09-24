@@ -60,7 +60,7 @@ Loop::run(function () {
                     try {
                         $response = $client->request('POST', "$fullUrl/api/batch_poller", [
                             'headers' => [
-                                'User-Agent' => "SonarPoller/{get_version()}",
+                                'User-Agent' => "SonarPoller/" . get_version(),
                                 'Accept' => 'application/json',
                                 'Content-Encoding' => 'gzip',
                                 'Accept-Encoding' => 'gzip',
