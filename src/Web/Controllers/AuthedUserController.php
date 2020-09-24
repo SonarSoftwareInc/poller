@@ -108,13 +108,11 @@ class AuthedUserController
                     'level' => str_replace(':', '', $split[2]),
                     'message' => $split[3]
                 ];
-
-                if (count($variables) > 250) {
-                    break;
-                }
             }
             fclose($handle);
         }
+
+        $variables['logs'] = array_reverse(array_slice($variables['logs'], -250, 250));
 
         $loader = new Loader();
         $template = $loader->load($template);
