@@ -53,23 +53,26 @@ Loop::run(function () {
                 $timeTaken = time() - $start;
                 output("Cycle completed in $timeTaken seconds, got " . count($results) . " results.");
 
-                if ($debug === true) {
-                    writeDebugLog($results, $timeTaken);
-                    Loop::disable($watcherId);
-                } else {
-                    try {
-                        $response = $client->request('POST', "$fullUrl/api/batch_poller", [
-                            'headers' => [
-                                'User-Agent' => "SonarPoller/" . get_version(),
-                                'Accept' => 'application/json',
-                                'Content-Encoding' => 'gzip',
-                                'Accept-Encoding' => 'gzip',
-                            ],
-                            'body' => Formatter::formatMonitoringData($results, $timeTaken, true),
-                        ]);
-                        output($response->getStatusCode() . ' - ' . $response->getBody()->getContents());
-                    } catch (Exception $e) {
-                        output($e->getMessage(), true);
+                if (count($results) > 0) {
+                    if ($debug === true) {
+                        writeDebugLog($results, $timeTaken);
+                        Loop::disable($watcherId);
+                    } else {
+                        try {
+                            $response = $client->request('POST', "$fullUrl/api/batch_poller", [
+                                'headers' => [
+                                    'User-Agent' => "SonarPoller/" . get_version(),
+                                    'Accept' => 'application/json',
+                                    //'Content-Encoding' => 'gzip',
+                                    'Accept-Encoding' => 'gzip',
+                                    'Content-Type' => 'application/json',
+                                ],
+                                'body' => Formatter::formatMonitoringData($results, $timeTaken, false),
+                            ]);
+                            output($response->getStatusCode() . ' - ' . $response->getBody()->getContents());
+                        } catch (Exception $e) {
+                            output($e->getMessage(), true);
+                        }
                     }
                 }
             } catch (Throwable $e) {
