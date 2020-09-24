@@ -22,9 +22,9 @@ class Auth
         $client = new Client();
         try {
             $response = $client->post($url . '/api/whoami', [
-                'json' => [
-                    'username' => $username,
-                    'password' => $password
+                'auth' => [
+                    $username,
+                    $password
                 ]
             ]);
         } catch (RequestException $e) {
