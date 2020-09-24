@@ -31,16 +31,18 @@ class Poller
         $deviceFactory = new DeviceFactory($data);
         $coroutines = [];
         $icmpDevices = $deviceFactory->getIcmpDevices();
-        $icmpDevices = array_chunk(
-            $icmpDevices,
-            ceil(count($icmpDevices)/$this->sysInfo->optimalIcmpQueueSize())
-        );
+        if (count($icmpDevices) > 0) {
+            $icmpDevices = array_chunk(
+                $icmpDevices,
+                ceil(count($icmpDevices)/$this->sysInfo->optimalIcmpQueueSize())
+            );
 
-        foreach ($icmpDevices as $icmpDeviceChunk) {
-            $pingHosts = new PingHosts($icmpDeviceChunk);
-            $coroutines[] = call(function () use ($pingHosts) {
-                return yield $this->icmpPool->enqueue($pingHosts);
-            });
+            foreach ($icmpDevices as $icmpDeviceChunk) {
+                $pingHosts = new PingHosts($icmpDeviceChunk);
+                $coroutines[] = call(function () use ($pingHosts) {
+                    return yield $this->icmpPool->enqueue($pingHosts);
+                });
+            }
         }
 
         $matcher = new SysObjectIDMatcher();

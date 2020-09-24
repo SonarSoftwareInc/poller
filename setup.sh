@@ -36,7 +36,7 @@ echo "* soft nofile 65535" >> /etc/security/limits.conf
 echo "* hard nofile 65535" >> /etc/security/limits.conf
 
 ## Clone the repo and run initial setup
-(cd /usr/share; rm -rf sonar_poller; mkdir sonar_poller; cd sonar_poller; git clone https://github.com/SonarSoftwareInc/poller.git .; composer install;)
+(cd /usr/share; rm -rf sonar_poller; mkdir sonar_poller; cd sonar_poller; git clone https://github.com/SonarSoftwareInc/poller.git .;)
 
 ## Write version
 (cd /usr/share/sonar_poller; git describe --tags > version;)
@@ -52,6 +52,8 @@ apt-get install -y nginx
 cp /usr/share/sonar_poller/ssl/self-signed.conf /etc/nginx/snippets/
 cp /usr/share/sonar_poller/ssl/default /etc/nginx/sites-available/
 systemctl restart nginx
+
+(cd /usr/share/sonar_poller; sudo -u www-data composer install;)
 
 ## Setup log rotation
 cp /usr/share/sonar_poller/config/sonar_poller_logs /etc/logrotate.d/

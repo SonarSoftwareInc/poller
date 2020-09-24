@@ -59,6 +59,7 @@ Loop::run(function () {
                         Loop::disable($watcherId);
                     } else {
                         try {
+                            output("Submitting results to $fullUrl");
                             $response = $client->request('POST', "$fullUrl/api/batch_poller", [
                                 'headers' => [
                                     'User-Agent' => "SonarPoller/" . get_version(),
