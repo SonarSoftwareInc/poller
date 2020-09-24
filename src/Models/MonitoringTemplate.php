@@ -39,7 +39,7 @@ class MonitoringTemplate
      * @param array $snmpOverrides
      * @throws \Jawira\CaseConverter\CaseConverterException
      */
-    public function applySnmpOverrides(array $snmpOverrides)
+    public function applySnmpOverrides(object $snmpOverrides)
     {
         foreach ($snmpOverrides as $key => $value) {
             if ($value) {
