@@ -21,8 +21,6 @@ bootstrap();
 Loop::run(function () {
     $poller = new Poller();
     $client = new Client();
-    $fetcher = new Fetcher();
-    $database = new Database();
 
     output("Starting polling loop...");
     $running = false;
@@ -35,6 +33,9 @@ Loop::run(function () {
                 output("---DEBUG MODE ENABLED---");
             }
             output("Starting polling cycle, fetching work from Sonar.");
+
+            $fetcher = new Fetcher();
+            $database = new Database();
 
             $sonarUrl = $database->get(Database::SONAR_URL);
             if (!$sonarUrl) {
@@ -59,7 +60,7 @@ Loop::run(function () {
                     try {
                         $response = $client->request('POST', "$fullUrl/api/batch_poller", [
                             'headers' => [
-                                'User-Agent' => "SonarPoller/" . get_version(),
+                                'User-Agent' => "SonarPoller/{get_version()}",
                                 'Accept' => 'application/json',
                                 'Content-Encoding' => 'gzip',
                                 'Accept-Encoding' => 'gzip',

@@ -22,6 +22,7 @@ class Fetcher
                     'User-Agent' => "SonarPoller/" . get_version(),
                     'Accept' => 'application/json',
                     'Accept-Encoding' => 'gzip',
+                    'Content-Type' => 'application/json',
                 ],
                 'timeout' => 30,
                 'json' => [
