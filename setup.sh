@@ -10,7 +10,8 @@ echo "Installing the Sonar poller...";
 ## Add PHP repository, setup PHP
 add-apt-repository -y ppa:ondrej/php
 apt-get -y update
-apt-get install -y php7.4-cli php7.4-common php7.4-json php7.4-gmp php7.4-sqlite3 php7.4-zip php7.4-fpm composer openssl git
+apt-get install -y php7.4-cli php7.4-common php7.4-json php7.4-gmp php7.4-dev php7.4-sqlite3 php7.4-zip php7.4-fpm composer openssl git php-pear
+pecl channel-update pecl.php.net
 pecl install ev
 echo "extension=ev.so" >> /etc/php/7.4/cli/php.ini
 
@@ -35,29 +36,29 @@ echo "* soft nofile 65535" >> /etc/security/limits.conf
 echo "* hard nofile 65535" >> /etc/security/limits.conf
 
 ## Clone the repo and run initial setup
-(cd /usr/share; mkdir sonar_poller; cd sonar_poller; git clone git@github.com:SonarSoftwareInc/poller.git .; cd poller; composer install;)
+(cd /usr/share; mkdir sonar_poller; cd sonar_poller; git clone https://github.com/SonarSoftwareInc/poller.git .; composer install;)
 
 ## Write version
-(cd /usr/share/sonar_poller/poller; git describe --tags > version;)
+(cd /usr/share/sonar_poller; git describe --tags > version;)
 
 ## Setup permissions
-chown -R www-data:www-data /usr/share/sonar_poller/poller/www
-chown -R www-data:www-data /usr/share/sonar_poller/poller/ssl
-chown -R www-data:www-data /usr/share/sonar_poller/poller/logs
-chown -R www-data:www-data /usr/share/sonar_poller/poller/permanent_config
+chown -R www-data:www-data /usr/share/sonar_poller/www
+chown -R www-data:www-data /usr/share/sonar_poller/ssl
+chown -R www-data:www-data /usr/share/sonar_poller/logs
+chown -R www-data:www-data /usr/share/sonar_poller/permanent_config
 
 ## Setup nginx and self signed cert
 apt-get install -y nginx
-cp /usr/share/sonar_poller/poller/ssl/self-signed.conf /etc/nginx/snippets/
-cp /usr/share/sonar_poller/poller/ssl/default /etc/nginx/sites-available/
+cp /usr/share/sonar_poller/ssl/self-signed.conf /etc/nginx/snippets/
+cp /usr/share/sonar_poller/ssl/default /etc/nginx/sites-available/
 systemctl restart nginx
 
 ## Setup log rotation
-cp /usr/share/sonar_poller/poller/config/sonar_poller_logs /etc/logrotate.d/
+cp /usr/share/sonar_poller/config/sonar_poller_logs /etc/logrotate.d/
 
 ## Check for upgrades daily
-chmod +x /usr/share/sonar_poller/poller/upgrade.sh
-echo "0 0 * * * root /usr/share/sonar_poller/poller/upgrade.sh" > /etc/cron.d/sonar_poller_upgrade
+chmod +x /usr/share/sonar_poller/upgrade.sh
+echo "0 0 * * * root /usr/share/sonar_poller/upgrade.sh" > /etc/cron.d/sonar_poller_upgrade
 
 ## Reboot to apply ulimit changes
 echo "Rebooting...";

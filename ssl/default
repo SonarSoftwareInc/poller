@@ -13,10 +13,10 @@ server {
 
         include /etc/nginx/mime.types;
 
-        root /usr/share/sonar_poller/poller/www;
+        root /usr/share/sonar_poller/www;
 
         location / {
-           root /usr/share/sonar_poller/poller/www;
+           root /usr/share/sonar_poller/www;
            try_files $uri $uri/ /index.php?$args;
            index index.php;
         }
