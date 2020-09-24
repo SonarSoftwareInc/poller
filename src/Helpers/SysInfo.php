@@ -29,8 +29,8 @@ class SysInfo
 
     public function optimalIcmpQueueSize():int
     {
-        $maxSize = 32;
-        $coreMultiplier = 8;
+        $maxSize = 16;
+        $coreMultiplier = 4;
         return $this->numberOfCpus() * $coreMultiplier > $maxSize
             ? $maxSize
             : $this->numberOfCpus() * $coreMultiplier;

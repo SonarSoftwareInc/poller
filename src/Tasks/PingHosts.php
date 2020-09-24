@@ -47,28 +47,20 @@ class PingHosts implements Task
             $this->ips[$device->getIp()] = $device->getInventoryItemID();
         }
 
-        $chunks = array_chunk($this->ips, 500, true);
-        $mergedResults = [];
-        foreach ($chunks as $chunk) {
-            $command = '/usr/local/sbin/fping '
-                . escapeshellcmd("-C {$this->repeats} ")
-                . escapeshellcmd("-t {$this->timeout} ")
-                . implode(' ', $flags)
-                . ' '
-                . implode(' ', array_keys($chunk))
-                . ' 2>&1';
+        $command = '/usr/local/sbin/fping '
+            . escapeshellcmd("-C {$this->repeats} ")
+            . escapeshellcmd("-t {$this->timeout} ")
+            . implode(' ', $flags)
+            . ' '
+            . implode(' ', array_keys($this->ips))
+            . ' 2>&1';
 
-            exec(
-                $command,
-                $results
-            );
+        exec(
+            $command,
+            $results
+        );
 
-            $mergedResults = array_merge($mergedResults, $results);
-        }
-
-
-
-        $results = $this->formatResults($mergedResults);
+        $results = $this->formatResults($results);
         return $results;
     }
 
