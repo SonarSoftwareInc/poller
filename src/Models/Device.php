@@ -13,7 +13,6 @@ class Device
     private string $ip;
     private string $type;
     private int $pollingPriority;
-    private int $inventoryModelID;
     private MonitoringTemplate $monitoringTemplate;
     private ?SnmpClient $snmpClient = null;
 
@@ -34,7 +33,6 @@ class Device
         $this->monitoringTemplate = $monitoringTemplate;
         $this->type = $hostData->type;
         $this->pollingPriority = (int)$hostData->polling_priority;
-        $this->inventoryModelID = (int)$hostData->inventory_model_id;
         $this->monitoringTemplate->applySnmpOverrides($hostData->snmp_overrides);
     }
 
@@ -68,14 +66,6 @@ class Device
     public function getPollingPriority():int
     {
         return $this->pollingPriority;
-    }
-
-    /**
-     * @return int
-     */
-    public function getInventoryModelID():int
-    {
-        return $this->inventoryModelID;
     }
 
     /**
