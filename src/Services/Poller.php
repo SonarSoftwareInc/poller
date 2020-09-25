@@ -8,9 +8,7 @@ use Poller\Helpers\SysInfo;
 use Poller\Pipelines\DeviceFactory;
 use Poller\Tasks\PingHosts;
 use Poller\Tasks\SnmpGet;
-use Poller\Web\Services\Database;
 use Poller\Worker\WorkerFactory;
-use Tries\SuffixTrie;
 use function Amp\call;
 
 class Poller

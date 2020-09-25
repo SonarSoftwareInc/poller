@@ -65,7 +65,7 @@ class MonitoringTemplate
      */
     public function getSnmpVersion():int
     {
-        switch ((int)$this->snmpVersion) {
+        switch ($this->snmpVersion) {
             case 2:
                 return 2;
             case 3:

@@ -23,7 +23,7 @@ class DeviceFactory
 
         $devices = [];
         foreach ($data->hosts as $id => $host) {
-            $devices[$host->ip] = new Device($id, $host, $monitoringTemplates[$host->monitoring_template_id]);
+            $devices[$host->ip] = new Device($id, $host, clone $monitoringTemplates[$host->monitoring_template_id]);
         }
 
         $this->devices = $devices;
