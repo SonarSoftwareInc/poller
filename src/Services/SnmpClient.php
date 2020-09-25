@@ -20,7 +20,7 @@ class SnmpClient
         //bulkwalk if v2/v3, regular if v1
         if ((int)$this->options['version'] === 1) {
             $cmd = '/usr/bin/snmpwalk '
-                . implode(' ', $this->buildSnmpOptions(10))
+                . implode(' ', $this->buildSnmpOptions(5))
                 . ' '
                 . escapeshellarg($this->options['host'])
                 . ' '

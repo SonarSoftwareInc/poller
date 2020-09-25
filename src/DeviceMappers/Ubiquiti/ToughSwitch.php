@@ -26,8 +26,8 @@ class ToughSwitch extends BaseDeviceMapper
             return $snmpResult;
         }
 
-        $ssh = new SSH2($this->device->getIp(), $credentials['port'], 5);
-        $ssh->setTimeout(5);
+        $ssh = new SSH2($this->device->getIp(), $credentials['port'], 3);
+        $ssh->setTimeout(3);
         if (!$ssh->login($credentials['username'], $credentials['password'])) {
             return $snmpResult;
         }
