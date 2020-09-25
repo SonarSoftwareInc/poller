@@ -41,7 +41,7 @@ class ToughSwitch extends BaseDeviceMapper
             $line = strtok($bridges, $separator);
             while ($line !== false) {
                 $bridgingTable = $ssh->exec("brctl showmacs $line");
-                $bridgingLine = $line = strtok($bridgingTable, $separator);
+                $bridgingLine = strtok($bridgingTable, $separator);
                 while ($bridgingLine !== false) {
                     $bridgingLine = strtok($separator);
                     $parts = preg_split('/\s+/', trim($bridgingLine));

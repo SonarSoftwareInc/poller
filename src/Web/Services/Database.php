@@ -12,9 +12,15 @@ class Database
     const LOG_EXCEPTIONS = 'LOG_EXCEPTIONS';
 
     //Credential types
-    const MIKROTIK_API = 'MikroTik API (SSL)';
-    const NETONIX_SSH = 'Netonix SSH';
-    const UBIQUITI_TOUGHSWITCH_SSH = 'Ubiquiti Toughswitch SSH';
+    const MIKROTIK_API = 'MIKROTIK_API';
+    const NETONIX_SSH = 'NETONIX_SSH';
+    const UBIQUITI_TOUGHSWITCH_SSH = 'UBIQUITI_TOUGHSWITCH_SSH';
+
+    private $translations = [
+        self::MIKROTIK_API => 'MikroTik API (SSL)',
+        self::NETONIX_SSH => 'Netonix SSH',
+        self::UBIQUITI_TOUGHSWITCH_SSH => 'Ubiquiti ToughSwitch SSH',
+    ];
 
     private PDO $dbh;
     public function __construct()
@@ -71,7 +77,7 @@ SQL;
         $result = $statement->fetchAll();
         foreach ($result as $key => $value) {
             $type = $value['type'];
-            $result[$key]['english_type'] = constant("self::$type");
+            $result[$key]['english_type'] = $this->translations[$type];
         }
         return $result;
     }
