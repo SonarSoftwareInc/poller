@@ -3,6 +3,7 @@
 namespace Poller\Models;
 
 use Jawira\CaseConverter\Convert;
+use Poller\Exceptions\SnmpException;
 
 class MonitoringTemplate
 {
@@ -69,8 +70,10 @@ class MonitoringTemplate
                 return 2;
             case 3:
                 return 3;
-            default:
+            case 1:
                 return 1;
+            default:
+                throw new SnmpException('No SNMP version defined.');
         }
     }
 
