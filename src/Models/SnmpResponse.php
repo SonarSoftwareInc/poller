@@ -17,7 +17,8 @@ class SnmpResponse
 
     public function merge(SnmpResponse $snmpResponse)
     {
-        $this->results = array_merge($this->results, $snmpResponse->getAll());
+        $this->results = array_merge($this->results, $snmpResponse->getOthers());
+        $this->counters = array_merge($this->counters, $snmpResponse->getCounters());
     }
 
     public function get(string $oid):string
@@ -32,12 +33,17 @@ class SnmpResponse
         throw new SnmpException("$oid is not found.");
     }
 
+    public function getCounters():array {
+        return $this->counters;
+    }
+
+    public function getOthers():array {
+        return $this->results;
+    }
+
     public function getAll():array
     {
-        return [
-            'counters' => $this->counters,
-            'others' => $this->results,
-        ];
+        return array_merge($this->counters, $this->results);
     }
 
     private function formatResults(array $results)
@@ -50,12 +56,13 @@ class SnmpResponse
 
             $boom = explode('=', $line, 2);
             if (count($boom) !== 2) {
-                //Multiline response, needs to be appended to previous response
                 if (isset($oid)) {
-                    $this->results[$oid] .= ' ' . $this->cleanValue($line);
-                    continue;
+                    if (isset($this->results[$oid])) {
+                        $this->results[$oid] .= $line;
+                        continue;
+                    }
                 }
-                $log->error("Unable to split response '$line' and no previous OID set.");
+                $log->error("Unable to explode '$line' on '=' and the OID is not set.");
                 continue;
             }
             $oid = trim(ltrim(trim($boom[0]), '.'));
@@ -68,13 +75,24 @@ class SnmpResponse
         }
     }
 
-    private function storeValue(string $oid, string $result)
+    private function storeValue(string $oid, string $result):void
     {
-        $boom = explode(':', $result);
-        $value = $result[1];
-        $value = trim($value);
-        if (strlen($value) === 0) {
-            return $value;
+        if (!str_contains($result, ':')) {
+            $type = 'Timeticks';
+            $value = $result;
+        } else {
+            $boom = explode(':', $result, 2);
+            if (count($boom) !== 2) {
+                $log = new Log();
+                $log->error("Failed to explode $result");
+                return;
+            }
+            $type = trim($boom[0]);
+            $value = $boom[1];
+            $value = trim($value);
+            if (strlen($value) === 0) {
+                return;
+            }
         }
 
         if ($value[0] === '"') {
@@ -83,12 +101,11 @@ class SnmpResponse
         $value = trim($value);
 
         if (strpos($value, 'No Such Object available on this agent at this OID') === false) {
-            if (trim($boom[0]) === 'COUNTER') {
-                $this->results[$oid] = $value;
-            } else {
+            if (str_contains(trim($type), 'Counter')) {
                 $this->counters[$oid] = $value;
+            } else {
+                $this->results[$oid] = $value;
             }
         }
-        return $value;
     }
 }

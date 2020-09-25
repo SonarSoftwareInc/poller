@@ -10,7 +10,7 @@ echo "Installing the Sonar poller...";
 ## Add PHP repository, setup PHP
 add-apt-repository -y ppa:ondrej/php
 apt-get -y update
-apt-get install -y php7.4-cli php7.4-common php7.4-json php7.4-gmp php7.4-dev php7.4-sqlite3 php7.4-zip php7.4-fpm composer openssl git php-pear
+apt-get install -y php7.4-cli php7.4-common php7.4-json php7.4-gmp php7.4-dev php7.4-sqlite3 php7.4-zip php7.4-fpm composer openssl git php-pear snmp
 pecl channel-update pecl.php.net
 pecl install ev
 echo "extension=ev.so" >> /etc/php/7.4/cli/php.ini

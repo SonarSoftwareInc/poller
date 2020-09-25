@@ -3,16 +3,16 @@
 namespace Poller\Services;
 
 use Poller\Exceptions\SnmpException;
+use Poller\Log;
 use Poller\Models\SnmpResponse;
 
 class SnmpClient
 {
     private array $options;
-    private array $optionsArray;
+
     public function __construct(array $options)
     {
         $this->options = $options;
-        $this->buildSnmpOptions();
     }
 
     public function walk(string $oid):SnmpResponse
@@ -20,14 +20,14 @@ class SnmpClient
         //bulkwalk if v2/v3, regular if v1
         if ((int)$this->options['version'] === 1) {
             $cmd = '/usr/bin/snmpwalk '
-                . implode(' ', $this->optionsArray)
+                . implode(' ', $this->buildSnmpOptions(10))
                 . ' '
                 . escapeshellarg($this->options['host'])
                 . ' '
                 . escapeshellarg($oid);
         } else {
             $cmd = '/usr/bin/snmpbulkwalk '
-                . implode(' ', $this->optionsArray)
+                . implode(' ', $this->buildSnmpOptions())
                 . ' '
                 . escapeshellarg($this->options['host'])
                 . ' '
@@ -38,7 +38,7 @@ class SnmpClient
         if ($returnVar === 0) {
             return new SnmpResponse($output);
         } else {
-            throw new SnmpException(implode(', ', $output));
+            throw new SnmpException("From $cmd: " . implode(', ', $output));
         }
     }
 
@@ -53,26 +53,26 @@ class SnmpClient
         }
 
         $cmd = '/usr/bin/snmpget -Cf '
-            . implode(' ', $this->optionsArray)
+            . implode(' ', $this->buildSnmpOptions())
             . ' '
             . escapeshellarg($this->options['host'])
             . ' '
             . $oidString;
 
         exec($cmd . ' 2>&1', $output, $returnVar);
-        if ($returnVar === 0) {
+        if ((int)$returnVar === 0) {
             return new SnmpResponse($output);
         } else {
-            throw new SnmpException(implode(', ', $output));
+            throw new SnmpException("From $cmd: " . implode(', ', $output));
         }
     }
 
-    private function buildSnmpOptions()
+    private function buildSnmpOptions(int $timeout = 2)
     {
         $options = [
             '-v' . $this->convertVersion(),
-            '-r0',
-            '-t2',
+            '-r1',
+            '-t' . $timeout,
             '-Oe',
             '-On',
             '-Ot',
@@ -98,7 +98,7 @@ class SnmpClient
 
         }
 
-        $this->optionsArray = $options;
+        return $options;
     }
 
     private function convertSecLevel():string

@@ -12,6 +12,7 @@ class DeviceFactory
     /**
      * DeviceFactory constructor.
      * @param object $data
+     * @throws \Jawira\CaseConverter\CaseConverterException
      */
     public function __construct(object $data)
     {

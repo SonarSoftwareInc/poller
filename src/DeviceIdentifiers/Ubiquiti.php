@@ -8,6 +8,8 @@ use Poller\DeviceMappers\Ubiquiti\AirMaxAccessPoint;
 use Poller\DeviceMappers\Ubiquiti\ToughSwitch;
 use Poller\Log;
 use Poller\Models\Device;
+use Poller\Models\SnmpResponse;
+use Throwable;
 
 class Ubiquiti implements IdentifierInterface
 {
@@ -22,8 +24,8 @@ class Ubiquiti implements IdentifierInterface
         $interfaces = [];
         try {
             $oids = $this->walk('1.3.6.1.2.1.2.2.1.2');
-            foreach ($oids as $oid) {
-                $interfaces[strtolower($oid->getValue()->__toString())] = true;
+            foreach ($oids->getAll() as $oid => $value) {
+                $interfaces[strtolower($value)] = true;
             }
             if (isset($interfaces['air0'])) {
                 return new AirFiberBackhaul($this->device);
@@ -39,24 +41,19 @@ class Ubiquiti implements IdentifierInterface
 
     /**
      * @param string $oid
-     * @return OidList
+     * @return SnmpResponse
      */
-    protected function walk(string $oid): OidList
+    protected function walk(string $oid):SnmpResponse
     {
-        $oids = [];
         try {
-            $walk = $this->device->getSnmpClient()->walk($oid);
-            while (!$walk->isComplete()) {
-                $oids[] = $walk->next();
-            }
-        } catch (Exception $e) {
+            return $this->device->getSnmpClient()->walk($oid);
+        } catch (Throwable $e) {
             $log = new Log();
             $log->exception($e, [
                 'ip' => $this->device->getIp(),
                 'oid' => $oid
             ]);
+            return new SnmpResponse([]);
         }
-
-        return new OidList(... $oids);
     }
 }

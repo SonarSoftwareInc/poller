@@ -7,7 +7,6 @@ use Poller\Log;
 use Poller\Models\SnmpError;
 use Poller\Models\SnmpResult;
 use Poller\Web\Services\Database;
-use Symfony\Component\VarDumper\Cloner\Data;
 use const FILTER_VALIDATE_MAC;
 use const ZLIB_ENCODING_GZIP;
 
@@ -99,6 +98,8 @@ class Formatter
                     continue;
                 }
                 $data[$coroutine->getID()]['snmp'] = $result;
+            } else {
+                $log->error(get_class($coroutine) . ' was submitted to the formatter.');
             }
         }
 

@@ -49,6 +49,7 @@ Loop::run(function () {
                 $data = $fetcher->fetch();
                 $lastRun = time();
                 $start = time();
+                output("Obtained work, starting coroutines.");
                 $results = yield all($poller->buildCoroutines($data->data));
                 $timeTaken = time() - $start;
                 output("Cycle completed in $timeTaken seconds, got " . count($results) . " results.");

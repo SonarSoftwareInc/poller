@@ -74,7 +74,10 @@ class SnmpResult implements CoroutineResultInterface
             'interfaces' => array_map(function ($interface) {
                 return $interface->toArray();
             }, $this->interfaces),
-            'results' => $this->results->getAll(),
+            'results' => [
+                'counters' => $this->results->getCounters(),
+                'others' => $this->results->getOthers(),
+            ]
         ];
     }
 }
