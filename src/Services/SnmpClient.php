@@ -38,7 +38,7 @@ class SnmpClient
         if ($returnVar === 0) {
             return new SnmpResponse($output);
         } else {
-            throw new SnmpException("From $cmd: " . implode(', ', $output));
+            throw new SnmpException(implode(', ', $output));
         }
     }
 
@@ -63,7 +63,7 @@ class SnmpClient
         if ((int)$returnVar === 0) {
             return new SnmpResponse($output);
         } else {
-            throw new SnmpException("From $cmd: " . implode(', ', $output));
+            throw new SnmpException(implode(', ', $output));
         }
     }
 
