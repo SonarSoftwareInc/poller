@@ -46,7 +46,7 @@ Loop::run(function () {
             $fullUrl = 'https://' . $sonarUrl . '.sonar.software';
 
             try {
-                $data = $fetcher->fetch();
+                $data = $fetcher->fetch($debug);
                 $lastRun = time();
                 $start = time();
                 output("Obtained work, starting coroutines.");

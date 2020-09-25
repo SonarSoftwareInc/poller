@@ -83,16 +83,12 @@ class Device
                 $this->snmpClient = new SnmpClient([
                     'host' => $this->getIp(),
                     'version' => $this->monitoringTemplate->getSnmpVersion(),
-                    'timeout_connect' => 2,
-                    'timeout_read' => 2,
                     'community' => $this->monitoringTemplate->getSnmpCommunity(),
                 ]);
             } else {
                 $this->snmpClient = new SnmpClient([
                     'host' => $this->getIp(),
                     'version' => $this->monitoringTemplate->getSnmpVersion(),
-                    'timeout_connect' => 2,
-                    'timeout_read' => 2,
                     'user' => $this->monitoringTemplate->getSnmpCommunity(),
                     'sec_level' => $this->monitoringTemplate->getSnmp3SecLevel(),
                     'auth_mech' => $this->monitoringTemplate->getSnmp3AuthProtocol() === 'SHA' ? 'sha' : 'md5',

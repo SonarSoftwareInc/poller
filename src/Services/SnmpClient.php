@@ -119,10 +119,11 @@ class SnmpClient
         switch ($this->options['version']) {
             case 1:
                 return 1;
-            case 2:
-                return '2c';
             case 3:
                 return 3;
+            case 2:
+            default:
+                return '2c';
         }
     }
 }

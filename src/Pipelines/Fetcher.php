@@ -7,10 +7,11 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Poller\Web\Services\Database;
 use RuntimeException;
+use const JSON_PRETTY_PRINT;
 
 class Fetcher
 {
-    public function fetch()
+    public function fetch(bool $debugMode = false)
     {
         $client = new Client();
         $database = new Database();
@@ -41,6 +42,12 @@ class Fetcher
             }
         } catch (Exception $e) {
             throw new RuntimeException($e->getMessage());
+        }
+
+        if ($debugMode === true) {
+            $handle = fopen(__DIR__ . '/../sonar_data.json', 'w');
+            fwrite($handle, json_encode($data, JSON_PRETTY_PRINT));
+            fclose($handle);
         }
 
         return $data;
