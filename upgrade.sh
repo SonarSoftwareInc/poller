@@ -6,3 +6,4 @@ chown -R www-data:www-data /usr/share/sonar_poller/logs
 chown -R www-data:www-data /usr/share/sonar_poller/permanent_config
 
 (cd /usr/share/sonar_poller; git describe --tags > version;)
+supervisorctl update sonar_poller

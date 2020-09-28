@@ -62,6 +62,11 @@ cp /usr/share/sonar_poller/config/sonar_poller_logs /etc/logrotate.d/
 chmod +x /usr/share/sonar_poller/upgrade.sh
 echo "0 0 * * * root bash /usr/share/sonar_poller/upgrade.sh" > /etc/cron.d/sonar_poller_upgrade
 
+## Setup supervisor for poller
+apt-get install -y supervisor
+cp config/sonar_poller.conf /etc/supervisor/conf.d/
+systemctl restart supervisor
+
 ## Reboot to apply ulimit changes
 echo "Rebooting...";
 reboot now
