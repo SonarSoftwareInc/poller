@@ -3,7 +3,7 @@
 namespace Poller\Services;
 
 use Poller\Exceptions\SnmpException;
-use Poller\Log;
+use Poller\Services\Log;
 use Poller\Models\SnmpResponse;
 
 class SnmpClient

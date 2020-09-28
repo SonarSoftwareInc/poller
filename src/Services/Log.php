@@ -1,6 +1,6 @@
 <?php
 
-namespace Poller;
+namespace Poller\Services;
 
 use League\CLImate\CLImate;
 use Monolog\Formatter\LineFormatter;

@@ -3,7 +3,7 @@
 namespace Poller\DeviceMappers\Cambium;
 
 use Poller\DeviceMappers\BaseDeviceMapper;
-use Poller\Log;
+use Poller\Services\Log;
 use Poller\Models\SnmpResult;
 use Throwable;
 

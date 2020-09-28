@@ -9,7 +9,7 @@ use PEAR2\Net\RouterOS\Response;
 use PEAR2\Net\RouterOS\SocketException;
 use PEAR2\Net\Transmitter\NetworkStream;
 use Poller\DeviceMappers\BaseDeviceMapper;
-use Poller\Log;
+use Poller\Services\Log;
 use Poller\Models\SnmpResult;
 use Poller\Services\Formatter;
 use Poller\Web\Services\Database;

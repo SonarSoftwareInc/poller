@@ -8,7 +8,7 @@ use GuzzleHttp\Client;
 use League\BooBoo\BooBoo;
 use League\BooBoo\Handler\LogHandler;
 use League\CLImate\CLImate;
-use Poller\Log;
+use Poller\Services\Log;
 use Poller\Overrides\CommandLineFormatter;
 use Poller\Pipelines\Fetcher;
 use Poller\Services\Formatter;

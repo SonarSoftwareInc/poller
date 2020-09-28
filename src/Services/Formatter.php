@@ -3,7 +3,7 @@
 namespace Poller\Services;
 
 use InvalidArgumentException;
-use Poller\Log;
+use Poller\Services\Log;
 use Poller\Models\SnmpError;
 use Poller\Models\SnmpResult;
 use Poller\Web\Services\Database;

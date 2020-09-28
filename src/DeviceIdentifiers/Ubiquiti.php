@@ -6,7 +6,7 @@ use Exception;
 use Poller\DeviceMappers\Ubiquiti\AirFiberBackhaul;
 use Poller\DeviceMappers\Ubiquiti\AirMaxAccessPoint;
 use Poller\DeviceMappers\Ubiquiti\ToughSwitch;
-use Poller\Log;
+use Poller\Services\Log;
 use Poller\Models\Device;
 use Poller\Models\SnmpResponse;
 use Throwable;

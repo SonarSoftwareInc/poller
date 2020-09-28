@@ -5,7 +5,7 @@ namespace Poller\DeviceMappers;
 use Exception;
 use Leth\IPAddress\IP\Address;
 use Poller\Exceptions\SnmpException;
-use Poller\Log;
+use Poller\Services\Log;
 use Poller\Models\Device;
 use Poller\Models\Device\Metadata;
 use Poller\Models\Device\NetworkInterface;

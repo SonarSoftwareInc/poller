@@ -4,7 +4,7 @@ namespace Poller\DeviceMappers\Netonix;
 
 use phpseclib\Net\SSH2;
 use Poller\DeviceMappers\BaseDeviceMapper;
-use Poller\Log;
+use Poller\Services\Log;
 use Poller\Models\SnmpResult;
 use Poller\Services\Formatter;
 use Poller\Web\Services\Database;

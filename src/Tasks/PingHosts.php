@@ -5,7 +5,7 @@ namespace Poller\Tasks;
 use Amp\Parallel\Worker\Environment;
 use Amp\Parallel\Worker\Task;
 use Carbon\Carbon;
-use Poller\Log;
+use Poller\Services\Log;
 use Poller\Models\PingResult;
 
 class PingHosts implements Task
