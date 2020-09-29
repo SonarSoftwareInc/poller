@@ -16,6 +16,7 @@ pecl install ev
 echo "extension=ev.so" >> /etc/php/7.4/cli/php.ini
 
 ## Install the latest fping
+apt-get install -y build-essential
 wget https://fping.org/dist/fping-5.0.tar.gz
 tar -zxvf fping-5.0.tar.gz
 cd fping-5.0
