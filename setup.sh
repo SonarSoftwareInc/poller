@@ -43,10 +43,7 @@ echo "* hard nofile 65535" >> /etc/security/limits.conf
 (cd /usr/share/sonar_poller; git describe --tags > version;)
 
 ## Setup permissions
-chown -R www-data:www-data /usr/share/sonar_poller/www
-chown -R www-data:www-data /usr/share/sonar_poller/ssl
-chown -R www-data:www-data /usr/share/sonar_poller/logs
-chown -R www-data:www-data /usr/share/sonar_poller/permanent_config
+chown -R www-data:www-data /usr/share/sonar_poller
 
 ## Setup nginx and self signed cert
 apt-get install -y nginx
@@ -54,7 +51,7 @@ cp /usr/share/sonar_poller/ssl/self-signed.conf /etc/nginx/snippets/
 cp /usr/share/sonar_poller/ssl/default /etc/nginx/sites-available/
 systemctl restart nginx
 
-(chown -R www-data:www-data /usr/share/sonar_poller; cd /usr/share/sonar_poller; sudo -u www-data composer install;)
+(cd /usr/share/sonar_poller; sudo -u www-data composer install;)
 
 ## Setup log rotation
 cp /usr/share/sonar_poller/config/sonar_poller_logs /etc/logrotate.d/
