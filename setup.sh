@@ -54,7 +54,7 @@ cp /usr/share/sonar_poller/ssl/self-signed.conf /etc/nginx/snippets/
 cp /usr/share/sonar_poller/ssl/default /etc/nginx/sites-available/
 systemctl restart nginx
 
-(cd /usr/share/sonar_poller; sudo -u www-data composer install;)
+(chown -R www-data:www-data /usr/share/sonar_poller; cd /usr/share/sonar_poller; sudo -u www-data composer install;)
 
 ## Setup log rotation
 cp /usr/share/sonar_poller/config/sonar_poller_logs /etc/logrotate.d/
