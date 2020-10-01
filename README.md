@@ -18,7 +18,7 @@ The poller is designed to run on [Ubuntu 20](https://releases.ubuntu.com/20.04.1
 
 The poller should automatically install and get up and running. Once this is complete, you can access the poller web interface by navigating to `https://SERVER_IP` in a browser, where `SERVER_IP` is the IP address of the server you installed the poller on.
 
-Login using your Sonar credentials, navigate to the `Settings` tab and enter the necessary information. To receive a poller API, you'll need to add the poller into Sonar under **Settings > Monitoring > Pollers**. Now navigate to the `Device Credentials` tab and enter any applicable credentials.
+Login using your Sonar credentials, navigate to the `Settings` tab and enter the necessary information. To receive a poller API key, you'll need to add the poller into Sonar under **Settings > Monitoring > Pollers**. Now navigate to the `Device Credentials` tab and enter any applicable credentials.
 
 ## For developers
 ### Adding new types of devices
