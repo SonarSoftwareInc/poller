@@ -33,7 +33,7 @@ class MonitoringTemplate
         $this->snmp3PrivPassphrase = $monitoringTemplate->snmp3_priv_passphrase;
         $this->snmp3ContextName = $monitoringTemplate->snmp3_context_name;
         $this->snmp3ContextEngineId = $monitoringTemplate->snmp3_context_engine_id;
-        $this->oids = array_unique(array_merge([MonitoringTemplate::SYSTEM_SYSOBJECT_ID], $monitoringTemplate->oids));
+        $this->oids = array_unique(array_merge([MonitoringTemplate::SYSTEM_SYSOBJECT_ID], (array)$monitoringTemplate->oids));
     }
 
     /**
