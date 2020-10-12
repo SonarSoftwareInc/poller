@@ -21,7 +21,7 @@ class Log
         $dateFormat = "Y-m-d H:i:s";
         $output = "[%datetime%] %level_name%: %message%\n";
         $formatter = new LineFormatter($output, $dateFormat);
-        $stream = new StreamHandler(__DIR__ . '/../logs/poller.log', Logger::DEBUG);
+        $stream = new StreamHandler(__DIR__ . '/../../logs/poller.log', Logger::DEBUG);
         $stream->setFormatter($formatter);
         $this->logger->pushHandler($stream);
         $database = new Database();
