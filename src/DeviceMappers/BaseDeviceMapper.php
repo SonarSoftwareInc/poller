@@ -449,6 +449,18 @@ abstract class BaseDeviceMapper
             switch ($boom[0]) {
                 //If  1, it's the IP. If 2, it's the prefix.
                 case 1:
+                    //This can be in a hex format we need to convert.
+                    if (str_contains($value, ' ')) {
+                        $boom = explode(' ', $value);
+                        $value = null;
+                        foreach ($boom as $key => $piece) {
+                            if ($key % 2 === 0 && $key !== 0) {
+                                $value .= ":$piece";
+                            } else {
+                                $value .= "$piece";
+                            }
+                        }
+                    }
                     $address = Address::factory($value);
                     $resultsToBeInserted[$boom[1]]['ip'] = $address->__toString();
                     break;
