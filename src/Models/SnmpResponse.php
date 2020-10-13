@@ -50,8 +50,13 @@ class SnmpResponse
     {
         $log = new Log();
         foreach ($results as $line) {
-            if (trim($line) === 'End of MIB') {
+            $line = trim($line);
+            if ($line === 'End of MIB') {
                 return;
+            }
+
+            if (empty($line)) {
+                continue;
             }
 
             $boom = explode('=', $line, 2);
@@ -65,11 +70,10 @@ class SnmpResponse
                 $log->error("Unable to explode '$line' on '=' and the OID is not set.");
                 continue;
             }
-            $oid = trim(ltrim(trim($boom[0]), '.'));
-            if (!str_contains($oid, '.')) {
-                $log->error("'$oid' is not a valid OID, received it in line $line.");
+            if (!str_contains($boom[0], '.')) {
                 continue;
             }
+            $oid = trim(ltrim(trim($boom[0]), '.'));;
 
             $this->storeValue($oid, $boom[1]);
         }
