@@ -3,14 +3,13 @@
 namespace Poller\Models;
 
 use Jawira\CaseConverter\Convert;
-use Poller\Exceptions\SnmpException;
 
 class MonitoringTemplate
 {
     const SYSTEM_SYSOBJECT_ID = '1.3.6.1.2.1.1.2.0';
 
     private bool $icmp;
-    private int $snmpVersion;
+    private ?int $snmpVersion;
     private $snmpCommunity;
     private $snmp3SecLevel;
     private $snmp3AuthProtocol;
@@ -24,7 +23,7 @@ class MonitoringTemplate
     public function __construct($monitoringTemplate)
     {
         $this->icmp = (bool)$monitoringTemplate->icmp;
-        $this->snmpVersion = (int)$monitoringTemplate->snmp_version;
+        $this->snmpVersion = $monitoringTemplate->snmp_version ? (int)$monitoringTemplate->snmp_version : null;
         $this->snmpCommunity = $monitoringTemplate->snmp_community;
         $this->snmp3SecLevel = $monitoringTemplate->snmp3_sec_level;
         $this->snmp3AuthProtocol = $monitoringTemplate->snmp3_auth_protocol;
@@ -63,7 +62,7 @@ class MonitoringTemplate
     /**
      * @return int
      */
-    public function getSnmpVersion():int
+    public function getSnmpVersion():?int
     {
         switch ($this->snmpVersion) {
             case 2:
@@ -73,14 +72,14 @@ class MonitoringTemplate
             case 1:
                 return 1;
             default:
-                throw new SnmpException('No SNMP version defined.');
+                return null;
         }
     }
 
     /**
      * @return string
      */
-    public function getSnmpCommunity():string
+    public function getSnmpCommunity():?string
     {
         return $this->snmpCommunity;
     }
