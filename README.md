@@ -34,7 +34,7 @@ Check out an existing mapper for examples of the best way to implement a new one
 ### Starting/Stopping the poller service
 
 Run `supervisor sonar_poller restart` to restart the poller
-Run `supervisor sonar_poller restart` to stop the poller
+Run `supervisor sonar_poller stop` to stop the poller
 
 ### Enabling Debug Mode
 
