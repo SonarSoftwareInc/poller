@@ -28,3 +28,19 @@ Edit `config/devices.json` and add a response value which should be the response
 If the class name is a mapper inside `src/DeviceMappers`, then the mapper must extend `BaseDeviceMapper`. If the class name is an identifier inside `src/DeviceIdentifiers`, then the identifier must implement `IdentifierInterface`. Almost all responses should be a mapper - the identifier path is only needed if the vendor doesn't uniquely identify their devices by a response to `1.3.6.1.2.1.1.2.0`.
 
 Check out an existing mapper for examples of the best way to implement a new one. The Netonix/Ws6Mini, Ubiquiti/Toughswitch or MikroTik/MikroTik mappers have examples of using non-SNMP based data collection as well.
+
+
+## Basic CLI Operation
+### Starting/Stopping the poller service
+
+Run `supervisor sonar_poller restart` to restart the poller
+Run `supervisor sonar_poller restart` to stop the poller
+
+### Enabling Debug Mode
+
+You will need to set the environment variable `SONAR_DEBUG_MODE`, setting it to 1 will enable debugging, and setting it to 0 will disable debugging.
+
+Run `export SONAR_DEBUG_MODE = 1` to enable debugging
+Run `export SONAR_DEBUG_MODE = 0` to disable debugging
+
+If debug logging doesn't immediately take effect, restart the poller.
