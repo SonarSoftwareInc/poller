@@ -17,7 +17,7 @@ update-alternatives --set phpize /usr/bin/phpize7.4
 update-alternatives --set php-config /usr/bin/php-config7.4
 
 pecl channel-update pecl.php.net
-pecl install ev
+print "\n" | pecl install ev
 grep -qxF 'extension=ev.so' /etc/php/7.4/cli/php.ini || echo "extension=ev.so" >> /etc/php/7.4/cli/php.ini
 
 ## Install the latest fping
