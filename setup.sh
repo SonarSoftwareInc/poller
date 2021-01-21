@@ -55,9 +55,11 @@ cp /usr/share/sonar_poller/ssl/self-signed.conf /etc/nginx/snippets/
 cp /usr/share/sonar_poller/ssl/default /etc/nginx/sites-available/
 systemctl restart nginx
 
+## Install vendor libraries needed for poller
 mkdir /var/www/.composer
 chown www-data:www-data /var/www/.composer
-(cd /usr/share/sonar_poller; sudo -u www-data composer install;)
+cd /usr/share/sonar_poller/
+sudo -u www-data composer install
 
 ## Setup log rotation
 cp /usr/share/sonar_poller/config/sonar_poller_logs /etc/logrotate.d/
@@ -70,11 +72,6 @@ echo "0 0 * * * root bash /usr/share/sonar_poller/upgrade.sh" > /etc/cron.d/sona
 apt-get install -y supervisor
 cp /usr/share/sonar_poller/config/sonar_poller.conf /etc/supervisor/conf.d/
 systemctl restart supervisor
-
-
-## Install vendor libraries needed for poller
-cd /usr/share/sonar_poller/
-composer install
 
 
 ## Reboot to apply ulimit changes
