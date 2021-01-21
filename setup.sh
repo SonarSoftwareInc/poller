@@ -10,9 +10,14 @@ echo "Installing the Sonar poller...";
 ## Add PHP repository, setup PHP
 add-apt-repository -y ppa:ondrej/php
 apt-get -y update
-apt-get install -y php7.4-cli php7.4-common php7.4-json php7.4-gmp php7.4-dev php7.4-sqlite3 php7.4-zip php7.4-fpm composer openssl git php-pear snmp
+apt-get install -y php7.4-cli php7.4-xml php7.4-common php7.4-json php7.4-gmp php7.4-dev php7.4-sqlite3 php7.4-zip php7.4-fpm php7.4-mbstring composer openssl git php-pear snmp
+
+update-alternatives --set php /usr/bin/php7.4
+update-alternatives --set phpize /usr/bin/phpize7.4
+update-alternatives --set php-config /usr/bin/php-config7.4
+
 pecl channel-update pecl.php.net
-pecl install ev
+print "\n" | pecl install ev
 grep -qxF 'extension=ev.so' /etc/php/7.4/cli/php.ini || echo "extension=ev.so" >> /etc/php/7.4/cli/php.ini
 
 ## Install the latest fping
@@ -50,9 +55,11 @@ cp /usr/share/sonar_poller/ssl/self-signed.conf /etc/nginx/snippets/
 cp /usr/share/sonar_poller/ssl/default /etc/nginx/sites-available/
 systemctl restart nginx
 
+## Install vendor libraries needed for poller
 mkdir /var/www/.composer
 chown www-data:www-data /var/www/.composer
-(cd /usr/share/sonar_poller; sudo -u www-data composer install;)
+cd /usr/share/sonar_poller/
+sudo -u www-data composer install
 
 ## Setup log rotation
 cp /usr/share/sonar_poller/config/sonar_poller_logs /etc/logrotate.d/
@@ -65,6 +72,7 @@ echo "0 0 * * * root bash /usr/share/sonar_poller/upgrade.sh" > /etc/cron.d/sona
 apt-get install -y supervisor
 cp /usr/share/sonar_poller/config/sonar_poller.conf /etc/supervisor/conf.d/
 systemctl restart supervisor
+
 
 ## Reboot to apply ulimit changes
 echo "Rebooting...";

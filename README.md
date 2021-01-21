@@ -33,16 +33,16 @@ Check out an existing mapper for examples of the best way to implement a new one
 ## Basic CLI Operation
 ### Starting/Stopping the poller service
 
-Run `supervisor sonar_poller restart` to restart the poller
+Run `supervisorctl sonar_poller restart` to restart the poller
 
-Run `supervisor sonar_poller stop` to stop the poller
+Run `supervisorctl sonar_poller stop` to stop the poller
 
 ### Enabling Debug Mode
 
 You will need to set the environment variable `SONAR_DEBUG_MODE`, setting it to 1 will enable debugging, and setting it to 0 will disable debugging.
 
-Run `export SONAR_DEBUG_MODE = 1` to enable debugging
+Run `export SONAR_DEBUG_MODE=1` to enable debugging
 
-Run `export SONAR_DEBUG_MODE = 0` to disable debugging
+Run `export SONAR_DEBUG_MODE=0` to disable debugging
 
-If debug logging doesn't immediately take effect, restart the poller.
+Restart the poller for changes to take effect
