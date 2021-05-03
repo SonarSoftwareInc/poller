@@ -33,9 +33,9 @@ Check out an existing mapper for examples of the best way to implement a new one
 ## Basic CLI Operation
 ### Starting/Stopping the poller service
 
-Run `supervisorctl sonar_poller restart` to restart the poller
+Run `supervisorctl restart sonar_poller` to restart the poller
 
-Run `supervisorctl sonar_poller stop` to stop the poller
+Run `supervisorctl stop sonar_poller` to stop the poller
 
 ### Enabling Debug Mode
 
