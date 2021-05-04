@@ -10,7 +10,7 @@ This poller provides a way to collect data from your network and return it to So
 
 Feel free to reach out to Sonar support if you need assistance getting the poller up and running.
 
-The poller is designed to run on [Ubuntu 20](https://releases.ubuntu.com/20.04.1/ubuntu-20.04.1-live-server-amd64.iso). Install on bare metal or a VM, and then follow the steps below.
+The poller is designed to run on [Ubuntu 20 Server Edition](https://releases.ubuntu.com/20.04.1/ubuntu-20.04.1-live-server-amd64.iso). Install on bare metal or a VM, and then follow the steps below.
 
 1. From the command line, enter `wget https://raw.githubusercontent.com/SonarSoftwareInc/poller/master/setup.sh`
 2. Enter `chmod +x setup.sh`
@@ -33,9 +33,9 @@ Check out an existing mapper for examples of the best way to implement a new one
 ## Basic CLI Operation
 ### Starting/Stopping the poller service
 
-Run `supervisorctl sonar_poller restart` to restart the poller
+Run `supervisorctl restart sonar_poller` to restart the poller
 
-Run `supervisorctl sonar_poller stop` to stop the poller
+Run `supervisorctl stop sonar_poller` to stop the poller
 
 ### Enabling Debug Mode
 
@@ -45,4 +45,4 @@ Run `export SONAR_DEBUG_MODE=1` to enable debugging
 
 Run `export SONAR_DEBUG_MODE=0` to disable debugging
 
-Restart the poller for changes to take effect
+Restart the poller (see the supervisorctl commands above) to enable the changes to take effect
