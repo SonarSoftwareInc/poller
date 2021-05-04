@@ -6,7 +6,6 @@ use Exception;
 use PEAR2\Net\RouterOS\Client;
 use PEAR2\Net\RouterOS\Request;
 use PEAR2\Net\RouterOS\Response;
-use PEAR2\Net\RouterOS\SocketException;
 use PEAR2\Net\Transmitter\NetworkStream;
 use Poller\DeviceMappers\BaseDeviceMapper;
 use Poller\Services\Log;
@@ -21,7 +20,44 @@ class MikroTik extends BaseDeviceMapper
     public function map(SnmpResult $snmpResult)
     {
         $snmpResult = $this->getWirelessClients(parent::map($snmpResult));
+        $snmpResult = $this->getLldpTable($snmpResult);
         return $this->getBridgingTable($snmpResult);
+    }
+
+    private function getLldpTable(SnmpResult $snmpResult):SnmpResult
+    {
+        $interfaces = $snmpResult->getInterfaces();
+
+        try {
+            $macResult = $this->walk("1.3.6.1.4.1.14988.1.1.11.1.1.3");
+            $interfaceResult = $this->walk("1.3.6.1.4.1.14988.1.1.11.1.1.8");
+
+            foreach ($macResult->getAll() as $oid => $value) {
+                $boom = explode(".", $oid);
+                $interfaceIndex = $boom[count($boom)-1];
+                try {
+                    $mac = Formatter::formatMac($value);
+
+                    $interfaceNumber = $interfaceResult->get("1.3.6.1.4.1.14988.1.1.11.1.1.8.$interfaceIndex");
+                    if(isset($interfaces[$interfaceNumber])) {
+                        $existingMacs = $interfaces[$interfaceNumber]->getConnectedLayer2Macs();
+                        $existingMacs[] = $mac;
+                        $interfaces[$interfaceNumber]->setConnectedLayer2Macs($existingMacs);
+                    }
+                } catch (Exception $e) {
+                    continue;
+                }
+            }
+        } catch (Exception $e) {
+            $log = new Log();
+            $log->exception($e, [
+                'ip' => $this->device->getIp(),
+            ]);
+        }
+
+        $snmpResult->setInterfaces($interfaces);
+
+        return $snmpResult;
     }
 
     /**
@@ -40,7 +76,7 @@ class MikroTik extends BaseDeviceMapper
                     $mac = Formatter::formatMac($value);
 
                     if(isset($interfaces[$interfaceIndex])) {
-                        $existingMacs = $interfaces[$interfaceIndex]->setConnectedLayer1Macs();
+                        $existingMacs = $interfaces[$interfaceIndex]->getConnectedLayer1Macs();
                         $existingMacs[] = $mac;
                         $interfaces[$interfaceIndex]->setConnectedLayer1Macs($existingMacs);
                     }
@@ -48,7 +84,7 @@ class MikroTik extends BaseDeviceMapper
                     continue;
                 }
             }
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $log = new Log();
             $log->exception($e, [
                 'ip' => $this->device->getIp(),
