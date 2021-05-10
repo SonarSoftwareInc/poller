@@ -6,3 +6,9 @@ function get_version() {
     }
     return 'Unknown';
 }
+
+function bugsnag():\Bugsnag\Client {
+    $bugsnag = \Bugsnag\Client::make('2c207cc0a41f9f0bed4322516629afed');
+    \Bugsnag\Handler::register($bugsnag);
+    return $bugsnag;
+}

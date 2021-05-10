@@ -33,6 +33,8 @@ class PingHosts implements Task
      */
     public function run(Environment $environment)
     {
+        bugsnag();
+
         $interval = 500 + (100*rand(0, 5));
         $flags = [
             '-b12', //12 byte packet
