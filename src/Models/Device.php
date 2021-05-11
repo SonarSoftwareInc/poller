@@ -92,7 +92,7 @@ class Device
                     'user' => $this->monitoringTemplate->getSnmpCommunity(),
                     'sec_level' => $this->monitoringTemplate->getSnmp3SecLevel(),
                     'auth_mech' => $this->monitoringTemplate->getSnmp3AuthProtocol() === 'SHA' ? 'sha' : 'md5',
-                    'auth_pwd' => $this->monitoringTemplate->getSnmp3AuthProtocol(),
+                    'auth_pwd' => $this->monitoringTemplate->getSnmp3AuthPassphrase(),
                     'priv_mech' => $this->monitoringTemplate->getSnmp3PrivProtocol() === 'AES' ? 'aes' : 'des',
                     'priv_pwd' => $this->monitoringTemplate->getSnmp3PrivPassphrase(),
                     'engine_id' => $this->monitoringTemplate->getSnmp3ContextEngineId(),
