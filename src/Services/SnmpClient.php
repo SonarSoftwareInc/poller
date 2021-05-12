@@ -86,12 +86,12 @@ class SnmpClient
             $options[] = '-c' . escapeshellarg($this->options['community']);
         } else {
             $options[] = '-l' . escapeshellarg($this->convertSecLevel());
-            if ($options['context_name']) {
+            if (isset($options['context_name'])) {
                 $options[] = '-n' . escapeshellarg($this->options['context_name']);
             }
             $options[] = '-a' . escapeshellarg($this->options['auth_mech']);
             $options[] = '-A' . escapeshellarg($this->options['auth_pwd']);
-            if ($options['engine_id']) {
+            if (isset($options['engine_id'])) {
                 $options[] = '-E' . escapeshellarg($options['engine_id']);
             }
             $options[] = '-x' . escapeshellarg($this->options['priv_mech']);
