@@ -47,6 +47,10 @@ class Ws6Mini extends BaseDeviceMapper
             $bridgingMacs = [];
             while ($line !== false) {
                 $boom = preg_split('/\s+/', $line);
+                if (!is_numeric($boom[1])) {
+                    $line = strtok($separator);
+                    continue;
+                }
                 try {
                     if (!isset($bridgingMacs["port {$boom[1]}"])) {
                         $bridgingMacs["port {$boom[1]}"] = [];
@@ -63,22 +67,23 @@ class Ws6Mini extends BaseDeviceMapper
             $ssh->read('(BusyBox)', SSH2::READ_REGEX);
             $interfaceMacs = $ssh->exec("ip -o link | awk '$2 != \"lo:\" {print $2, $(NF-2)}' | grep -v @\n");
             $line = strtok($interfaceMacs, $separator);
+            //Netonix uses the same MAC for every interface, they are bound to eth0 internally
+            $eth0Mac = null;
             while ($line !== false) {
-                $boom = explode(' ', $interfaceMacs);
-                $interface = str_replace(':', '', $boom[0]);
-                $interface = str_replace('eth', '', $interface);
-                $interface = 'Port ' . (string)((int)$interface+1);
-                $mac = Formatter::formatMac($boom[1]);
-                $readInterfaces[strtolower($interface)] = $mac;
+                if (str_contains($line, 'eth0:')) {
+                    $boom = explode(' ', $line);
+                    $interface = str_replace(':', '', $boom[0]);
+                    $interface = str_replace('eth', '', $interface);
+                    $eth0Mac = Formatter::formatMac($boom[1]);
+                    break;
+                }
                 $line = strtok($separator);
             }
 
             foreach ($interfaces as $key => $interface) {
-                if (isset($readInterfaces[strtolower($interface->getName())])) {
-                    $interfaces[$key]->setMacAddress($readInterfaces[strtolower($interface->getName())]);
-                    if (isset($bridgingMacs[strtolower($interface->getName())])) {
-                        $interfaces[$key]->setConnectedLayer2Macs(array_merge($bridgingMacs[strtolower($interface->getName())], $interfaces[$key]->getConnectedLayer2Macs()));
-                    }
+                $interfaces[$key]->setMacAddress($eth0Mac);
+                if (isset($bridgingMacs[strtolower($interface->getName())])) {
+                    $interfaces[$key]->setConnectedLayer2Macs(array_merge($bridgingMacs[strtolower($interface->getName())], $interfaces[$key]->getConnectedLayer2Macs()));
                 }
             }
         } catch (Throwable $e) {
