@@ -48,17 +48,14 @@ class Ws6Mini extends BaseDeviceMapper
             while ($line !== false) {
                 $boom = preg_split('/\s+/', $line);
                 try {
-                    $bridgingMacs[] = Formatter::formatMac($boom[0]);
+                    if (!isset($bridgingMacs["port {$boom[1]}"])) {
+                        $bridgingMacs["port {$boom[1]}"] = [];
+                    }
+                    $bridgingMacs["port {$boom[1]}"][] = Formatter::formatMac($boom[0]);
                 } catch (InvalidArgumentException $e) {
                     continue;
                 } finally {
                     $line = strtok($separator);
-                }
-            }
-
-            if (count($bridgingMacs) > 0) {
-                foreach ($interfaces as $key => $interface) {
-                    $interfaces[$key]->setConnectedLayer2Macs(array_merge($bridgingMacs, $interfaces[$key]->getConnectedLayer2Macs()));
                 }
             }
 
@@ -79,6 +76,9 @@ class Ws6Mini extends BaseDeviceMapper
             foreach ($interfaces as $key => $interface) {
                 if (isset($readInterfaces[strtolower($interface->getName())])) {
                     $interfaces[$key]->setMacAddress($readInterfaces[strtolower($interface->getName())]);
+                    if (isset($bridgingMacs[strtolower($interface->getName())])) {
+                        $interfaces[$key]->setConnectedLayer2Macs(array_merge($bridgingMacs[strtolower($interface->getName())], $interfaces[$key]->getConnectedLayer2Macs()));
+                    }
                 }
             }
         } catch (Throwable $e) {
