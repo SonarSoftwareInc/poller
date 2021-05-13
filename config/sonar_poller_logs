@@ -4,5 +4,5 @@
     rotate 7
     compress
     notifempty
-    create 0640 www-data www-data
+    create 0666 www-data www-data
 }
