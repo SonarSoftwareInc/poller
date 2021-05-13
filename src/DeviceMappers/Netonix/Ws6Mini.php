@@ -2,6 +2,7 @@
 
 namespace Poller\DeviceMappers\Netonix;
 
+use InvalidArgumentException;
 use phpseclib\Net\SSH2;
 use Poller\DeviceMappers\BaseDeviceMapper;
 use Poller\Services\Log;
@@ -36,11 +37,34 @@ class Ws6Mini extends BaseDeviceMapper
         $readInterfaces = [];
 
         try {
+            $separator = "\r\n";
+
             $ssh->read('[#]', SSH2::READ_REGEX);
+            $ssh->write("show mac table\n");
+            $bridgingTable = $ssh->read();
+
+            $line = strtok($bridgingTable, $separator);
+            $bridgingMacs = [];
+            while ($line !== false) {
+                $boom = preg_split('/\s+/', $line);
+                try {
+                    $bridgingMacs[] = Formatter::formatMac($boom[0]);
+                } catch (InvalidArgumentException $e) {
+                    continue;
+                } finally {
+                    $line = strtok($separator);
+                }
+            }
+
+            if (count($bridgingMacs) > 0) {
+                foreach ($interfaces as $key => $interface) {
+                    $interfaces[$key]->setConnectedLayer2Macs(array_merge($bridgingMacs, $interfaces[$key]->getConnectedLayer2Macs()));
+                }
+            }
+
             $ssh->write("cmdline\n");
             $ssh->read('(BusyBox)', SSH2::READ_REGEX);
             $interfaceMacs = $ssh->exec("ip -o link | awk '$2 != \"lo:\" {print $2, $(NF-2)}' | grep -v @\n");
-            $separator = "\r\n";
             $line = strtok($interfaceMacs, $separator);
             while ($line !== false) {
                 $boom = explode(' ', $interfaceMacs);
