@@ -36,7 +36,6 @@ class SnmpGet implements Task
      */
     public function run(Environment $environment)
     {
-        $bugsnag = bugsnag();
         $snmp = $this->device->getSnmpClient();
         try {
             $snmpResult = new SnmpResult(
@@ -57,7 +56,6 @@ class SnmpGet implements Task
         } catch (SnmpException $e) {
             return new SnmpError(true, $e->getMessage(), $this->device->getInventoryItemID());
         } catch (Throwable $e) {
-            $bugsnag->notifyException($e);
             return new SnmpError(false, $e->getMessage(), $this->device->getInventoryItemID());
         } finally {
             unset($snmp);
