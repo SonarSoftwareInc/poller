@@ -113,8 +113,6 @@ function bootstrap()
     $booboo->pushHandler(new LogHandler($log->getLogger()));
     $booboo->setErrorPageFormatter(new CommandLineFormatter());
     $booboo->register();
-
-    bugsnag();
 }
 
 function writeDebugLog($results, $timeTaken)
