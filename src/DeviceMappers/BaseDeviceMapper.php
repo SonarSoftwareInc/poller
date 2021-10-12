@@ -28,6 +28,9 @@ abstract class BaseDeviceMapper
     //Set this to true if this device exposes IPv4/IPv6 address assignments
     protected bool $exposesIpAddresses = true;
 
+    /**
+     * @var NetworkInterface[]
+     */
     protected array $interfaces = [];
 
     /**
@@ -176,8 +179,9 @@ abstract class BaseDeviceMapper
                          * 6 = Ethernet
                          * 71 = Radio Spread Spectrum
                          * 157 = Wireless P2P
+                         * 250 = GPON
                          */
-                        if (!in_array($interfaceType, [6, 71, 157])) {
+                        if (!in_array($interfaceType, [6, 71, 157, 250])) {
                             continue;
                         }
 
@@ -206,7 +210,9 @@ abstract class BaseDeviceMapper
                     }
 
                     try {
-                        $this->interfaces[$interfaceID]->setStatus((bool)$oidList->get('1.3.6.1.2.1.2.2.1.8.' . $interfaceID));
+                        // ifOperStatus 1 = up
+                        // ifOperStatus 2 = down
+                        $this->interfaces[$interfaceID]->setStatus($oidList->get('1.3.6.1.2.1.2.2.1.8.' . $interfaceID) == 1);
                     } catch (SnmpException $e) {
                         $log->exception($e, [
                             'ip' => $this->device->getIp()
