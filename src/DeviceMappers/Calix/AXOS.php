@@ -35,8 +35,6 @@ class AXOS extends BaseDeviceMapper
      */
     public function map(SnmpResult $snmpResult): SnmpResult
     {
-        $snmpResult = parent::map($snmpResult);
-
         if (!$this->sshLogin()) {
             throw new \Exception("Failed to map: could not login via SSH to device " .
                 $this->device->getIp() . ".");
@@ -48,6 +46,8 @@ class AXOS extends BaseDeviceMapper
         }
         $onts = $this->getOnts();
         $this->ssh->disconnect();
+
+        $snmpResult = parent::map($snmpResult);
 
         // filter out ONT "interfaces"
         $this->interfaces = \array_filter(
