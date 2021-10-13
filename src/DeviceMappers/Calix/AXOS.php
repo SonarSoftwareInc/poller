@@ -30,26 +30,30 @@ class AXOS extends BaseDeviceMapper
         $this->credentials = $this->database->getCredential(Database::CALIX_AXOS_SSH);
     }
 
-    public function map(SnmpResult $snmpResult)
+    /**
+     * @throws \Exception
+     */
+    public function map(SnmpResult $snmpResult): SnmpResult
     {
         $snmpResult = parent::map($snmpResult);
 
         if (!$this->sshLogin()) {
-            return $snmpResult;
+            throw new \Exception("Failed to map: could not login via SSH to device " .
+                $this->device->getIp() . ".");
         }
 
+        if (!($interfaceNames = $this->getInterfaceNames())) {
+            throw new \Exception("Failed to map: could not get interface names from device " .
+                $this->device->getIp() . ".");
+        }
         $onts = $this->getOnts();
-        $interfaceNames = $this->getInterfaceNames();
-
         $this->ssh->disconnect();
 
         // filter out ONT "interfaces"
-        if ($interfaceNames) {
-            $this->interfaces = \array_filter(
-                $this->interfaces,
-                fn(NetworkInterface $interface): bool => \in_array($interface->getName(), $interfaceNames),
-            );
-        }
+        $this->interfaces = \array_filter(
+            $this->interfaces,
+            fn(NetworkInterface $interface): bool => \in_array($interface->getName(), $interfaceNames),
+        );
 
         $this->associateOntsToPonInterfaces($onts);
 
