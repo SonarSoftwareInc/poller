@@ -15,11 +15,15 @@ class Database
     const MIKROTIK_API = 'MIKROTIK_API';
     const NETONIX_SSH = 'NETONIX_SSH';
     const UBIQUITI_TOUGHSWITCH_SSH = 'UBIQUITI_TOUGHSWITCH_SSH';
+    const UBIQUITI_UFIBER_OLT_HTTPS = 'UBIQUITI_UFIBER_OLT_HTTPS';
+    const CALIX_AXOS_SSH = 'CALIX_AXOS_SSH';
 
     private $translations = [
         self::MIKROTIK_API => 'MikroTik API (SSL)',
         self::NETONIX_SSH => 'Netonix SSH',
         self::UBIQUITI_TOUGHSWITCH_SSH => 'Ubiquiti ToughSwitch SSH',
+        self::UBIQUITI_UFIBER_OLT_HTTPS => 'Ubiquiti UFiber OLT HTTPS',
+        self::CALIX_AXOS_SSH  => 'Calix AXOS SSH',
     ];
 
     private PDO $dbh;
