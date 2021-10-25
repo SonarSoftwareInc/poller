@@ -27,7 +27,6 @@ class Ubiquiti implements IdentifierInterface
         $this->device = $device;
 
         $this->interfaces = $this->getInterfaceNamesAsKeys();
-        print_r($this->interfaces);
     }
 
     public function getMapper()
