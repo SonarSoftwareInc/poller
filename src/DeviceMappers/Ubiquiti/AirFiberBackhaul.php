@@ -4,87 +4,82 @@ namespace Poller\DeviceMappers\Ubiquiti;
 
 use Exception;
 use Poller\DeviceMappers\BaseDeviceMapper;
+use Poller\Exceptions\SnmpException;
+use Poller\Models\Device;
 use Poller\Services\Log;
 use Poller\Models\SnmpResult;
 use Poller\Services\Formatter;
 use Throwable;
 
+/**
+ * af11, af24, af5x
+ */
+
 class AirFiberBackhaul extends BaseDeviceMapper
 {
-    private int $air0 = 1;
+    const OID_REMOTE_MAC = '1.3.6.1.4.1.41112.1.3.2.1.45.1';
+    const OID_RXCAPACITY = '1.3.6.1.4.1.41112.1.3.2.1.5.1';
+    const OID_TXCAPACITY = '1.3.6.1.4.1.41112.1.3.2.1.6.1';
 
-    public function map(SnmpResult $snmpResult)
+    public function map(SnmpResult $snmpResult): SnmpResult
     {
-        $interfaces = $snmpResult->getInterfaces();
-        foreach ($interfaces as $key => $interface) {
-            if (strpos($interface->getName(), "air0") !== false) {
-                $this->air0 = (int)$key;
-                break;
+        $snmpResult = parent::map($snmpResult);
+
+        if ($air0 = $snmpResult->getInterfaceByName('air0')) {
+            if ($remoteMac = $this->getRemoteBackhaulMac()) {
+                $air0->setConnectedLayer1Macs([$remoteMac]);
             }
+
+            if ($wirelessCapacities = $this->getWirelessCapacities()) {
+                $air0->setSpeedOut($wirelessCapacities['tx']);
+                $air0->setSpeedIn($wirelessCapacities['rx']);
+            }
+
+            return $snmpResult;
         }
-        $snmpResult = $this->getWirelessCapacity(parent::map($snmpResult));
-        return $this->getRemoteBackhaulMac($snmpResult);
+
+        throw new \RuntimeException(
+            "air0 interface is non-existent on device ".$this->device->getIp().". Either not an AirFiber device or there was an SNMP error."
+        );
     }
 
     /**
-     * Get the capacity of the wireless interface
-     * @param SnmpResult $snmpResult
-     * @return SnmpResult
+     * @return array{tx: int, rx: int}|null
      */
-    private function getWirelessCapacity(SnmpResult $snmpResult):SnmpResult
+    private function getWirelessCapacities(): ?array
     {
-        if (isset($interfaces[$this->air0])) {
-            $interfaces = $snmpResult->getInterfaces();
-            try {
-                $capacity = $this->device->getSnmpClient()->get("1.3.6.1.4.1.41112.1.3.2.1.5");
-                $interfaces[$this->air0]->setSpeedIn(($capacity->get("1.3.6.1.4.1.41112.1.3.2.1.5"))/1000**2);
-                $interfaces[$this->air0]->setSpeedOut($interfaces[$this->air0]->getSpeedIn());
-            } catch (Throwable $e) {
-                $log = new Log();
-                $log->exception($e, [
-                    'ip' => $this->device->getIp(),
-                    'oid' => '1.3.6.1.4.1.41112.1.3.2.1.5',
-                ]);
-            }
+        try {
+            $txCapacity = $this->device
+                ->getSnmpClient()
+                ->get(self::OID_TXCAPACITY)
+                ->get(self::OID_TXCAPACITY);
 
-            $snmpResult->setInterfaces($interfaces);
+            $rxCapacity = $this->device
+                ->getSnmpClient()
+                ->get(self::OID_RXCAPACITY)
+                ->get(self::OID_RXCAPACITY);
+
+            return [
+                'tx' => $txCapacity/1000**2,
+                'rx' => $rxCapacity/1000**2,
+            ];
+        } catch (SnmpException $e) {
+            return null;
         }
 
-        return $snmpResult;
     }
 
-    /**
-     * @param SnmpResult $snmpResult
-     * @return SnmpResult
-     */
-    private function getRemoteBackhaulMac(SnmpResult $snmpResult):SnmpResult
+    private function getRemoteBackhaulMac(): ?string
     {
-        $interfaces = $snmpResult->getInterfaces();
-        if (isset($interfaces[$this->air0])) {
-            $existingMacs = $interfaces[$this->air0]->getConnectedLayer1Macs();
+        try {
+            $remoteMac = $this->device
+                ->getSnmpClient()
+                ->get(self::OID_REMOTE_MAC)
+                ->get(self::OID_REMOTE_MAC);
 
-            try {
-                $result = $this->walk("1.3.6.1.4.1.41112.1.3.2.1.45");
-                foreach ($result->getAll() as $oid => $value)
-                {
-                    try {
-                        $existingMacs[] = Formatter::formatMac($value);
-                    } catch (Exception $e) {
-                        $log = new Log();
-                        $log->exception($e);
-                    }
-                }
-
-            }
-            catch (Exception $e) {
-                $log = new Log();
-                $log->exception($e);
-            }
-
-            $interfaces[$this->air0]->setConnectedLayer1Macs($existingMacs);
-            $snmpResult->setInterfaces($interfaces);
+            return $remoteMac ? Formatter::formatMac($remoteMac) : null;
+        } catch (SnmpException $e) {
+            return null;
         }
-
-        return $snmpResult;
     }
 }
