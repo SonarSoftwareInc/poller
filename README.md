@@ -127,7 +127,7 @@ Using the device list and the information in the matching monitoring template, e
                     "1": { // Last number in the oid string
                         "id": 1, // Last number in the oid string
                         "description": "...",
-                        "up": tru,
+                        "up": true,
                         "connected_11": [ // layer 1 connections (wireless connections by default)
                             "FF:FF:FF:FF:FF:FF",
                             ...
