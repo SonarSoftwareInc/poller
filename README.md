@@ -106,7 +106,7 @@ Using the device list and the information in the matching monitoring template, e
     "version": "2.0.12-5-g3e1048b", // output of `git describe --tags`
     "time_taken": 0.34, // in secoonds
     "results": {
-        123: { // Sonar item ID
+        "123": { // Sonar item ID
             "icmp": {
                 "low": 12.34, // in miliseconds
                 "high": 12.34, // in miliseconds
