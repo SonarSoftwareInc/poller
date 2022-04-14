@@ -124,8 +124,8 @@ Using the device list and the information in the matching monitoring template, e
                     "description": "..."
                 },
                 "interfaces": {
-                    {last_number_of_oid_for_interface}: {
-                        "id": 1, // Last number in the oid string for interface information
+                    "1": { // Last number in the oid string
+                        "id": 1, // Last number in the oid string
                         "description": "...",
                         "up": tru,
                         "connected_11": [ // layer 1 connections (wireless connections by default)
