@@ -180,6 +180,8 @@ The poller performs ICMP pings using the following command
 ``` bash
 interval=$(( 500 + $RANDOM % 500 ))    # Random number in the range [500,1000]
 /usr/local/sbin/fping -b12 \           # 12 byte packet
+                      -C10 \           # number of ping packets
+                      -t${timout} \    # timeout in ms before failure
                       -p${interval} \  # interval between ping packets
                       -r0 \            # no retries
                       -B1.5 \          # backoff multiplier
