@@ -99,7 +99,6 @@ class AuthedUserController
         $variables['table_values']['credentials'] = $database->getAllCredentials();
 
         $handle = popen('tail -250 ' . __DIR__ . '/../../../logs/poller.log', 'r');
-        $line = 0;
         if ($handle) {
             while (($buffer = fgets($handle, 50000)) !== false) {
                 $split = explode(' ', $buffer, 4);
@@ -109,7 +108,6 @@ class AuthedUserController
                     'level' => str_replace(':', '', $split[2]),
                     'message' => $split[3]
                 ];
-                $line++;
             }
             pclose($handle);
         }
