@@ -98,11 +98,9 @@ class AuthedUserController
 
         $variables['table_values']['credentials'] = $database->getAllCredentials();
 
-        $handle = fopen(__DIR__ . '/../../../logs/poller.log', 'r');
-        $lines = 250;
-        $line = 0;
+        $handle = popen('tail -250 ' . __DIR__ . '/../../../logs/poller.log', 'r');
         if ($handle) {
-            while (($buffer = fgets($handle, 50000)) !== false && $line < $lines) {
+            while (($buffer = fgets($handle, 50000)) !== false) {
                 $split = explode(' ', $buffer, 4);
                 $variables['logs'][] = [
                     'date' => str_replace('[', '',$split[0]),
@@ -110,9 +108,8 @@ class AuthedUserController
                     'level' => str_replace(':', '', $split[2]),
                     'message' => $split[3]
                 ];
-                $line++;
             }
-            fclose($handle);
+            pclose($handle);
         }
 
         $variables['logs'] = array_reverse(array_slice($variables['logs'], -250, 250));
