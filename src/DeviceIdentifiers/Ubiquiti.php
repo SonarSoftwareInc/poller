@@ -2,58 +2,98 @@
 
 namespace Poller\DeviceIdentifiers;
 
-use Exception;
+use Poller\DeviceMappers\Ubiquiti\AirFiber60Backhaul;
 use Poller\DeviceMappers\Ubiquiti\AirFiberBackhaul;
-use Poller\DeviceMappers\Ubiquiti\AirMaxAccessPoint;
+use Poller\DeviceMappers\Ubiquiti\AccessPoint;
 use Poller\DeviceMappers\Ubiquiti\ToughSwitch;
-use Poller\Services\Log;
+use Poller\Exceptions\SnmpException;
 use Poller\Models\Device;
-use Poller\Models\SnmpResponse;
-use Throwable;
 
 class Ubiquiti implements IdentifierInterface
 {
+    const OID_IFDESCR         = '1.3.6.1.2.1.2.2.1.2';
+    const OID_AFLTU_DEV_MODEL = '1.3.6.1.4.1.41112.1.10.1.3.2.0';
+    const OID_AF60_DEV_MODEL  = '1.3.6.1.4.1.41112.1.11.1.2.2.1';
+
     private Device $device;
+
+    private array $interfaces;
+
+    /**
+     * @throws SnmpException
+     */
     public function __construct(Device $device)
     {
         $this->device = $device;
+
+        $this->interfaces = $this->getInterfaceNamesAsKeys();
     }
 
     public function getMapper()
     {
-        $interfaces = [];
-        try {
-            $oids = $this->walk('1.3.6.1.2.1.2.2.1.2');
-            foreach ($oids->getAll() as $oid => $value) {
-                $interfaces[strtolower($value)] = true;
-            }
-            if (isset($interfaces['air0'])) {
-                return new AirFiberBackhaul($this->device);
-            } else if (isset($interfaces['wifi0'])) {
-                return new AirMaxAccessPoint($this->device);
-            } else {
-                return new ToughSwitch($this->device);
-            }
-        } catch (Exception $e) {
-            return new AirMaxAccessPoint($this->device);
+        if ($this->isAirFiber()) {
+            return new AirFiberBackhaul($this->device);
+        } else if ($this->isAirMax()) {
+            return new AccessPoint($this->device);
+        } else if ($this->isLtu()) {
+            return new AccessPoint($this->device, AccessPoint::OID_AFLTU_STA_REMOTE_MAC);
+        } else if ($this->isAirFiber60()) {
+            return new AirFiber60Backhaul($this->device);
+        } else {
+            return new ToughSwitch($this->device);
         }
     }
 
-    /**
-     * @param string $oid
-     * @return SnmpResponse
-     */
-    protected function walk(string $oid):SnmpResponse
+    private function isAirFiber()
+    {
+        return isset($this->interfaces['air0']);
+    }
+
+    private function isAirFiber60(): bool
     {
         try {
-            return $this->device->getSnmpClient()->walk($oid);
-        } catch (Throwable $e) {
-            $log = new Log();
-            $log->exception($e, [
-                'ip' => $this->device->getIp(),
-                'oid' => $oid
-            ]);
-            return new SnmpResponse([]);
+            $af60Model = $this->device
+                ->getSnmpClient()
+                ->get(self::OID_AF60_DEV_MODEL)
+                ->get(self::OID_AF60_DEV_MODEL);
+
+            return !empty($af60Model);
+        } catch (SnmpException $e) {
+            //
         }
+
+        return false;
+    }
+
+    private function isAirMax()
+    {
+        return isset($this->interfaces['wifi0']);
+    }
+
+    private function isLtu(): bool
+    {
+        try {
+            $ltuModel = $this->device
+                ->getSnmpClient()
+                ->get(self::OID_AFLTU_DEV_MODEL)
+                ->get(self::OID_AFLTU_DEV_MODEL);
+
+            return !empty($ltuModel);
+        } catch (SnmpException $e) {
+            //
+        }
+
+        return false;
+    }
+
+    /**
+     * @throws SnmpException
+     */
+    private function getInterfaceNamesAsKeys(): array
+    {
+        return \array_fill_keys(
+            $this->device->getSnmpClient()->walk(self::OID_IFDESCR)->getAll(),
+            true
+        );
     }
 }
