@@ -43,7 +43,8 @@ grep -qxF '* hard nofile 65535' /etc/systemd/system.conf || echo "* hard nofile 
 ## Clone the repo and run initial setup
 (cd /usr/share; rm -rf sonar_poller; mkdir sonar_poller; cd sonar_poller; git clone https://github.com/SonarSoftwareInc/poller.git .;)
 
-## Write version
+## Write version and prevent potential dubious ownership error
+git config --global --add safe.directory /usr/share/sonar_poller
 (cd /usr/share/sonar_poller; git describe --tags > version;)
 
 ## Setup permissions
