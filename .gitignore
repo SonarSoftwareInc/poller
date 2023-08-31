@@ -5,3 +5,4 @@ node_modules/
 www/assets/
 permanent_config/database
 version
+/nbproject/private/
