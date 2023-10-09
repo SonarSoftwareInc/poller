@@ -3,11 +3,15 @@
 namespace Poller\Models;
 
 use Poller\Models\Device\Metadata;
+use Poller\Models\Device\NetworkInterface;
 
 class SnmpResult implements CoroutineResultInterface
 {
     private SnmpResponse $results;
     private ?Metadata $metadata = null;
+    /**
+     * @var NetworkInterface[]
+     */
     private array $interfaces = [];
     private int $id;
 
@@ -49,6 +53,17 @@ class SnmpResult implements CoroutineResultInterface
     public function getInterfaces(): array
     {
         return $this->interfaces;
+    }
+
+    public function getInterfaceByName(string $name): ?NetworkInterface
+    {
+        foreach ($this->interfaces as $interface) {
+            if ($interface->getName() == $name) {
+                return $interface;
+            }
+        }
+
+        return null;
     }
 
     /**

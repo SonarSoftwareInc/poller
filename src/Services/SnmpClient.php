@@ -15,7 +15,10 @@ class SnmpClient
         $this->options = $options;
     }
 
-    public function walk(string $oid):SnmpResponse
+    /**
+     * @throws SnmpException
+     */
+    public function walk(string $oid): SnmpResponse
     {
         //bulkwalk if v2/v3, regular if v1
         if ((int)$this->options['version'] === 1) {
@@ -42,7 +45,10 @@ class SnmpClient
         }
     }
 
-    public function get($oids):SnmpResponse
+    /**
+     * @throws SnmpException
+     */
+    public function get($oids): SnmpResponse
     {
         if (is_array($oids)) {
             $oidString = implode(' ', array_map(function ($oid) {
