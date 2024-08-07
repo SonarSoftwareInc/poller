@@ -26,7 +26,9 @@ class EPMPAccessPoint extends BaseDeviceMapper
                 try {
                     $result = $this->walk("1.3.6.1.4.1.17713.21.1.2.30.1.1");
                     foreach ($result->getAll() as $datum) {
-                        $existingMacs[] = Formatter::formatMac($datum);
+                        if (Formatter::validateMac($datum)) {
+                            $existingMacs[] = Formatter::formatMac($datum);
+                        }
                     }
                 } catch (Throwable $e) {
                     $log = new Log();
@@ -36,9 +38,13 @@ class EPMPAccessPoint extends BaseDeviceMapper
                 }
 
                 //If this is a station (slave end of a backhaul, for example) we need to query this OID as well
+                // However, it can return either an empty string or "Not Associated" which need to be handled.
                 try {
                     $result = $this->device->getSnmpClient()->get('1.3.6.1.4.1.17713.21.1.2.19.0');
-                    $existingMacs[] = Formatter::formatMac($result->get('1.3.6.1.4.1.17713.21.1.2.19.0'));
+                    $resultMac = $result->get('1.3.6.1.4.1.17713.21.1.2.19.0');
+                    if (Formatter::validateMac($resultMac)) {
+                        $existingMacs[] = Formatter::formatMac($resultMac);
+                    }
                 } catch (Throwable $e) {
                     $log = new Log();
                     $log->exception($e, [
