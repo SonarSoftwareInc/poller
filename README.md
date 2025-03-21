@@ -10,11 +10,14 @@ This poller provides a way to collect data from your network and return it to So
 
 Feel free to reach out to Sonar support if you need assistance getting the poller up and running.
 
-The poller is designed to run on [Ubuntu 20 Server Edition](https://releases.ubuntu.com/20.04.1/ubuntu-20.04.1-live-server-amd64.iso). Install on bare metal or a VM, and then follow the steps below.
+The poller is designed to run on [Ubuntu 24 Server Edition](https://releases.ubuntu.com/24.04.2/ubuntu-24.04.2-live-server-amd64.iso). Install on bare metal or a VM, and then follow the steps below.
 
-1. From the command line, enter `wget https://raw.githubusercontent.com/SonarSoftwareInc/poller/master/setup.sh`
-2. Enter `chmod +x setup.sh`
-3. Enter `sudo ./setup.sh`
+Logon to the server and from the command line run the following commands:
+```bash
+wget https://raw.githubusercontent.com/SonarSoftwareInc/poller/master/setup.sh
+chmod +x setup.sh
+sudo ./setup.sh
+```
 
 The poller should automatically install and get up and running. Once this is complete, you can access the poller web interface by navigating to `https://SERVER_IP` in a browser, where `SERVER_IP` is the IP address of the server you installed the poller on.
 
