@@ -12,7 +12,7 @@ fi
 # Switch to the appropriate branch and pull updates
 cd /usr/share/sonar_poller
 git reset --hard "$GIT_BRANCH"
-git pull "$GIT_BRANCH"
+git pull
 
 # Update version and dependencies
 git describe --tags > version
