@@ -22,6 +22,8 @@ setcap cap_net_raw+ep /usr/bin/fping
 ## Setup sysctl for better monitoring performance
 grep -qxF 'net.core.somaxconn=4096' /etc/sysctl.conf || echo "net.core.somaxconn=4096" >> /etc/sysctl.conf
 grep -qxF 'net.ipv4.icmp_ratelimit=0' /etc/sysctl.conf || echo "net.ipv4.icmp_ratelimit=0" >> /etc/sysctl.conf
+grep -qxF 'net.ipv4.icmp_msgs_per_sec=100000' /etc/sysctl.conf || echo "net.ipv4.icmp_msgs_per_sec=100000" >> /etc/sysctl.conf
+grep -qxF 'net.ipv4.icmp_msgs_burst=5000' /etc/sysctl.conf || echo "net.ipv4.icmp_msgs_burst=5000" >> /etc/sysctl.conf
 grep -qxF 'fs.file-max = 500000' /etc/sysctl.conf || echo "fs.file-max = 500000" >> /etc/sysctl.conf
 
 /sbin/sysctl -p
