@@ -9,11 +9,12 @@ echo "Installing the Sonar poller...";
 
 ## Add PHP repository, setup PHP
 apt-get -y update
-apt-get install -y php8.3-cli php8.3-xml php8.3-common php8.3-gmp php8.3-dev php8.3-sqlite3 php8.3-zip php8.3-fpm php8.3-mbstring composer openssl git php-pear snmp
+apt-get install -y php8.3-cli php8.3-xml php8.3-common php8.3-gmp php8.3-dev php8.3-sqlite3 php8.3-zip php8.3-fpm php8.3-mbstring libev-dev composer openssl git php-pear snmp
 
 pecl channel-update pecl.php.net
 print "\n" | pecl install ev
 grep -qxF 'extension=ev.so' /etc/php/8.3/cli/php.ini || echo "extension=ev.so" >> /etc/php/8.3/cli/php.ini
+grep -qxF 'extension=ev.so' /etc/php/8.3/fpm/php.ini || echo "extension=ev.so" >> /etc/php/8.3/fpm/php.ini
 
 ## Install the latest fping
 apt-get install -y fping
