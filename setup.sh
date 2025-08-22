@@ -19,6 +19,8 @@ grep -qxF 'extension=ev.so' /etc/php/8.3/fpm/php.ini || echo "extension=ev.so" >
 ## Install the latest fping
 apt-get install -y fping
 setcap cap_net_raw+ep /usr/bin/fping
+## Maintain compatability with legacy version so code stays the same for both
+ln -s /usr/bin/fping /usr/local/sbin/fping
 
 ## Setup sysctl for better monitoring performance
 grep -qxF 'net.core.somaxconn=4096' /etc/sysctl.conf || echo "net.core.somaxconn=4096" >> /etc/sysctl.conf
