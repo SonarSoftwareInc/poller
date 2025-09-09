@@ -84,20 +84,29 @@ class PingHosts implements Task
                     $log->error("$ip is not a valid IP address, skipping line '$result'");
                     continue;
                 }
+
+                //Strip "<ip> :" and reindex: series has RTT (Round Trip Time) strings and "-" losses
                 //-2 here because we don't care about the first two results which are the host and a colon
-                unset($boom[0]);
-                unset($boom[1]);
-                sort($boom);
-                $lossCount = count(array_filter($boom, function($val) {
-                    return strpos($val, '-') === 0;
-                }));
+                $series = array_values(array_slice($boom, 2));
+                $rtts = array_values(array_filter($series, static fn($v) => is_numeric($v)));
+                $total = count($series);
+                $lossCount = $total - count($rtts);
+                $lossPct = $total > 0 ? round(($lossCount / $total) * 100, 2) : 100.0;
+
+                $min = $max = $median = 0.0;
+
+                if (!empty($rtts)) {
+                    $min = (float) round((float) min($rtts), 2);
+                    $max = (float) round((float) max($rtts), 2);
+                    $median = $this->calculateMedian($rtts);
+                }
 
                 $formattedResults[] = new PingResult(
-                    $this->ips[trim($ip)],
-                    round(($lossCount / (count($boom)))*100,2),
-                    (float)round($boom[0],2),
-                    (float)round($boom[count($boom)-1],2),
-                    $this->calculateMedian($boom),
+                    $this->ips[trim($ip)] ?? null,
+                    $lossPct,
+                    $min,
+                    $max,
+                    $median,
                 );
             }
         }
@@ -109,26 +118,20 @@ class PingHosts implements Task
      * @param array $data
      * @return float
      */
-    private function calculateMedian(array $data):float
+    private function calculateMedian(array $data): float
     {
-        $responses = array_values(array_filter($data, function ($value) {
-            return is_numeric($value);
-        }));
+        $responses = array_values(array_filter($data, static fn($v) => is_numeric($v)));
+        $n = count($responses);
+        if ($n === 0) return 0.0;
 
-        if (count($responses) === 0){
-            return (float)0;
+        sort($responses, SORT_NUMERIC);
+
+        $m = intdiv($n, 2);
+        if ($n % 2 === 1) {
+            return (float) round((float) $responses[$m], 2);
         }
 
-        if (count($responses) === 1) {
-            return (float)$responses[0];
-        }
-
-        $middleIndex = floor(count($responses)/2);
-
-        $median = $responses[$middleIndex];
-        if (count($responses) % 2 === 0) {
-            $median = ($median + $responses[$middleIndex - 1]) / 2;
-        }
-        return (float)round($median,2);
+        $median = ((float) $responses[$m] + (float) $responses[$m - 1]) / 2;
+        return (float) round($median, 2);
     }
 }
