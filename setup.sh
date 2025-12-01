@@ -9,7 +9,7 @@ echo "Installing the Sonar poller...";
 
 ## Add PHP repository, setup PHP
 apt-get -y update
-apt-get install -y php8.3-cli php8.3-xml php8.3-common php8.3-gmp php8.3-dev php8.3-sqlite3 php8.3-zip php8.3-fpm php8.3-mbstring libev-dev composer openssl git php-pear snmp
+apt-get install -y php8.3-cli php8.3-xml php8.3-common php8.3-gmp php8.3-dev php8.3-sqlite3 php8.3-zip php8.3-fpm php8.3-mbstring libev-dev composer openssl git php-pear snmp mailcap
 
 pecl channel-update pecl.php.net
 print "\n" | pecl install ev
