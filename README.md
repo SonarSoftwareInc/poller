@@ -37,6 +37,50 @@ run the following command to restart the poller:
 supervisorctl restart sonar_poller
 ```
 
+## Docker
+
+You can run Sonar Poller in Docker for local development/testing.
+
+### Prerequisites
+
+- Docker Engine 24+
+- Docker Compose v2+
+
+### Run with Docker Compose
+
+From the repository root:
+
+```bash
+docker compose up --build -d
+```
+
+Then open:
+
+- `http://localhost:8080`
+
+The container runs:
+
+- `php-fpm` for PHP execution
+- `nginx` for the web UI
+- the background poller process (`src/poller.php`)
+
+Persistent data is mounted from the host:
+
+- `./permanent_config` → `/usr/share/sonar_poller/permanent_config`
+- `./logs` → `/usr/share/sonar_poller/logs`
+
+To stop:
+
+```bash
+docker compose down
+```
+
+To view logs:
+
+```bash
+docker compose logs -f
+```
+
 ## For developers
 ### Adding new types of devices
 
