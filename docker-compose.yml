@@ -1,0 +1,13 @@
+services:
+  sonar-poller:
+    build:
+      context: .
+    container_name: sonar-poller
+    ports:
+      - "8080:80"
+    cap_add:
+      - NET_RAW
+    restart: unless-stopped
+    volumes:
+      - ./permanent_config:/usr/share/sonar_poller/permanent_config
+      - ./logs:/usr/share/sonar_poller/logs
